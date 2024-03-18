@@ -26,8 +26,6 @@
 #include <gio/gio.h>
 #include <pango/pangocairo.h>
 
-static PangoContext *context;
-
 static void
 test_parse (void)
 {
@@ -147,12 +145,16 @@ test_empty_variations (void)
 static void
 test_metrics (void)
 {
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoFontDescription *desc;
   PangoFontMetrics *metrics;
   char *str;
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_context_get_font_map (context)), "PangoCairoWin32FontMap") == 0)
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
     desc = pango_font_description_from_string ("Verdana 11");
   else
     desc = pango_font_description_from_string ("Cantarell 11");
@@ -181,6 +183,8 @@ test_metrics (void)
   pango_font_metrics_unref (metrics);
   g_free (str);
   pango_font_description_free (desc);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -191,10 +195,12 @@ test_extents (void)
   PangoItem *item;
   PangoGlyphString *glyphs;
   PangoRectangle ink, log;
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoFontDescription *desc;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   desc = pango_font_description_from_string("Cantarell 11");
   pango_context_set_font_description (context, desc);
   pango_font_description_free (desc);
@@ -213,6 +219,7 @@ test_extents (void)
   pango_glyph_string_free (glyphs);
   g_list_free_full (items, (GDestroyNotify)pango_item_free);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -231,7 +238,7 @@ test_enumerate (void)
   PangoFont *font;
   gboolean found_face;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_cairo_font_map_new ();
   context = pango_font_map_create_context (fontmap);
 
   pango_font_map_list_families (fontmap, &families, &n_families);
@@ -273,6 +280,7 @@ test_enumerate (void)
   g_free (faces);
   g_free (families);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -289,7 +297,7 @@ test_roundtrip_plain (void)
   desc = pango_font_description_from_string ("Cantarell 11");
 #endif
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_cairo_font_map_new ();
   context = pango_font_map_create_context (fontmap);
 
 
@@ -302,6 +310,7 @@ test_roundtrip_plain (void)
   g_object_unref (font);
   pango_font_description_free (desc);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -314,13 +323,14 @@ test_roundtrip_small_caps (void)
   hb_feature_t features[32];
   guint num = 0;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+  fontmap = pango_cairo_font_map_new ();
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
     {
       g_test_skip ("Small Caps support needs to be added to PangoCoreTextFontMap");
+      g_object_unref (fontmap);
       return;
     }
 
-  fontmap = pango_cairo_font_map_get_default ();
   context = pango_font_map_create_context (fontmap);
 
   desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
@@ -380,6 +390,7 @@ test_roundtrip_small_caps (void)
   pango_font_description_free (desc);
 
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -390,7 +401,7 @@ test_roundtrip_emoji (void)
   PangoFontDescription *desc, *desc2;
   PangoFont *font;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_cairo_font_map_new ();
   context = pango_font_map_create_context (fontmap);
 
   /* This is how pango_itemize creates the emoji font desc */
@@ -411,12 +422,13 @@ test_roundtrip_emoji (void)
   g_object_unref (font);
   pango_font_description_free (desc);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_font_models (void)
 {
-  PangoFontMap *map = pango_cairo_font_map_get_default ();
+  PangoFontMap *map = pango_cairo_font_map_new ();
   gboolean monospace_found = FALSE;
   int n_families = 0;
   int n_variable_families = 0;
@@ -477,6 +489,8 @@ test_font_models (void)
 
   g_print ("# %d font families, %d monospace, %d variable\n",
            n_families, n_monospace_families, n_variable_families);
+
+  g_object_unref (map);
 }
 
 static void
@@ -571,7 +585,7 @@ test_font_scale (void)
   cairo_scaled_font_t *sf;
   cairo_font_options_t *options2;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_cairo_font_map_new ();
   context = pango_font_map_create_context (fontmap);
 
   options = cairo_font_options_create ();
@@ -640,6 +654,7 @@ test_font_scale (void)
   g_object_unref (font);
   pango_font_description_free (desc);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 int
@@ -648,8 +663,6 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
-
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   g_test_add_func ("/pango/font/metrics", test_metrics);
   g_test_add_func ("/pango/fontdescription/parse", test_parse);

@@ -33,16 +33,19 @@
 static void
 test_shape_tab_crash (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one\ttwo", -1);
   pango_layout_is_ellipsized (layout);
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Test that itemizing a string with 0 characters works
@@ -50,26 +53,34 @@ test_shape_tab_crash (void)
 static void
 test_itemize_empty_crash (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
+
   pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "", 0, 1, NULL, NULL);
 
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_itemize_utf8 (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   GList *result = NULL;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
+
   result = pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "\xc3\xa1\na", 3, 1, NULL, NULL);
   g_assert (result != NULL);
 
   g_list_free_full (result, (GDestroyNotify)pango_item_free);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Test that pango_layout_set_text (layout, "short", 200)
@@ -78,17 +89,20 @@ test_itemize_utf8 (void)
 static void
 test_short_string_crash (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   int width, height;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "short text", 200);
   pango_layout_get_pixel_size (layout, &width, &height);
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -108,12 +122,14 @@ test_language_emoji_crash (void)
 static void
 test_line_height (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoLayoutLine *line;
   int height = 0;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one\ttwo", -1);
   line = pango_layout_get_line_readonly (layout, 0);
@@ -123,18 +139,21 @@ test_line_height (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_line_height2 (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoLayoutLine *line;
   int height1 = 0;
   int height2 = 0;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one", -1);
 
@@ -150,11 +169,13 @@ test_line_height2 (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_line_height3 (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoLayoutLine *line;
@@ -162,7 +183,8 @@ test_line_height3 (void)
   int height1 = 0;
   int height2 = 0;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one", -1);
   attrs = pango_attr_list_new ();
@@ -182,23 +204,27 @@ test_line_height3 (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_run_height (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoLayoutIter *iter;
   PangoRectangle logical1, logical2;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+  fontmap = pango_cairo_font_map_new ();
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
     {
       g_test_skip ("This test fails on macOS and needs debugging");
+      g_object_unref (fontmap);
       return;
     }
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one", -1);
 
@@ -216,16 +242,19 @@ test_run_height (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_cursor_height (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoRectangle strong;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one\ttwo", -1);
   pango_layout_get_cursor_pos (layout, 0, &strong, NULL);
@@ -234,22 +263,26 @@ test_cursor_height (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_cursor_height2 (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoRectangle strong1, strong2;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+  fontmap = pango_cairo_font_map_new ();
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
     {
       g_test_skip ("This test fails on macOS and needs debugging");
+      g_object_unref (fontmap);
       return;
     }
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "one", -1);
 
@@ -263,6 +296,7 @@ test_cursor_height2 (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -413,11 +447,13 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 static void
 test_fallback_shape (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   const char *text;
   GList *items, *l;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
 
   text = "Some text to sha​pe ﺄﻧﺍ ﻕﺍﺩﺭ ﻊﻟﻯ ﺄﻜﻟ ﺎﻟﺰﺟﺎﺟ ﻭ ﻩﺫﺍ ﻻ ﻱﺆﻠﻤﻨﻳ";
   items = pango_itemize (context, text, 0, strlen (text), NULL, NULL);
@@ -444,19 +480,22 @@ test_fallback_shape (void)
   g_list_free_full (items, (GDestroyNotify)pango_item_free);
 
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* https://bugzilla.gnome.org/show_bug.cgi?id=547303 */
 static void
 test_get_cursor_crash (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   int i;
 
   const char *string = "foo\n\rbar\r\nbaz\n\nqux\n\n..";
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
 
   layout = pango_layout_new (context);
 
@@ -472,6 +511,7 @@ test_get_cursor_crash (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Test that get_cursor returns split cursors in the
@@ -482,11 +522,13 @@ static void
 test_get_cursor (void)
 {
   const char *text = "abאב";
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoRectangle strong, weak;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
 
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, text, -1);
@@ -508,18 +550,21 @@ test_get_cursor (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_index_to_x (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   const char *tests[] = {
     "ac­ual­ly", // soft hyphen
     "ac​ual​ly", // zero-width space
   };
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
@@ -556,6 +601,7 @@ test_index_to_x (void)
     }
 
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static gboolean
@@ -571,12 +617,14 @@ pango_rectangle_contains (const PangoRectangle *r1,
 static void
 test_extents (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   const char *tests[] = {
     "Some long text that has multiple lines that are wrapped by Pango."
   };
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
@@ -627,11 +675,13 @@ test_extents (void)
     }
 
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_empty_line_height (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoFontDescription *description;
@@ -640,13 +690,15 @@ test_empty_line_height (void)
   int hint;
   int size;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+  fontmap = pango_cairo_font_map_new ();
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
     {
       g_test_skip ("This test fails on macOS and needs debugging");
+      g_object_unref (fontmap);
       return;
     }
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (fontmap);
   description = pango_font_description_new ();
 
   for (size = 10; size <= 20; size++)
@@ -683,6 +735,7 @@ test_empty_line_height (void)
 
   pango_font_description_free (description);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -697,7 +750,7 @@ test_gravity_metrics (void)
   PangoRectangle ink[4];
   PangoRectangle log[4];
 
-  map = pango_cairo_font_map_get_default ();
+  map = pango_cairo_font_map_new ();
   context = pango_font_map_create_context (map);
 
   desc = pango_font_description_from_string ("Cantarell 64");
@@ -724,6 +777,7 @@ test_gravity_metrics (void)
 
   pango_font_description_free (desc);
   g_object_unref (context);
+  g_object_unref (map);
 }
 
 static void
@@ -767,11 +821,13 @@ test_transform_rectangle (void)
 static void
 test_wrap_char (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   int w, h, w0, h0;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, "Rows can have suffix widgets", -1);
   pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
@@ -787,24 +843,28 @@ test_wrap_char (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Test the crash with Small Caps in itemization from #627 */
 static void
 test_small_caps_crash (void)
 {
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   PangoFontDescription *desc;
   int w, h;
 
-  if (strcmp (G_OBJECT_TYPE_NAME (pango_cairo_font_map_get_default ()), "PangoCairoCoreTextFontMap") == 0)
+  fontmap = pango_cairo_font_map_new ();
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
     {
       g_test_skip ("This test needs a fontmap that supports Small-Caps");
+      g_object_unref (fontmap);
       return;
     }
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   desc = pango_font_description_from_string ("Cantarell Small-Caps 11");
   pango_layout_set_font_description (layout, desc);
@@ -816,6 +876,7 @@ test_small_caps_crash (void)
   pango_font_description_free (desc);
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 int

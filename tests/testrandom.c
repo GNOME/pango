@@ -106,6 +106,7 @@ test_wrap_char (gconstpointer data)
 {
   PangoDirection dir = GPOINTER_TO_UINT (data);
   PangoFontDescription *desc;
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *layout;
   char *sentence;
@@ -113,7 +114,8 @@ test_wrap_char (gconstpointer data)
   Size sizes[100];
   gsize i, j;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   desc = pango_font_description_from_string ("Sans 10");
   layout = pango_layout_new (context);
   pango_layout_set_font_description (layout, desc);
@@ -169,6 +171,7 @@ test_wrap_char (gconstpointer data)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 #if 0
@@ -177,6 +180,7 @@ test_wrap_char_min_width (gconstpointer data)
 {
   PangoDirection dir = GPOINTER_TO_UINT (data);
   PangoFontDescription *desc;
+  PangoFontMap *fontmap;
   PangoContext *context;
   PangoLayout *test_layout, *ref_layout;
   char *sentence, *s;
@@ -184,7 +188,8 @@ test_wrap_char_min_width (gconstpointer data)
   gsize j;
   int test_width, ref_width;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   desc = pango_font_description_from_string ("Sans 10");
   ref_layout = pango_layout_new (context);
   pango_layout_set_font_description (ref_layout, desc);
@@ -219,6 +224,7 @@ test_wrap_char_min_width (gconstpointer data)
   g_object_unref (test_layout);
   g_object_unref (ref_layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 #endif
 

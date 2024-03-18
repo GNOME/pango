@@ -33,11 +33,42 @@
 #include <pango/pangofc-fontmap.h>
 #include "test-common.h"
 
+static char *opt_fonts = NULL;
+
+static PangoFontMap *
+generate_font_map (void)
+{
+  FcConfig *config;
+  PangoFontMap *map;
+  char *path;
+  gsize len;
+  char *conf;
+
+  map = g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
+
+  config = FcConfigCreate ();
+
+  path = g_build_filename (opt_fonts, "fonts.conf", NULL);
+  g_file_get_contents (path, &conf, &len, NULL);
+
+  if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
+    g_error ("Failed to parse fontconfig configuration");
+
+  g_free (conf);
+  g_free (path);
+
+  FcConfigAppFontAddDir (config, (const FcChar8 *) opt_fonts);
+  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
+  FcConfigDestroy (config);
+
+  return map;
+}
 
 static void
 test_layout (gconstpointer d)
 {
   const char *filename = d;
+  PangoFontMap *fontmap;
   GError *error = NULL;
   char *diff;
   GBytes *bytes;
@@ -47,9 +78,11 @@ test_layout (gconstpointer d)
   PangoContext *context;
   PangoLayout *layout;
 
-  if (!PANGO_IS_FC_FONT_MAP (pango_cairo_font_map_get_default ()))
+  fontmap = generate_font_map ();
+  if (!PANGO_IS_FC_FONT_MAP (fontmap))
     {
       g_test_skip ("Not an fc fontmap. Skipping...");
+      g_object_unref (fontmap);
       return;
     }
 
@@ -61,6 +94,7 @@ test_layout (gconstpointer d)
       g_test_skip (msg);
       g_free (msg);
       g_free (old_locale);
+      g_object_unref (fontmap);
       return;
     }
 
@@ -68,7 +102,7 @@ test_layout (gconstpointer d)
   g_assert_no_error (error);
   orig = g_bytes_new_take (contents, length);
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
   g_assert_no_error (error);
 
@@ -76,6 +110,7 @@ test_layout (gconstpointer d)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 
   diff = diff_bytes (orig, bytes, &error);
   g_assert_no_error (error);
@@ -105,42 +140,44 @@ test_layout (gconstpointer d)
 }
 
 static void
-install_fonts (const char *dir)
+generate_expected_output (const char *path)
 {
-  FcConfig *config;
-  PangoFontMap *map;
-  char *path;
-  gsize len;
-  char *conf;
+  PangoFontMap *fontmap;
+  char *contents;
+  gsize length;
+  GError *error = NULL;
+  GBytes *orig;
+  GBytes *bytes;
+  PangoContext *context;
+  PangoLayout *layout;
 
-  map = g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
+  fontmap = generate_font_map ();
 
-  config = FcConfigCreate ();
+  g_file_get_contents (path, &contents, &length, &error);
+  g_assert_no_error (error);
+  orig = g_bytes_new_take (contents, length);
+  context = pango_font_map_create_context (fontmap);
+  layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
+  g_assert_no_error (error);
 
-  path = g_build_filename (dir, "fonts.conf", NULL);
-  g_file_get_contents (path, &conf, &len, NULL);
+  bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_CONTEXT | PANGO_LAYOUT_SERIALIZE_OUTPUT);
 
-  if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
-    g_error ("Failed to parse fontconfig configuration");
+  g_object_unref (layout);
+  g_object_unref (context);
 
-  g_free (conf);
-  g_free (path);
+  g_print ("%s", (const char *)g_bytes_get_data (bytes, NULL));
 
-  FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
-  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
-  FcConfigDestroy (config);
-
-  pango_cairo_font_map_set_default (PANGO_CAIRO_FONT_MAP (map));
-
-  g_object_unref (map);
+  g_bytes_unref (bytes);
+  g_bytes_unref (orig);
+  g_object_unref (fontmap);
 }
 
 int
 main (int argc, char *argv[])
 {
+  int result = 0;
   GDir *dir;
   GError *error = NULL;
-  char *opt_fonts = NULL;
   const gchar *name;
   char *path;
   GOptionContext *option_context;
@@ -160,51 +197,17 @@ main (int argc, char *argv[])
     }
   g_option_context_free (option_context);
 
-  if (opt_fonts)
-    {
-      install_fonts (opt_fonts);
-      g_free (opt_fonts);
-    }
-
   /* allow to easily generate expected output for new test cases */
   if (argc > 1 && argv[1][0] != '-')
     {
-      char *contents;
-      gsize length;
-      GError *error = NULL;
-      GBytes *orig;
-      GBytes *bytes;
-      PangoContext *context;
-      PangoLayout *layout;
-
-      g_file_get_contents (argv[1], &contents, &length, &error);
-      g_assert_no_error (error);
-      orig = g_bytes_new_take (contents, length);
-      context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-      layout = pango_layout_deserialize (context, orig, PANGO_LAYOUT_DESERIALIZE_CONTEXT, &error);
-      g_assert_no_error (error);
-
-      bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_CONTEXT | PANGO_LAYOUT_SERIALIZE_OUTPUT);
-
-      g_object_unref (layout);
-      g_object_unref (context);
-
-      g_print ("%s", (const char *)g_bytes_get_data (bytes, NULL));
-
-      g_bytes_unref (bytes);
-      g_bytes_unref (orig);
-
+      generate_expected_output (argv[1]);
       return 0;
     }
 
   g_test_init (&argc, &argv, NULL);
 
   if (!opt_fonts)
-    {
-      path = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
-      install_fonts (path);
-      g_free (path);
-    }
+    opt_fonts = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
 
   path = g_test_build_filename (G_TEST_DIST, "layouts", NULL);
   dir = g_dir_open (path, 0, &error);
@@ -222,5 +225,9 @@ main (int argc, char *argv[])
     }
   g_dir_close (dir);
 
-  return g_test_run ();
+  result = g_test_run ();
+
+  g_free (opt_fonts);
+
+  return result;
 }

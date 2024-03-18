@@ -23,21 +23,24 @@
 #include <pango/pangocairo.h>
 #include "test-common.h"
 
-static PangoContext *context;
-
 /* Some basic checks that the hb_font_t returned
  * by pango_font_get_hb_font is functional
  */
 static void
 test_hb_font (void)
 {
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoFontDescription *desc;
   PangoFont *font;
   hb_font_t *hb_font;
   hb_bool_t res;
   hb_codepoint_t glyph;
 
- if (strcmp (G_OBJECT_TYPE_NAME (pango_context_get_font_map (context)), "PangoCairoWin32FontMap") == 0)
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
+
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
     desc = pango_font_description_from_string ("Verdana 11");
   else
     desc = pango_font_description_from_string ("Cantarell 11");
@@ -53,16 +56,13 @@ test_hb_font (void)
 
   g_object_unref (font);
   pango_font_description_free (desc);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 int
 main (int argc, char *argv[])
 {
-  PangoFontMap *fontmap;
-
-  fontmap = pango_cairo_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
-
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/harfbuzz/font", test_hb_font);

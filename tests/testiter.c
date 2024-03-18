@@ -222,7 +222,7 @@ test_layout_iter (void)
   PangoFontDescription *font_desc;
   PangoLayout  *layout;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_cairo_font_map_new ();
   context = pango_font_map_create_context (fontmap);
   font_desc = pango_font_description_from_string ("cantarell 11");
   pango_context_set_font_description (context, font_desc);
@@ -245,6 +245,7 @@ test_layout_iter (void)
   g_object_unref (layout);
   g_object_unref (context);
   pango_font_description_free (font_desc);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -258,7 +259,7 @@ test_glyphitem_iter (void)
   const char *text;
   GSList *l;
 
-  fontmap = pango_cairo_font_map_get_default ();
+  fontmap = pango_cairo_font_map_new ();
   context = pango_font_map_create_context (fontmap);
   font_desc = pango_font_description_from_string ("cantarell 11");
   pango_context_set_font_description (context, font_desc);
@@ -308,6 +309,7 @@ test_glyphitem_iter (void)
   g_object_unref (layout);
   g_object_unref (context);
   pango_font_description_free (font_desc);
+  g_object_unref (fontmap);
 }
 
 int

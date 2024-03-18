@@ -33,8 +33,6 @@
 #include "validate-log-attrs.h"
 
 
-static PangoContext *context;
-
 static gboolean opt_hex_chars;
 
 static gboolean
@@ -43,6 +41,8 @@ test_file (const gchar *filename, GString *string)
   gchar *contents;
   gsize  length;
   GError *error = NULL;
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoLogAttr *attrs;
   const PangoLogAttr *attrs2;
   int len;
@@ -72,6 +72,8 @@ test_file (const gchar *filename, GString *string)
   pango_parse_markup (test, -1, 0, &attributes, &text, NULL, &error);
   g_assert_no_error (error);
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
   pango_layout_set_text (layout, text, length);
   pango_layout_set_attributes (layout, attributes);
@@ -89,6 +91,8 @@ test_file (const gchar *filename, GString *string)
       g_object_unref (layout);
       pango_attr_list_unref (attributes);
       g_free (text);
+      g_object_unref (context);
+      g_object_unref (fontmap);
       return FALSE;
     }
 #endif
@@ -295,6 +299,8 @@ test_file (const gchar *filename, GString *string)
   g_free (contents);
   g_free (text);
   pango_attr_list_unref (attributes);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 
   return TRUE;
 }
@@ -399,8 +405,6 @@ main (int argc, char *argv[])
   g_option_context_free (option_context);
 
   setlocale (LC_ALL, "");
-
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   if (opt_legend)
     {

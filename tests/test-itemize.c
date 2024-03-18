@@ -34,8 +34,6 @@
 #include "pango/pango-item-private.h"
 
 
-static PangoContext *context;
-
 static void
 append_text (GString    *s,
              const char *text,
@@ -127,6 +125,8 @@ test_file (const gchar *filename, GString *string)
   GString *s1, *s2, *s3, *s4, *s5, *s6, *s7;
   char *test;
   char *text;
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoAttrList *attrs;
   PangoAttrList *itemize_attrs;
   GList *items, *l;
@@ -155,6 +155,10 @@ test_file (const gchar *filename, GString *string)
   length = strlen (text);
   if (text[length - 1] == '\n')
     length--;
+
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
+  pango_context_set_language (context, pango_language_from_string ("en-us"));
 
   itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
   items = pango_itemize (context, text, 0, length, itemize_attrs, NULL);
@@ -229,6 +233,8 @@ test_file (const gchar *filename, GString *string)
   pango_attr_list_unref (attrs);
   g_free (text);
   g_free (contents);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static gchar *
@@ -255,6 +261,8 @@ test_itemize (gconstpointer d)
   GError *error = NULL;
   GString *dump;
   gchar *diff;
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoFontFamily **families;
   int n_families;
   gboolean found_cantarell;
@@ -270,6 +278,10 @@ test_itemize (gconstpointer d)
       return;
     }
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
+  pango_context_set_language (context, pango_language_from_string ("en-us"));
+
   found_cantarell = FALSE;
   pango_context_list_families (context, &families, &n_families);
   for (int i = 0; i < n_families; i++)
@@ -281,6 +293,8 @@ test_itemize (gconstpointer d)
         }
     }
   g_free (families);
+  g_clear_object (&context);
+  g_clear_object (&fontmap);
 
   if (!found_cantarell)
     {
@@ -331,9 +345,6 @@ main (int argc, char *argv[])
   GError *error = NULL;
   const gchar *name;
   gchar *path;
-
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
-  pango_context_set_language (context, pango_language_from_string ("en-us"));
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1 && argv[1][0] != '-')

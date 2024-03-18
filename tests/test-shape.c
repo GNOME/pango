@@ -34,8 +34,6 @@
 #include "test-common.h"
 
 
-static PangoContext *context;
-
 gboolean opt_hex_chars;
 
 static void
@@ -138,6 +136,8 @@ test_file (const gchar *filename, GString *string)
   GError *error = NULL;
   char *test;
   char *text;
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoAttrList *attrs;
   PangoAttrList *itemize_attrs;
   PangoAttrList *shape_attrs;
@@ -180,6 +180,9 @@ test_file (const gchar *filename, GString *string)
   if (text[length - 1] == '\n')
     length--;
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
+
   itemize_attrs = pango_attr_list_filter (attrs, affects_itemization, NULL);
   shape_attrs = pango_attr_list_filter (attrs, affects_break_or_shape, NULL);
 
@@ -188,6 +191,8 @@ test_file (const gchar *filename, GString *string)
 
   pango_attr_list_unref (itemize_attrs);
   pango_attr_list_unref (shape_attrs);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 
   for (l = items; l; l = l->next)
     {
@@ -409,8 +414,6 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
-
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
 
   /* allow to easily generate expected output for new test cases */
   if (argc > 1)
