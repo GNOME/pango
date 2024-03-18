@@ -151,7 +151,7 @@ get_real_family (const char *family_name)
     case 'm':
     case 'M':
       if (g_ascii_strcasecmp (family_name, "monospace") == 0)
-        return "Courier";
+        return "Menlo";
       break;
     case 's':
     case 'S':
