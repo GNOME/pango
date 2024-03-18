@@ -599,6 +599,17 @@ default_break (const char    *text,
 	    if (script == PANGO_SCRIPT_HEBREW && type == G_UNICODE_OTHER_LETTER)
 	      WB_type = WB_Hebrew_Letter;
 
+#if !GLIB_CHECK_VERSION(2, 80, 0)
+	    /* The line break property of character 0x06DD is changed
+	       from G_UNICODE_BREAK_ALPHABETIC to G_UNICODE_BREAK_NUMERIC
+	       in Unicode 15.1.0.
+
+	       After the line break property is updated in glib,
+	       we will remove the following code. */
+	    if (wc == 0x06DD)
+	      WB_type = WB_Numeric;
+#endif
+
 	    if (WB_type == WB_Other)
 	      switch (wc >> 8)
 	        {
@@ -615,6 +626,10 @@ default_break (const char    *text,
 		  break;
 		case 0x05:
 		  if (wc == 0x058A)
+		    WB_type = WB_ALetter; /* ALetter exceptions */
+		  break;
+		case 0x07:
+		  if (wc == 0x070F)
 		    WB_type = WB_ALetter; /* ALetter exceptions */
 		  break;
                 default:
