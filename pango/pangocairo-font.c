@@ -450,13 +450,7 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
     mini_size = size / 2.2;
     if (is_hinted)
       {
-	mini_size = HINT_Y (mini_size);
-
-	if (mini_size < 6.0)
-	  {
-	    rows = 1;
-	    mini_size = MIN (MAX (size - 1, 0), 6.0);
-	  }
+        mini_size = HINT_Y (mini_size);
       }
 
     pango_font_description_set_absolute_size (desc, pango_units_from_double (mini_size));
@@ -476,7 +470,6 @@ _pango_cairo_font_private_get_hex_box_info (PangoCairoFontPrivate *cf_priv)
 
   pango_font_description_free (desc);
   cairo_font_options_destroy (font_options);
-
 
   scaled_mini_font = pango_cairo_font_get_scaled_font ((PangoCairoFont *) mini_font);
   if (G_UNLIKELY (scaled_mini_font == NULL || cairo_scaled_font_status (scaled_mini_font) != CAIRO_STATUS_SUCCESS))
