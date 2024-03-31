@@ -1,3 +1,11 @@
+Overview of changes in 1.52.2, 31-03-2024
+=========================================
+- coretext: Implement reload_font
+- coretext: Use Menlo instead of Courier for monospace
+- win32: Avoid a double free
+- Update to Unicode 15.1
+- Simplify hexbox drawing
+
 Overview of changes in 1.52.1, 05-03-2024
 =========================================
 - Fix hexbox drawing
