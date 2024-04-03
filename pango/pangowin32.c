@@ -1319,14 +1319,12 @@ pango_win32_font_create_hb_font (PangoFont *font)
 #else
   hfont = _pango_win32_font_get_hfont (font);
 
-  /* We are *not* allowed to destroy the HFONT here ! */
 #ifdef USE_HB_GDI
   face = hb_gdi_face_create (hfont);
-
-  hb_face_set_user_data (face, &key, hfont, g_free, TRUE);
 #else
   face = hb_face_create_for_tables (hfont_reference_table, (void *)hfont, NULL);
 #endif
+
 #endif
 
   hb_font = hb_font_create (face);
