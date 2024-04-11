@@ -48,6 +48,7 @@
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "pango-emoji-private.h"
 #include "pango-emoji-table.h"
@@ -201,8 +202,6 @@ _pango_EmojiSegmentationCategory (gunichar codepoint)
 }
 
 
-typedef gboolean bool;
-enum { false = FALSE, true = TRUE };
 typedef unsigned char *emoji_text_iter_t;
 
 #pragma GCC diagnostic push
@@ -260,7 +259,7 @@ gboolean
 _pango_emoji_iter_next (PangoEmojiIter *iter)
 {
   unsigned int old_cursor, cursor;
-  gboolean is_emoji;
+  bool is_emoji;
 
   if (iter->end >= iter->text_end)
     return FALSE;
