@@ -1,36 +1,45 @@
-option('gtk_doc',
-       description: 'Build API reference for Pango using GTK-Doc',
+option('documentation',
        type: 'boolean',
-       value: false)
+       value: false,
+       description : 'Build API reference')
+
+option('gtk_doc',
+       type: 'boolean',
+       value: false,
+       description: 'Build API reference',
+       deprecated: 'documentation')
+
 option('introspection',
-       description: 'Build the GObject introspection data for Pango',
        type: 'feature',
        value: 'auto',
-       yield: true)
-option('install-tests',
-       description : 'Install tests',
-       type: 'boolean',
-       value: false)
+       yield: true,
+       description: 'Build the introspection data (requires gobject-introspection)')
+
 option('fontconfig',
        description : 'Build with FontConfig support. Passing \'auto\' or \'disabled\' disables fontconfig where it is optional, i.e. on Windows and macOS. Passing \'disabled\' on platforms where fontconfig is required results in error.',
        type: 'feature',
        value: 'auto')
+
 option('sysprof',
        type : 'feature',
        value : 'disabled',
-       description : 'include tracing support for sysprof')
+       description : 'Include tracing support for sysprof')
+
 option('libthai',
        type : 'feature',
        value : 'auto',
        description : 'Build with libthai support')
+
 option('cairo',
        type : 'feature',
        value : 'enabled',
        description : 'Build with cairo support')
+
 option('xft',
        type : 'feature',
        value : 'auto',
        description : 'Build with xft support')
+
 option('freetype',
        type : 'feature',
        value : 'auto',

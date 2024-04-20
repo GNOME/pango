@@ -8,7 +8,7 @@ project('pango', 'c', 'cpp',
           # https://github.com/mesonbuild/meson/issues/2289
           'c_std=gnu99',
         ],
-        meson_version : '>= 0.60.0')
+        meson_version : '>= 0.63.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
@@ -545,8 +545,7 @@ subdir('utils')
 subdir('examples')
 subdir('tests')
 subdir('tools')
-
-if get_option('gtk_doc')
+if get_option('documentation')
   subdir('docs')
 endif
 
@@ -568,8 +567,7 @@ summary('Linker', cc.get_linker_id(), section: 'Toolchain')
 summary('Debugging', get_option('debug'), section: 'Build')
 summary('Optimization', get_option('optimization'), section: 'Build')
 summary('Introspection', gir.found(), section: 'Build')
-summary('Documentation', get_option('gtk_doc'), section: 'Build')
-summary('Install tests', get_option('install-tests'), section: 'Build')
+summary('Documentation', get_option('documentation'), section: 'Build')
 
 summary('prefix', pango_prefix, section: 'Directories')
 summary('includedir', pango_includedir, section: 'Directories')
