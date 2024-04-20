@@ -1,4 +1,4 @@
-gidocgen = find_program('gi-docgen', required: get_option('gtk_doc'))
+gidocgen = find_program('gi-docgen', required: get_option('documentation'))
 
 pango_content_files = [
   'pango_rendering.md',

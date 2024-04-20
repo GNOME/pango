@@ -545,8 +545,7 @@ subdir('utils')
 subdir('examples')
 subdir('tests')
 subdir('tools')
-
-if get_option('gtk_doc')
+if get_option('documentation')
   subdir('docs')
 endif
 
@@ -568,7 +567,7 @@ summary('Linker', cc.get_linker_id(), section: 'Toolchain')
 summary('Debugging', get_option('debug'), section: 'Build')
 summary('Optimization', get_option('optimization'), section: 'Build')
 summary('Introspection', gir.found(), section: 'Build')
-summary('Documentation', get_option('gtk_doc'), section: 'Build')
+summary('Documentation', get_option('documentation'), section: 'Build')
 summary('Install tests', get_option('install-tests'), section: 'Build')
 
 summary('prefix', pango_prefix, section: 'Directories')
