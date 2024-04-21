@@ -15,6 +15,16 @@ option('introspection',
        yield: true,
        description: 'Build the introspection data (requires gobject-introspection)')
 
+option('build-testsuite',
+       description : 'Build the test suite',
+       type: 'boolean',
+       value: true)
+
+option('build-examples',
+       description : 'Build example test programs',
+       type: 'boolean',
+       value: true)
+
 option('fontconfig',
        description : 'Build with FontConfig support. Passing \'auto\' or \'disabled\' disables fontconfig where it is optional, i.e. on Windows and macOS. Passing \'disabled\' on platforms where fontconfig is required results in error.',
        type: 'feature',
