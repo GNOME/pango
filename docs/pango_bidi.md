@@ -21,6 +21,8 @@ Here is an example for mixed-direction text (shown in logical order):
   <img alt="mixed-direction text, logical order" src="bidi-input-light.png">
 </picture>
 
+(the text to copy is: abאב12αβ )
+
 Pango reorders the text according to the direction of the runs:
 
 <picture>
