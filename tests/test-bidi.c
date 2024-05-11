@@ -587,6 +587,7 @@ test_bidi_nested (void)
 
               offset = g_utf8_pointer_to_offset (text, text + run->item->offset);
               g_assert_true (offset == nested_tests[i].offsets[j]);
+              g_assert_true (offset == pango_item_get_char_offset (run->item));
               g_assert_true (run->item->analysis.level == nested_tests[i].levels[j]);
               g_assert_true (run->item->analysis.script == nested_tests[i].scripts[j]);
               g_assert_true (moved == (j + 1 < nested_tests[i].n_runs));

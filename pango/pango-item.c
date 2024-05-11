@@ -372,3 +372,28 @@ pango_analysis_get_size_font (const PangoAnalysis *analysis)
 
   return priv->size_font;
 }
+
+/**
+ * pango_item_get_char_offset:
+ * @item: a `PangoItem`
+ *
+ * Returns the character offset of the item from the beginning
+ * of the itemized text.
+ *
+ * If the item has not been obtained from Pango's itemization
+ * machinery, then the character offset is not available. In
+ * that case, this function returns -1.
+ *
+ * Returns: the character offset of the item from the beginning
+ *   of the itemized text, or -1
+ *
+ * Since: 1.54
+ */
+int
+pango_item_get_char_offset (PangoItem *item)
+{
+  if (item->analysis.flags & PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET)
+    return ((PangoItemPrivate *)item)->char_offset;
+  else
+    return -1;
+}
