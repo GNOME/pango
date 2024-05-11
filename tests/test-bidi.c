@@ -417,6 +417,137 @@ test_sinhala_cursor (void)
     }
 }
 
+static struct
+{
+  const char *text;
+  int chars[20];
+  int n_chars;
+  int n_runs;
+  int offsets[20];
+  int levels[20];
+  GUnicodeScript scripts[20];
+} nested_tests[] = {
+  {
+    /* The example from docs/pango_bidi.md */
+    .text = "abאב12αβ",
+    .chars = { 0, 1, 4, 5, 3, 2, 6, 7, -1, },
+    .n_chars = 8,
+    .n_runs = 5,
+    .offsets = { 0, 4, 2, 6, -1, },
+    .levels = { 0, 2, 1, 0, -1, },
+    .scripts = {
+      G_UNICODE_SCRIPT_LATIN,  /* ab */
+      G_UNICODE_SCRIPT_HEBREW, /* 12 */
+      G_UNICODE_SCRIPT_HEBREW, /* אב */
+      G_UNICODE_SCRIPT_GREEK,  /* αβ */
+      -1,                      /* NULL run */
+    },
+  },
+  {
+    /* https://gitlab.gnome.org/GNOME/pango/-/issues/794 */
+    .text = "abאב12",
+    .chars = { 0, 1, 4, 5, 3, 2, -1, },
+    .n_chars = 6,
+    .n_runs = 4,
+    .offsets = { 0, 4, 2, -1, },
+    .levels = { 0, 2, 1, -1, },
+    .scripts = {
+      G_UNICODE_SCRIPT_LATIN,  /* ab */
+      G_UNICODE_SCRIPT_HEBREW, /* 12 */
+      G_UNICODE_SCRIPT_HEBREW, /* אב */
+      -1,                      /* NULL run */
+    },
+  },
+};
+
+static void
+test_bidi_nested (void)
+{
+  for (int i = 0; i < G_N_ELEMENTS (nested_tests); i++)
+    {
+      const char *text = nested_tests[i].text;
+      gunichar *codes;
+      glong n_chars;
+      Pango2Layout *layout;
+      Pango2Lines *lines;
+      Pango2LineIter *iter;
+
+      codes = g_utf8_to_ucs4_fast (text, -1, &n_chars);
+      g_assert_nonnull (codes);
+      g_assert_true (n_chars == nested_tests[i].n_chars);
+
+      layout = pango2_layout_new (context);
+      pango2_layout_set_text (layout, text, -1);
+      lines = pango2_layout_get_lines (layout);
+
+      if (pango2_lines_get_unknown_glyphs_count (lines) > 0)
+        {
+          g_object_unref (layout);
+          g_test_skip ("missing fonts");
+          return;
+        }
+
+      /* Iterate chars in visual order */
+      iter = pango2_lines_get_iter (lines);
+      for (int j = 0; j < nested_tests[i].n_chars; j++)
+        {
+          int index = pango2_line_iter_get_index (iter);
+          int offset = g_utf8_pointer_to_offset (text, text + index);
+          gboolean moved = pango2_line_iter_next_char (iter);
+
+          g_assert_true (offset == nested_tests[i].chars[j]);
+          g_assert_true (moved == (j + 1 < n_chars));
+        }
+      pango2_line_iter_free (iter);
+
+      /* Iterate runs in visual order */
+      iter = pango2_lines_get_iter (lines);
+      for (int j = 0; j < nested_tests[i].n_runs; j++)
+        {
+          Pango2Run *run = pango2_line_iter_get_run (iter);
+          gboolean moved = pango2_line_iter_next_run (iter);
+
+          if (j + 1 < nested_tests[i].n_runs)
+            {
+              int offset;
+              Pango2Item *item;
+              const Pango2Analysis *analysis;
+
+              g_assert_nonnull (run);
+
+              item = pango2_run_get_item (run);
+              analysis = pango2_item_get_analysis (item);
+
+              offset = g_utf8_pointer_to_offset (text, text + pango2_item_get_byte_offset (item));
+              g_assert_true (offset == nested_tests[i].offsets[j]);
+              g_assert_true (pango2_analysis_get_bidi_level (analysis) == nested_tests[i].levels[j]);
+              g_assert_true (pango2_analysis_get_script (analysis) == nested_tests[i].scripts[j]);
+              g_assert_true (moved == (j + 1 < nested_tests[i].n_runs));
+
+              g_assert_true (moved);
+            }
+          else
+            {
+              g_assert_null (run);
+
+              g_assert_false (moved);
+            }
+        }
+
+      pango2_line_iter_free (iter);
+
+      /* Lines */
+      iter = pango2_lines_get_iter (lines);
+      g_assert_true (pango2_line_iter_at_last_line (iter));
+      g_assert_false (pango2_line_iter_next_line (iter));
+      pango2_line_iter_free (iter);
+
+      g_object_unref (layout);
+
+      g_free (codes);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -432,6 +563,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/bidi/move-cursor-line", test_move_cursor_line);
   g_test_add_func ("/bidi/move-cursor-para", test_move_cursor_para);
   g_test_add_func ("/bidi/sinhala-cursor", test_sinhala_cursor);
+  g_test_add_func ("/bidi/nested", test_bidi_nested);
 
   return g_test_run ();
 }
