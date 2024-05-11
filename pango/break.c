@@ -1405,7 +1405,7 @@ default_break (const char    *text,
 		  next_break_type == G_UNICODE_BREAK_WORD_JOINER ||
 		  next_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
 		  next_break_type == G_UNICODE_BREAK_QUOTATION ||
-		  next_break_type == G_UNICODE_BREAK_CLOSE_PARENTHESIS ||
+		  next_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS ||
 		  next_break_type == G_UNICODE_BREAK_EXCLAMATION ||
 		  next_break_type == G_UNICODE_BREAK_INFIX_SEPARATOR ||
 		  next_break_type == G_UNICODE_BREAK_SYMBOL ||
