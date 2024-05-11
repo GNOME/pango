@@ -127,6 +127,10 @@ PangoItem *             pango_item_copy              (PangoItem         *item);
 PANGO_AVAILABLE_IN_ALL
 void                    pango_item_free              (PangoItem         *item);
 
+
+PANGO_AVAILABLE_IN_1_54
+int                     pango_item_get_char_offset   (PangoItem         *item);
+
 PANGO_AVAILABLE_IN_ALL
 PangoItem *             pango_item_split             (PangoItem         *orig,
                                                       int                split_index,
@@ -157,7 +161,6 @@ GList *                 pango_itemize_with_base_dir  (PangoContext      *context
                                                       int                length,
                                                       PangoAttrList     *attrs,
                                                       PangoAttrIterator *cached_iter);
-
 
 G_END_DECLS
 
