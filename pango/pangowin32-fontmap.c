@@ -2148,7 +2148,7 @@ pango_win32_font_map_cache_clear (PangoFontMap *font_map)
  * Return value: TRUE if the font file is successfully loaded into the `PangoWin32FontMap`;
  *   otherwise FALSE.
  *
- * Since: 1.52.0
+ * Since: 1.52
  */
 gboolean
 pango_win32_font_map_add_font_file (PangoFontMap *font_map,
