@@ -928,7 +928,8 @@ pango_win32_font_get_coverage (PangoFont     *font,
       while (hb_set_next(chars, &ch))
         pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
 
-      win32face->coverage = g_object_ref (coverage);
+      hb_set_destroy (chars);
+      win32face->coverage = coverage;
     }
 
   return g_object_ref (win32face->coverage);
