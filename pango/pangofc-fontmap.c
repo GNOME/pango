@@ -1887,8 +1887,8 @@ ensure_families (PangoFcFontMap *fcfontmap)
 	  if (temp_family)
 	    {
               variable = FALSE;
-              variable = FcPatternGetBool (fontset->fonts[i], FC_VARIABLE, 0, &variable);
-              if (variable)
+              res = FcPatternGetBool (fontset->fonts[i], FC_VARIABLE, 0, &variable);
+              if (res == FcResultMatch && variable)
                 temp_family->variable = TRUE;
 
 	      FcPatternReference (fontset->fonts[i]);
