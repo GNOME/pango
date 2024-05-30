@@ -1678,6 +1678,9 @@ pango_fc_font_map_finalize (GObject *object)
   if (fcfontmap->substitute_destroy)
     fcfontmap->substitute_destroy (fcfontmap->substitute_data);
 
+  if (fcfontmap->priv->config)
+    FcConfigDestroy (fcfontmap->priv->config);
+
   G_OBJECT_CLASS (pango_fc_font_map_parent_class)->finalize (object);
 }
 
