@@ -97,7 +97,7 @@ iter_char_test (PangoLayout *layout)
   for (i = 0 ; i < num_chars; ++i)
     {
       gchar *char_str;
-      g_assert (iter_next_ok);
+      g_assert_true (iter_next_ok);
 
       index = pango_layout_iter_get_index (iter);
       ptr = text + index;
@@ -145,8 +145,8 @@ iter_char_test (PangoLayout *layout)
 	  verbose ("  (index_to_x ind=%d: expected x=%d, width=%d)\n",
 		   index - offset, x0, x1 - x0);
 
-	  g_assert (extents.x == x0);
-	  g_assert (extents.width == x1 - x0);
+	  g_assert_cmpint (extents.x, ==, x0);
+	  g_assert_cmpint (extents.width, ==, x1 - x0);
 	}
       else
 	{
@@ -159,7 +159,7 @@ iter_char_test (PangoLayout *layout)
 
   /* There should be one character position iterator for each character in the
    * input string */
-  g_assert (!iter_next_ok);
+  g_assert_false (iter_next_ok);
 
   pango_layout_iter_free (iter);
 }
@@ -182,7 +182,7 @@ iter_cluster_test (PangoLayout *layout)
       PangoLayoutLine *line = pango_layout_iter_get_line (iter);
 
       /* Every cluster is part of a run */
-      g_assert (pango_layout_iter_get_run (iter));
+      g_assert_true (pango_layout_iter_get_run (iter));
 
       index = pango_layout_iter_get_index (iter);
 
@@ -198,17 +198,17 @@ iter_cluster_test (PangoLayout *layout)
 
       /* All the clusters on a line should be next to each other and occupy
        * the entire line. They advance linearly from left to right */
-      g_assert (extents.width >= 0);
+      g_assert_cmpint (extents.width, >=, 0);
 
       if (last_line == line)
-	g_assert (extents.x == expected_next_x);
+	g_assert_cmpint (extents.x, ==, expected_next_x);
 
       expected_next_x = extents.x + extents.width;
 
       last_line = line;
     }
 
-  g_assert (!iter_next_ok);
+  g_assert_false (iter_next_ok);
 
   pango_layout_iter_free (iter);
 }

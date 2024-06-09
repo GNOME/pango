@@ -66,7 +66,7 @@ test_itemize_utf8 (void)
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   result = pango_itemize_with_base_dir (context, PANGO_DIRECTION_LTR, "\xc3\xa1\na", 3, 1, NULL, NULL);
-  g_assert (result != NULL);
+  g_assert_nonnull (result);
 
   g_list_free_full (result, (GDestroyNotify)pango_item_free);
   g_object_unref (context);
@@ -101,8 +101,8 @@ test_language_emoji_crash (void)
   lang = pango_language_from_string ("und-zsye");
   scripts = pango_language_get_scripts (lang, &num);
 
-  g_assert (num >= 0);
-  g_assert (scripts == NULL || num > 0);
+  g_assert_cmpint (num, >=, 0);
+  g_assert_true (scripts == NULL || num > 0);
 }
 
 static void
