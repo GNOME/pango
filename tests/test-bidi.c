@@ -23,8 +23,6 @@
 #include <pango/pango.h>
 #include <pango/pangocairo.h>
 
-static PangoContext *context;
-
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 
 static void
@@ -174,9 +172,13 @@ test_move_cursor_line (void)
     "aאב12b",
     "pa­ra­graph", // soft hyphens
   };
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoLayout *layout;
   gboolean fail = FALSE;
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
@@ -329,6 +331,8 @@ test_move_cursor_line (void)
     }
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 
   if (fail)
     g_test_fail ();
@@ -350,6 +354,8 @@ test_move_cursor_para (void)
     { "long word", 40 },
     { "זוהי השורה הראשונה" "\n" "זוהי השורה השנייה" "\n" "זוהי השורה השלישית" , 200 },
   };
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoLayout *layout;
   PangoRectangle pos, old_pos;
   int index;
@@ -360,6 +366,8 @@ test_move_cursor_para (void)
   PangoRectangle ext;
   PangoLayoutIter *iter;
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
@@ -451,17 +459,23 @@ test_move_cursor_para (void)
     }
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
 test_sinhala_cursor (void)
 {
   const char *text = "ර් á ";
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoLayout *layout;
   const char *p;
   const PangoLogAttr *attrs;
   int n, i;
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
 
   pango_layout_set_text (layout, text, -1);
@@ -469,6 +483,8 @@ test_sinhala_cursor (void)
   if (pango_layout_get_unknown_glyphs_count (layout) > 0)
     {
       g_object_unref (layout);
+      g_object_unref (context);
+      g_object_unref (fontmap);
       g_test_skip ("missing Sinhala fonts");
       return;
     }
@@ -489,6 +505,10 @@ test_sinhala_cursor (void)
       g_assert_true (strong.x == weak.x);
       g_assert_true (strong.width == weak.width);
     }
+
+  g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static struct
@@ -542,6 +562,8 @@ test_bidi_nested (void)
       const char *text = nested_tests[i].text;
       gunichar *codes;
       glong n_chars;
+      PangoFontMap *fontmap;
+      PangoContext *context;
       PangoLayout *layout;
       PangoLayoutIter *iter;
 
@@ -549,12 +571,16 @@ test_bidi_nested (void)
       g_assert_nonnull (codes);
       g_assert_true (n_chars == nested_tests[i].n_chars);
 
+      fontmap = pango_cairo_font_map_new ();
+      context = pango_font_map_create_context (fontmap);
       layout = pango_layout_new (context);
       pango_layout_set_text (layout, text, -1);
 
       if (pango_layout_get_unknown_glyphs_count (layout) > 0)
         {
           g_object_unref (layout);
+          g_object_unref (context);
+          g_object_unref (fontmap);
           g_test_skip ("missing fonts");
           return;
         }
@@ -610,6 +636,8 @@ test_bidi_nested (void)
       pango_layout_iter_free (iter);
 
       g_object_unref (layout);
+      g_object_unref (context);
+      g_object_unref (fontmap);
 
       g_free (codes);
     }
@@ -618,12 +646,7 @@ test_bidi_nested (void)
 int
 main (int argc, char *argv[])
 {
-  PangoFontMap *fontmap;
-
   setlocale (LC_ALL, "");
-
-  fontmap = pango_cairo_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
 
   g_test_init (&argc, &argv, NULL);
 

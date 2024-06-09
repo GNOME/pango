@@ -34,8 +34,8 @@
 #include "test-common.h"
 
 
-static void
-install_fonts (const char *dir)
+static PangoFontMap *
+generate_font_map (const char *dir)
 {
   FcConfig *config;
   PangoFontMap *map;
@@ -60,20 +60,24 @@ install_fonts (const char *dir)
   pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
   FcConfigDestroy (config);
 
-  pango_cairo_font_map_set_default (PANGO_CAIRO_FONT_MAP (map));
-
-  g_object_unref (map);
+  return map;
 }
 
 static void
 test_nofonts (void)
 {
+  char *path;
+  PangoFontMap *fontmap;
   PangoContext *context;
   const char *text;
   PangoLayout *layout;
   int missing;
 
-  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  path = g_test_build_filename (G_TEST_DIST, "nofonts", NULL);
+  fontmap = generate_font_map (path);
+  g_free (path);
+
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
 
   text = "Schlaf, Kindlein schlaf! "
@@ -88,20 +92,15 @@ test_nofonts (void)
 
   g_object_unref (layout);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 int
 main (int argc, char *argv[])
 {
-  char *path;
-
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
-
-  path = g_test_build_filename (G_TEST_DIST, "nofonts", NULL);
-  install_fonts (path);
-  g_free (path);
 
   g_test_add_func ("/layout/nofonts", test_nofonts);
 

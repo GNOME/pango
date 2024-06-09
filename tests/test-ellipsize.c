@@ -23,18 +23,20 @@
 #include <pango/pangocairo.h>
 #include "test-common.h"
 
-static PangoContext *context;
-
 /* Test that ellipsization does not change the height of a layout.
  * See https://gitlab.gnome.org/GNOME/pango/issues/397
  */
 static void
 test_ellipsize_height (void)
 {
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoLayout *layout;
   int height1, height2;
   PangoFontDescription *desc;
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
 
   desc = pango_font_description_from_string ("Fixed 7");
@@ -55,6 +57,8 @@ test_ellipsize_height (void)
   g_assert_cmpint (height1, ==, height2);
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Test that ellipsization without attributes does not crash
@@ -62,8 +66,12 @@ test_ellipsize_height (void)
 static void
 test_ellipsize_crash (void)
 {
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoLayout *layout;
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
 
   pango_layout_set_text (layout, "some text that should be ellipsized", -1);
@@ -76,6 +84,8 @@ test_ellipsize_crash (void)
   g_assert_cmpint (pango_layout_is_ellipsized (layout), ==, 1);
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Check that the width of a fully ellipsized paragraph
@@ -84,10 +94,14 @@ test_ellipsize_crash (void)
 static void
 test_ellipsize_fully (void)
 {
+  PangoFontMap *fontmap;
+  PangoContext *context;
   PangoLayout *layout;
   PangoRectangle ink, logical;
   PangoRectangle ink2, logical2;
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
   layout = pango_layout_new (context);
 
   pango_layout_set_text (layout, "…", -1);
@@ -104,16 +118,13 @@ test_ellipsize_fully (void)
   g_assert_cmpint (logical.width, ==, logical2.width);
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 int
 main (int argc, char *argv[])
 {
-  PangoFontMap *fontmap;
-
-  fontmap = pango_cairo_font_map_get_default ();
-  context = pango_font_map_create_context (fontmap);
-
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/layout/ellipsize/height", test_ellipsize_height);
