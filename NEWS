@@ -1,3 +1,14 @@
+Overview of changes in 1.54.0, 09-06-2024
+=========================================
+- Build fixes
+- Memory leak fixes
+- Drop the install-tests build option
+- Add build-examples and build-tests build options
+- Require meson 0.63
+- Add pango_item_get_char_offset
+- Update to Unicode 15.1
+- Fix wrong use of GWeakRef, leading to crashes
+
 Overview of changes in 1.52.2, 31-03-2024
 =========================================
 - coretext: Implement reload_font
