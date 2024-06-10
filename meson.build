@@ -574,6 +574,7 @@ summary('Introspection', gir.found(), section: 'Build')
 summary('Documentation', get_option('documentation'), section: 'Build')
 summary('Build Testsuite', get_option('build-testsuite'), section: 'Build')
 summary('Build Examples', get_option('build-examples'), section: 'Build')
+summary('Install tests', get_option('install-tests'), section: 'Build')
 
 summary('prefix', pango_prefix, section: 'Directories')
 summary('includedir', pango_includedir, section: 'Directories')
