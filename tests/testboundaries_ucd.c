@@ -20,6 +20,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
 #include <pango/pango.h>
 #include <stdlib.h>
 #include <string.h>
@@ -382,6 +383,10 @@ test_line_break (void)
   const char *filename;
   AttrBits bits;
 
+#ifdef HAVE_LIBTHAI
+  g_test_skip ("Compiled with libthai, skip the line break test.");
+  return;
+#endif
 
   filename = g_test_get_filename (G_TEST_DIST, "LineBreakTest.txt", NULL);
   bits.bits = 0;
