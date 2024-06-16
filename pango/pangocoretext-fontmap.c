@@ -1538,6 +1538,15 @@ pango_core_text_font_map_init (PangoCoreTextFontMap *ctfontmap)
     g_hash_table_insert (ctfontmap->families,
                          g_utf8_casefold (family->family_name, -1), family);
   }
+  /* Insert .AppleSystemUIFont because it isn't included in the result
+   * set from CTFontCollectionCreateFromAvailableFonts. If it's not
+   * included in the families fontset it can't be used to render text.
+   */
+  family = g_object_new (PANGO_TYPE_CORE_TEXT_FAMILY, NULL);
+  family->family_name = g_strdup (".AppleSystemUIFont");
+    g_hash_table_insert (ctfontmap->families,
+                         g_utf8_casefold (family->family_name, -1), family);
+
 }
 
 static PangoFontFace *

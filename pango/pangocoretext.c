@@ -79,12 +79,20 @@ ct_font_descriptor_get_coverage (CTFontDescriptorRef desc)
   const UInt8 *ptr, *plane_ptr;
   const UInt32 plane_size = 8192;
   PangoCoverage *coverage;
+  CFStringRef font_name;
 
   coverage = pango_coverage_new ();
 
   charset = CTFontDescriptorCopyAttribute (desc, kCTFontCharacterSetAttribute);
   if (!charset)
     /* Return an empty coverage */
+    return coverage;
+  /* .AppleSymbols Fallback's CTFontDescriptor has a host of members
+   * but the font appears to have no glyphs so return an empty
+   * coverage.
+   */
+  font_name = (CFStringRef)CTFontDescriptorCopyAttribute(desc, kCTFontNameAttribute);
+  if (CFStringCompare(font_name, CFSTR(".AppleSymbolsFB"), 0) == kCFCompareEqualTo)
     return coverage;
 
   bitmap = CFCharacterSetCreateBitmapRepresentation (kCFAllocatorDefault,
