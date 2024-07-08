@@ -1258,7 +1258,7 @@ parse_variations (const char  *word,
  *
  * The string must have the form
  *
- *     "\[FAMILY-LIST] \[STYLE-OPTIONS] \[SIZE] \[VARIATIONS]",
+ *     "[FAMILY-LIST] [STYLE-OPTIONS] [SIZE] [VARIATIONS]",
  *
  * where FAMILY-LIST is a comma-separated list of families optionally
  * terminated by a comma, STYLE_OPTIONS is a whitespace-separated list
@@ -1266,7 +1266,7 @@ parse_variations (const char  *word,
  * stretch, or gravity, and SIZE is a decimal number (size in points)
  * or optionally followed by the unit modifier "px" for absolute size.
  * VARIATIONS is a comma-separated list of font variation
- * specifications of the form "\@axis=value" (the = sign is optional).
+ * specifications of the form @‍axis=value (the = sign is optional).
  *
  * The following words are understood as styles:
  * "Normal", "Roman", "Oblique", "Italic".
@@ -1297,7 +1297,7 @@ parse_variations (const char  *word,
  *
  * A typical example:
  *
- *     "Cantarell Italic Light 15 \@wght=200"
+ *     "Cantarell Italic Light 15 @‍wght=200"
  *
  * Returns: (transfer full): a new `PangoFontDescription`.
  */
