@@ -82,7 +82,7 @@ scan_emoji_presentation (emoji_text_iter_t p,
     const emoji_text_iter_t pe,
     bool* is_emoji)
 {
-  emoji_text_iter_t ts, te;
+  emoji_text_iter_t te;
   const emoji_text_iter_t eof = pe;
 
   unsigned act;
