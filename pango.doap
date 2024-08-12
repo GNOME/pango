@@ -21,20 +21,6 @@
 
   <maintainer>
     <foaf:Person>
-      <foaf:name>Owen Taylor</foaf:name>
-      <foaf:mbox rdf:resource="mailto:otaylor@redhat.com" />
-      <gnome:userid>otaylor</gnome:userid>
-    </foaf:Person>
-  </maintainer>
-  <maintainer>
-    <foaf:Person>
-      <foaf:name>Behdad Esfahbod</foaf:name>
-      <foaf:mbox rdf:resource="mailto:behdad@gnome.org" />
-      <gnome:userid>behdad</gnome:userid>
-    </foaf:Person>
-  </maintainer>
-  <maintainer>
-    <foaf:Person>
       <foaf:name>Matthias Clasen</foaf:name>
       <foaf:mbox rdf:resource="mailto:mclasen@redhat.com" />
       <gnome:userid>matthiasc</gnome:userid>
