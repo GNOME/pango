@@ -8,7 +8,7 @@ stages:
 variables:
   COMMON_MESON_FLAGS: "--fatal-meson-warnings --werror"
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
-  FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v11
+  FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v12
 
 .only-default:
   only:
