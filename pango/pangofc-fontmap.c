@@ -984,6 +984,8 @@ fc_thread_func (gpointer data)
 
   g_async_queue_unref (queue);
 
+  pango_trace_mark (PANGO_TRACE_CURRENT_TIME, "end fontconfig thread", NULL);
+
   return NULL;
 }
 
