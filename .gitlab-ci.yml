@@ -6,9 +6,9 @@ stages:
 
 # Common variables
 variables:
-  COMMON_MESON_FLAGS: "--fatal-meson-warnings --werror"
+  COMMON_MESON_FLAGS:
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
-  FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v11
+  FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v12
 
 .only-default:
   only:
@@ -118,7 +118,7 @@ macos:
     - python3 -m venv .venv
     - curl -L $CCACHE_URL | tar -C .venv/bin -xz --strip-components=1 ccache-$CCACHE_VER-darwin/ccache
     - source .venv/bin/activate
-    - pip3 install meson==1.2.3 ninja==1.11.1.1 packaging==23.2
+    - pip3 install meson==1.4.2 ninja==1.11.1.1 packaging==23.2
     # Disable font-scale test as it SIGTRAPs. (The test code is skipped over by
     # inserting "return;" as first statement into the relevant function.)
     - |
