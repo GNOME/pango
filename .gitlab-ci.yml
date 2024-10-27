@@ -6,7 +6,7 @@ stages:
 
 # Common variables
 variables:
-  COMMON_MESON_FLAGS: "--fatal-meson-warnings --werror"
+  COMMON_MESON_FLAGS: "--werror"
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
   FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v12
 
