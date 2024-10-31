@@ -47,14 +47,11 @@ struct _PangoCairoCoreTextFontClass
 
 
 static cairo_font_face_t *pango_cairo_core_text_font_create_font_face           (PangoCairoFont *font);
-static PangoFontMetrics  *pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font,
-                                                                                      PangoContext    *context);
 
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->create_font_face = pango_cairo_core_text_font_create_font_face;
-  iface->create_base_metrics_for_context = pango_cairo_core_text_font_create_base_metrics_for_context;
   iface->cf_priv_offset = G_STRUCT_OFFSET (PangoCairoCoreTextFont, cf_priv);
 }
 
@@ -96,31 +93,6 @@ pango_cairo_core_text_font_create_font_face (PangoCairoFont *font)
   return cairo_face;
 }
 
-static PangoFontMetrics *
-pango_cairo_core_text_font_create_base_metrics_for_context (PangoCairoFont *font,
-                                                            PangoContext   *context)
-{
-  PangoCoreTextFont *cfont = (PangoCoreTextFont *) font;
-  PangoFontMetrics *metrics;
-  CTFontRef ctfont;
-
-  metrics = pango_font_metrics_new ();
-
-  ctfont = pango_core_text_font_get_ctfont (cfont);
-
-  metrics->ascent = CTFontGetAscent (ctfont) * PANGO_SCALE;
-  metrics->descent = CTFontGetDescent (ctfont) * PANGO_SCALE;
-  metrics->height = (CTFontGetAscent (ctfont) + CTFontGetDescent (ctfont) + CTFontGetLeading (ctfont)) * PANGO_SCALE;
-
-  metrics->underline_position = CTFontGetUnderlinePosition (ctfont) * PANGO_SCALE;
-  metrics->underline_thickness = CTFontGetUnderlineThickness (ctfont) * PANGO_SCALE;
-
-  metrics->strikethrough_position = metrics->ascent / 3;
-  metrics->strikethrough_thickness = CTFontGetUnderlineThickness (ctfont) * PANGO_SCALE;
-
-  return metrics;
-}
-
 static PangoFontDescription *
 pango_cairo_core_text_font_describe_absolute (PangoFont *font)
 {
@@ -151,7 +123,6 @@ pango_cairo_core_text_font_class_init (PangoCairoCoreTextFontClass *class)
   object_class->finalize = pango_cairo_core_text_font_finalize;
   /* font_class->describe defined by parent class PangoCoreTextFont. */
   font_class->get_glyph_extents = pango_cairo_core_text_font_get_glyph_extents;
-  font_class->get_metrics = _pango_cairo_font_get_metrics;
   font_class->describe_absolute = pango_cairo_core_text_font_describe_absolute;
 }
 

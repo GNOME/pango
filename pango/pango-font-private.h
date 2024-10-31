@@ -49,6 +49,9 @@ typedef struct {
                                    PangoMatrix *matrix);
   int              (* get_absolute_size) (PangoFont *font);
   PangoVariant     (* get_variant) (PangoFont *font);
+  gboolean         (* get_transform) (PangoFont   *font,
+                                      PangoMatrix *matrix);
+
 } PangoFontClassPrivate;
 
 gboolean pango_font_is_hinted         (PangoFont *font);
@@ -82,6 +85,22 @@ pango_font_get_variant (PangoFont *font)
       pango_font_description_free (desc);
 
       return variant;
+    }
+}
+
+static inline gboolean
+pango_font_get_transform (PangoFont   *font,
+                          PangoMatrix *matrix)
+{
+  GTypeClass *klass = (GTypeClass *) PANGO_FONT_GET_CLASS (font);
+  PangoFontClassPrivate *priv = (PangoFontClassPrivate *) g_type_class_get_private (klass, PANGO_TYPE_FONT);
+
+  if (priv->get_transform)
+    return priv->get_transform (font, matrix);
+  else
+    {
+      *matrix = (PangoMatrix) PANGO_MATRIX_INIT;
+      return FALSE;
     }
 }
 

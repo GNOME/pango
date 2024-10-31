@@ -138,8 +138,6 @@ struct _PangoWin32Font
   LOGFONTW logfontw;
   int size;
 
-  GSList *metrics_by_lang;
-
   PangoFontMap *fontmap;
 
   /* Written by _pango_win32_font_get_hfont: */

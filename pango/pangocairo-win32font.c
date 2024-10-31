@@ -68,15 +68,11 @@ struct _PangoCairoWin32FontClass
 GType pango_cairo_win32_font_get_type (void);
 
 static cairo_font_face_t *pango_cairo_win32_font_create_font_face                (PangoCairoFont *font);
-static PangoFontMetrics  *pango_cairo_win32_font_create_base_metrics_for_context (PangoCairoFont *font,
-										  PangoContext    *context);
-
 
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->create_font_face = pango_cairo_win32_font_create_font_face;
-  iface->create_base_metrics_for_context = pango_cairo_win32_font_create_base_metrics_for_context;
   iface->cf_priv_offset = G_STRUCT_OFFSET (PangoCairoWin32Font, cf_priv);
 }
 
@@ -115,44 +111,6 @@ pango_cairo_win32_font_create_font_face (PangoCairoFont *font)
 #endif
 
   return cairo_win32_font_face_create_for_logfontw (&win32font->logfontw);
-}
-
-static PangoFontMetrics *
-pango_cairo_win32_font_create_base_metrics_for_context (PangoCairoFont *font,
-							PangoContext   *context)
-{
-  PangoFontMetrics *metrics;
-  cairo_scaled_font_t *scaled_font;
-  cairo_font_extents_t font_extents;
-
-  metrics = pango_font_metrics_new ();
-
-  scaled_font = pango_cairo_font_get_scaled_font (font);
-
-  cairo_scaled_font_extents (scaled_font, &font_extents);
-  cairo_win32_scaled_font_done_font (scaled_font);
-
-  metrics->ascent = font_extents.ascent * PANGO_SCALE;
-  metrics->descent = font_extents.descent * PANGO_SCALE;
-
-  /* FIXME: Should get the real settings for these from the TrueType
-   * font file.
-   */
-  metrics->height = metrics->ascent + metrics->descent;
-  metrics->underline_thickness = metrics->height / 14;
-  metrics->underline_position = - metrics->underline_thickness;
-  metrics->strikethrough_thickness = metrics->underline_thickness;
-  metrics->strikethrough_position = metrics->height / 4;
-
-  pango_quantize_line_geometry (&metrics->underline_thickness,
-				&metrics->underline_position);
-  pango_quantize_line_geometry (&metrics->strikethrough_thickness,
-				&metrics->strikethrough_position);
-  /* Quantizing may have pushed underline_position to 0.  Not good */
-  if (metrics->underline_position == 0)
-    metrics->underline_position = - metrics->underline_thickness;
-
-  return metrics;
 }
 
 static void
@@ -215,7 +173,6 @@ pango_cairo_win32_font_class_init (PangoCairoWin32FontClass *class)
   object_class->finalize = pango_cairo_win32_font_finalize;
 
   font_class->get_glyph_extents = pango_cairo_win32_font_get_glyph_extents;
-  font_class->get_metrics = _pango_cairo_font_get_metrics;
 
   win32_font_class->select_font = pango_cairo_win32_font_select_font;
   win32_font_class->done_font = pango_cairo_win32_font_done_font;

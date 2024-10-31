@@ -52,8 +52,6 @@ static void                  pango_win32_font_get_glyph_extents (PangoFont      
 								 PangoGlyph        glyph,
 								 PangoRectangle   *ink_rect,
 								 PangoRectangle   *logical_rect);
-static PangoFontMetrics *    pango_win32_font_get_metrics       (PangoFont        *font,
-								 PangoLanguage    *lang);
 static PangoFontMap *        pango_win32_font_get_font_map      (PangoFont        *font);
 
 static gboolean pango_win32_font_real_select_font      (PangoFont *font,
@@ -124,8 +122,6 @@ static void
 _pango_win32_font_init (PangoWin32Font *win32font)
 {
   win32font->size = -1;
-
-  win32font->metrics_by_lang = NULL;
 
   win32font->glyph_info = g_hash_table_new_full (NULL, NULL, NULL, g_free);
 }
@@ -227,7 +223,6 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
   font_class->describe_absolute = pango_win32_font_describe_absolute;
   font_class->get_coverage = pango_win32_font_get_coverage;
   font_class->get_glyph_extents = pango_win32_font_get_glyph_extents;
-  font_class->get_metrics = pango_win32_font_get_metrics;
   font_class->get_font_map = pango_win32_font_get_font_map;
   font_class->create_hb_font = pango_win32_font_create_hb_font;
 
@@ -559,92 +554,6 @@ max_glyph_width (PangoLayout *layout)
   return max_width;
 }
 
-static PangoFontMetrics *
-pango_win32_font_get_metrics (PangoFont     *font,
-			      PangoLanguage *language)
-{
-  PangoWin32MetricsInfo *info = NULL; /* Quiet gcc */
-  PangoWin32Font *win32font = (PangoWin32Font *)font;
-  GSList *tmp_list;
-
-  const char *sample_str = pango_language_get_sample_string (language);
-
-  tmp_list = win32font->metrics_by_lang;
-  while (tmp_list)
-    {
-      info = tmp_list->data;
-
-      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
-	break;
-
-      tmp_list = tmp_list->next;
-    }
-
-  if (!tmp_list)
-    {
-      HFONT hfont;
-      PangoFontMetrics *metrics;
-
-      info = g_new (PangoWin32MetricsInfo, 1);
-      win32font->metrics_by_lang = g_slist_prepend (win32font->metrics_by_lang, info);
-
-      info->sample_str = sample_str;
-      info->metrics = metrics = pango_font_metrics_new ();
-
-      hfont = _pango_win32_font_get_hfont (font);
-      if (hfont != NULL)
-	{
-	  PangoCoverage *coverage;
-	  TEXTMETRIC tm;
-	  HDC hdc = _pango_win32_get_display_dc ();
-
-	  SelectObject (hdc, hfont);
-	  GetTextMetrics (hdc, &tm);
-
-	  metrics->ascent = tm.tmAscent * PANGO_SCALE;
-	  metrics->descent = tm.tmDescent * PANGO_SCALE;
-          metrics->height = (tm.tmHeight + tm.tmInternalLeading + tm.tmExternalLeading) * PANGO_SCALE;
-	  metrics->approximate_char_width = tm.tmAveCharWidth * PANGO_SCALE;
-
-	  coverage = pango_win32_font_get_coverage (font, language);
-	  if (pango_coverage_get (coverage, '0') != PANGO_COVERAGE_NONE &&
-	      pango_coverage_get (coverage, '9') != PANGO_COVERAGE_NONE)
-	    {
-	      PangoContext *context;
-	      PangoFontDescription *font_desc;
-	      PangoLayout *layout;
-
-	      /*  Get the average width of the chars in "0123456789" */
-	      context = pango_font_map_create_context (pango_win32_font_map_for_display ());
-	      pango_context_set_language (context, language);
-	      font_desc = pango_font_describe_with_absolute_size (font);
-	      pango_context_set_font_description (context, font_desc);
-	      layout = pango_layout_new (context);
-	      pango_layout_set_text (layout, "0123456789", -1);
-
-	      metrics->approximate_digit_width = max_glyph_width (layout);
-
-	      pango_font_description_free (font_desc);
-	      g_object_unref (layout);
-	      g_object_unref (context);
-	    }
-	  else
-	    metrics->approximate_digit_width = metrics->approximate_char_width;
-
-	  g_object_unref (coverage);
-
-	  /* FIXME: Should get the real values from the TrueType font file */
-	  metrics->underline_position = -2 * PANGO_SCALE;
-	  metrics->underline_thickness = 1 * PANGO_SCALE;
-	  metrics->strikethrough_thickness = metrics->underline_thickness;
-	  /* Really really wild guess */
-	  metrics->strikethrough_position = metrics->ascent / 3;
-	}
-    }
-
-  return pango_font_metrics_ref (info->metrics);
-}
-
 static PangoFontMap *
 pango_win32_font_get_font_map (PangoFont *font)
 {
@@ -866,9 +775,6 @@ pango_win32_font_finalize (GObject *object)
 
   if (cache != NULL && win32font->hfont != NULL)
     pango_win32_font_cache_unload (cache, win32font->hfont);
-
-  g_slist_foreach (win32font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
-  g_slist_free (win32font->metrics_by_lang);
 
   if (win32font->win32face)
     pango_win32_font_entry_remove (win32font->win32face, PANGO_FONT (win32font));

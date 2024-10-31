@@ -79,7 +79,7 @@ struct _PangoFcFont
   PangoMatrix matrix;               /* unused */
   PangoFontDescription *description;
 
-  GSList *metrics_by_lang;
+  GSList *metrics_by_lang; /* Unused */
 
   guint is_hinted : 1;
   guint is_transformed : 1;

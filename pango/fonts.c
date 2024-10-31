@@ -32,6 +32,8 @@
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
 
+#include <hb-ot.h>
+
 struct _PangoFontDescription
 {
   char *family_name;
@@ -1746,6 +1748,7 @@ pango_parse_stretch (const char   *str,
 
 typedef struct {
   hb_font_t *hb_font;
+  GSList *metrics_by_lang;
 } PangoFontPrivate;
 
 #define PANGO_FONT_GET_CLASS_PRIVATE(font) ((PangoFontClassPrivate *) \
@@ -1756,6 +1759,20 @@ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFont, pango_font, G_TYPE_OBJECT,
                                   G_ADD_PRIVATE (PangoFont)
                                   g_type_add_class_private (g_define_type_id, sizeof (PangoFontClassPrivate)))
 
+typedef struct _PangoMetricsInfo PangoMetricsInfo;
+struct _PangoMetricsInfo
+{
+  const char *sample_str;
+  PangoFontMetrics *metrics;
+};
+
+static void
+free_metrics_info (PangoMetricsInfo *info)
+{
+  pango_font_metrics_unref (info->metrics);
+  g_free (info);
+}
+
 static void
 pango_font_finalize (GObject *object)
 {
@@ -1763,6 +1780,8 @@ pango_font_finalize (GObject *object)
   PangoFontPrivate *priv = pango_font_get_instance_private (font);
 
   hb_font_destroy (priv->hb_font);
+
+  g_slist_free_full (priv->metrics_by_lang, (GDestroyNotify) free_metrics_info);
 
   G_OBJECT_CLASS (pango_font_parent_class)->finalize (object);
 }
@@ -1981,6 +2000,174 @@ pango_font_get_glyph_extents  (PangoFont      *font,
   PANGO_FONT_GET_CLASS (font)->get_glyph_extents (font, glyph, ink_rect, logical_rect);
 }
 
+static void
+get_face_metrics (PangoFont        *font,
+                  PangoFontMetrics *metrics)
+{
+  hb_font_t *hb_font = pango_font_get_hb_font (font);
+  hb_font_extents_t extents;
+  hb_position_t position;
+  PangoMatrix matrix = PANGO_MATRIX_INIT;
+  gboolean have_transform;
+
+  hb_font_get_extents_for_direction (hb_font, HB_DIRECTION_LTR, &extents);
+
+  have_transform = pango_font_get_transform (font, &matrix);
+
+  if (have_transform)
+    {
+      metrics->descent =  - extents.descender * matrix.yy;
+      metrics->ascent = extents.ascender * matrix.yy;
+      metrics->height = (extents.ascender - extents.descender + extents.line_gap) * matrix.yy;
+    }
+  else
+    {
+      metrics->descent = - extents.descender;
+      metrics->ascent = extents.ascender;
+      metrics->height = extents.ascender - extents.descender + extents.line_gap;
+    }
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_UNDERLINE_SIZE, &position) &&
+      position != 0)
+    metrics->underline_thickness = position;
+  else
+    metrics->underline_thickness = PANGO_SCALE;
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_UNDERLINE_OFFSET, &position) &&
+      position != 0)
+    metrics->underline_position = position;
+  else
+    metrics->underline_position = - PANGO_SCALE;
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_SIZE, &position) &&
+      position != 0)
+    metrics->strikethrough_thickness = position;
+  else
+    metrics->strikethrough_thickness = PANGO_SCALE;
+
+  if (hb_ot_metrics_get_position (hb_font, HB_OT_METRICS_TAG_STRIKEOUT_OFFSET, &position) &&
+      position != 0)
+    metrics->strikethrough_position = position;
+  else
+    metrics->strikethrough_position = metrics->ascent / 2;
+}
+
+static PangoFontMetrics *
+pango_font_create_base_metrics_for_context (PangoFont     *font,
+                                            PangoContext  *context)
+{
+  PangoFontMetrics *metrics;
+  metrics = pango_font_metrics_new ();
+
+  get_face_metrics (font, metrics);
+
+  return metrics;
+}
+
+static int
+max_glyph_width (PangoLayout *layout)
+{
+  int max_width = 0;
+  GSList *l, *r;
+
+  for (l = pango_layout_get_lines_readonly (layout); l; l = l->next)
+    {
+      PangoLayoutLine *line = l->data;
+
+      for (r = line->runs; r; r = r->next)
+        {
+          PangoGlyphString *glyphs = ((PangoGlyphItem *)r->data)->glyphs;
+          int i;
+
+          for (i = 0; i < glyphs->num_glyphs; i++)
+            if (glyphs->glyphs[i].geometry.width > max_width)
+              max_width = glyphs->glyphs[i].geometry.width;
+        }
+    }
+
+  return max_width;
+}
+
+static PangoFontMetrics *
+pango_font_real_get_metrics (PangoFont     *font,
+                             PangoLanguage *language)
+{
+  PangoFontPrivate *priv = pango_font_get_instance_private (font);
+  PangoMetricsInfo *info = NULL; /* Quiet gcc */
+  GSList *l;
+  static int in_get_metrics;
+
+  const char *sample_str = pango_language_get_sample_string (language);
+
+  for (l = priv->metrics_by_lang; l != NULL; l = l->next)
+    {
+      info = l->data;
+
+      if (info->sample_str == sample_str)    /* We _don't_ need strcmp */
+        break;
+    }
+
+  if (!l)
+    {
+      PangoFontMap *fontmap;
+      PangoContext *context;
+
+      fontmap = pango_font_get_font_map (font);
+
+      if (!fontmap)
+        return pango_font_metrics_new ();
+
+      info = g_new0 (PangoMetricsInfo, 1);
+
+      /* Note: we need to add info to the list before calling
+       * into PangoLayout below, to prevent recursion
+       */
+      priv->metrics_by_lang = g_slist_prepend (priv->metrics_by_lang, info);
+
+      info->sample_str = sample_str;
+
+      context = pango_font_map_create_context (fontmap);
+      pango_context_set_language (context, language);
+
+      info->metrics = pango_font_create_base_metrics_for_context (font, context);
+
+      if (!in_get_metrics)
+        {
+          /* Compute derived metrics */
+          PangoLayout *layout;
+          PangoRectangle extents;
+          PangoFontDescription *desc = pango_font_describe_with_absolute_size (font);
+          gulong sample_str_width;
+
+          in_get_metrics = 1;
+
+          layout = pango_layout_new (context);
+          pango_layout_set_font_description (layout, desc);
+          pango_font_description_free (desc);
+
+          pango_layout_set_text (layout, sample_str, -1);
+          pango_layout_get_extents (layout, NULL, &extents);
+
+          sample_str_width = pango_utf8_strwidth (sample_str);
+          g_assert (sample_str_width > 0);
+
+          info->metrics->approximate_char_width = extents.width / sample_str_width;
+
+          pango_layout_set_text (layout, "0123456789", -1);
+          info->metrics->approximate_digit_width = max_glyph_width (layout);
+
+          g_object_unref (layout);
+
+          in_get_metrics = 0;
+        }
+
+      g_object_unref (context);
+    }
+
+  return pango_font_metrics_ref (info->metrics);
+}
+
+
 /**
  * pango_font_get_metrics:
  * @font: (nullable): a `PangoFont`
@@ -2021,7 +2208,7 @@ pango_font_get_metrics (PangoFont     *font,
       return metrics;
     }
 
-  return PANGO_FONT_GET_CLASS (font)->get_metrics (font, language);
+  return pango_font_real_get_metrics (font, language);
 }
 
 /**

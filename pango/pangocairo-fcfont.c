@@ -71,35 +71,10 @@ pango_cairo_fc_font_create_font_face (PangoCairoFont *cfont)
   return cairo_ft_font_face_create_for_pattern (fcfont->font_pattern);
 }
 
-static PangoFontMetrics *
-pango_cairo_fc_font_create_base_metrics_for_context (PangoCairoFont *cfont,
-						     PangoContext   *context)
-{
-  PangoCairoFcFont *cffont = (PangoCairoFcFont *) cfont;
-  PangoFcFont *fcfont = (PangoFcFont *) cfont;
-  PangoFontMetrics *metrics;
-
-  metrics = pango_fc_font_create_base_metrics_for_context (fcfont, context);
-
-  if (_pango_cairo_font_private_is_metrics_hinted (&cffont->cf_priv))
-    {
-      metrics->ascent = PANGO_PIXELS_CEIL (metrics->ascent) * PANGO_SCALE;
-      metrics->descent = PANGO_PIXELS_CEIL (metrics->descent) * PANGO_SCALE;
-      metrics->height = PANGO_PIXELS_CEIL (metrics->height) * PANGO_SCALE;
-      metrics->underline_position = PANGO_PIXELS_CEIL (metrics->underline_position) * PANGO_SCALE;
-      metrics->underline_thickness = PANGO_PIXELS_CEIL (metrics->underline_thickness) * PANGO_SCALE;
-      metrics->strikethrough_position = PANGO_PIXELS_CEIL (metrics->strikethrough_position) * PANGO_SCALE;
-      metrics->strikethrough_thickness = PANGO_PIXELS_CEIL (metrics->strikethrough_thickness) * PANGO_SCALE;
-    }
-
-  return metrics;
-}
-
 static void
 cairo_font_iface_init (PangoCairoFontIface *iface)
 {
   iface->create_font_face = pango_cairo_fc_font_create_font_face;
-  iface->create_base_metrics_for_context = pango_cairo_fc_font_create_base_metrics_for_context;
   iface->cf_priv_offset = G_STRUCT_OFFSET (PangoCairoFcFont, cf_priv);
 }
 
@@ -167,7 +142,6 @@ pango_cairo_fc_font_class_init (PangoCairoFcFontClass *class)
   object_class->finalize = pango_cairo_fc_font_finalize;
 
   font_class->get_glyph_extents = pango_cairo_fc_font_get_glyph_extents;
-  font_class->get_metrics = _pango_cairo_font_get_metrics;
 
   fc_font_class->lock_face = pango_cairo_fc_font_lock_face;
   fc_font_class->unlock_face = pango_cairo_fc_font_unlock_face;

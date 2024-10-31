@@ -95,16 +95,12 @@ struct _PangoCairoFontIface
   GTypeInterface g_iface;
 
   cairo_font_face_t *(*create_font_face) (PangoCairoFont *cfont);
-  PangoFontMetrics *(*create_base_metrics_for_context) (PangoCairoFont *cfont,
-							PangoContext   *context);
 
   gssize cf_priv_offset;
 };
 
 gboolean _pango_cairo_font_install (PangoFont *font,
 				    cairo_t   *cr);
-PangoFontMetrics * _pango_cairo_font_get_metrics (PangoFont     *font,
-						  PangoLanguage *language);
 PangoCairoFontHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont);
 
 void _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
