@@ -115,6 +115,7 @@ void _pango_cairo_font_private_initialize (PangoCairoFontPrivate      *cf_priv,
 					   const cairo_matrix_t       *font_matrix);
 void _pango_cairo_font_private_finalize (PangoCairoFontPrivate *cf_priv);
 cairo_scaled_font_t *_pango_cairo_font_private_get_scaled_font (PangoCairoFontPrivate *cf_priv);
+cairo_font_options_t *pango_cairo_font_private_get_font_options (PangoCairoFontPrivate *cf_private);
 gboolean _pango_cairo_font_private_is_metrics_hinted (PangoCairoFontPrivate *cf_priv);
 void _pango_cairo_font_private_get_glyph_extents (PangoCairoFontPrivate *cf_priv,
 						  PangoGlyph             glyph,

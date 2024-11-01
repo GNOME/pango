@@ -635,6 +635,11 @@ _pango_cairo_font_private_is_metrics_hinted (PangoCairoFontPrivate *cf_priv)
   return cf_priv->is_hinted;
 }
 
+cairo_font_options_t *
+pango_cairo_font_private_get_font_options (PangoCairoFontPrivate *cf_priv)
+{
+  return cf_priv->data->options;
+}
 
 static void
 get_space_extents (PangoCairoFontPrivate *cf_priv,
