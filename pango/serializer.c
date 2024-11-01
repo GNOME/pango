@@ -1713,7 +1713,7 @@ pango_layout_deserialize (PangoContext                 *context,
         code = PANGO_LAYOUT_DESERIALIZE_INVALID;
 
       g_set_error (error, PANGO_LAYOUT_DESERIALIZE_ERROR, code,
-                   "%ld:%ld: %s", start, end, parser_error->message);
+                   "%" G_GSIZE_FORMAT ":%" G_GSIZE_FORMAT ": %s", start, end, parser_error->message);
 
       g_clear_object (&layout);
     }
