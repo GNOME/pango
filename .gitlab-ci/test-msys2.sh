@@ -22,9 +22,7 @@ pacman --noconfirm -S --needed \
     mingw-w64-$MSYS2_ARCH-toolchain \
     mingw-w64-$MSYS2_ARCH-cantarell-fonts
 
-meson --buildtype debug _build
-cd _build
-ninja
-
+meson setup --buildtype debug _build
+meson compile -C _build
 # FIXME: Fix tests
-meson test || true
+meson test -C _build || true
