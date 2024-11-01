@@ -646,6 +646,8 @@ test_font_scale (void)
 
   scaled_font = pango_font_map_reload_font (fontmap, font, 1.5, NULL, NULL);
 
+  g_assert_true (scaled_font != font);
+
   scaled_desc = pango_font_describe (scaled_font);
   str = pango_font_description_to_string (scaled_desc);
   g_assert_cmpstr (str, ==, "Cantarell 16.5 @wght=444");
@@ -668,6 +670,8 @@ test_font_scale (void)
   pango_cairo_context_set_font_options (context, options);
 
   scaled_font = pango_font_map_reload_font (fontmap, font, 1, context, NULL);
+
+  g_assert_true (scaled_font != font);
 
   scaled_desc = pango_font_describe (scaled_font);
   str = pango_font_description_to_string (scaled_desc);
