@@ -230,10 +230,7 @@ get_dwrite_font_from_pango_win32_font (PangoWin32Font *font)
 void *
 pango_win32_font_get_dwrite_font_face (PangoWin32Font *font)
 {
-  PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
-  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (win32font->fontmap);
-  IDWriteFont *dwrite_font = NULL;
-  IDWriteFontFace *face = NULL;
+  IDWriteFont *dwrite_font;
 
   dwrite_font = get_dwrite_font_from_pango_win32_font (font);
 
@@ -313,7 +310,6 @@ pango_win32_dwrite_font_map_populate_with_collection (PangoWin32FontMap     *map
 void
 pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 {
-  UINT32 count;
   HRESULT hr = S_OK;
   IDWriteFontCollection *sys_collection = NULL;
   IDWriteFontSet *fontset = NULL;
@@ -590,22 +586,6 @@ util_dwrite_get_font_family_name (IDWriteFontFamily *family)
   return util_free_to_string (strings);
 }
 
-static char*
-util_dwrite_get_font_variant_name (IDWriteFont *font)
-{
-  IDWriteLocalizedStrings *strings = NULL;
-  HRESULT hr;
-
-  hr = font->GetFaceNames (&strings);
-  if (FAILED (hr) || strings == NULL)
-    {
-      g_warning ("IDWriteFont::GetFaceNames failed with error code %x", (unsigned) hr);
-      return NULL;
-    }
-
-  return util_free_to_string (strings);
-}
-
 PangoFontDescription *
 pango_win32_font_description_from_dwrite_font (void *dwrite_font)
 {
@@ -638,11 +618,6 @@ pango_win32_font_description_from_logfontw_dwrite (const LOGFONTW *logfontw)
   PangoFontDescription *desc = NULL;
   IDWriteFont *font = NULL;
   HRESULT hr;
-  gchar *family;
-  PangoStyle style;
-  PangoVariant variant;
-  PangoWeight weight;
-  PangoStretch stretch;
   PangoWin32DWriteItems *dwrite_items;
 
   dwrite_items = pango_win32_get_direct_write_items ();
@@ -771,7 +746,6 @@ add_custom_font_factory5 (PangoFontMap     *font_map,
 {
   HRESULT hr = S_OK;
   IDWriteFontFile *font_file = NULL;
-  gboolean collection_failed = FALSE;
   PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
   PangoWin32DWriteFontSetBuilder *win10_font_set_builder = win32fontmap->font_set_builder;
   wchar_t *filepath_w = reinterpret_cast<wchar_t*> (g_utf8_to_utf16 (filepath, -1, NULL, NULL, error));
@@ -789,18 +763,16 @@ add_custom_font_factory5 (PangoFontMap     *font_map,
     }
 
   if (FAILED (hr) || win10_font_set_builder->font_set_builder1 == NULL)
-    g_set_error (error,
-                 G_FILE_ERROR,
-                 G_FILE_ERROR_FAILED,
-                 "Setup for IDWriteFontSetBuilder1 failed with error code %x\n", (unsigned)hr);
+    g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                 "Setup for IDWriteFontSetBuilder1 failed with error code %x\n",
+                 (unsigned)hr);
 
   hr = factory5->CreateFontFileReference (filepath_w, nullptr, &font_file);
 
   if (FAILED (hr) || font_file == NULL)
-    g_set_error (error,
-                 G_FILE_ERROR,
-                 G_FILE_ERROR_FAILED,
-                 "DirectWrite setup for custom font file failed with error code %x\n", (unsigned)hr);
+    g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                 "DirectWrite setup for custom font file %s failed with error code %x\n",
+                 filepath, (unsigned)hr);
 
   if (*error == NULL)
     hr = win10_font_set_builder->font_set_builder1->AddFontFile (font_file);
@@ -808,16 +780,13 @@ add_custom_font_factory5 (PangoFontMap     *font_map,
   if (FAILED (hr))
     {
       if (hr == DWRITE_E_FILEFORMAT)
-        g_set_error (error,
-                     G_FILE_ERROR,
-                     G_FILE_ERROR_INVAL,
+        g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_INVAL,
                      "Specified font file '%s' is not supported by DirectWrite",
                      filepath);
       else
-        g_set_error (error,
-                     G_FILE_ERROR,
-                     G_FILE_ERROR_FAILED,
-                     "Loading custom font '%s' file failed with error code %x\n", (unsigned)hr);
+        g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                     "Loading custom font '%s' file failed with error code %x\n",
+                     filepath, (unsigned)hr);
     }
 
   g_free (filepath_w);
@@ -833,7 +802,6 @@ add_custom_font_factory3 (PangoFontMap     *font_map,
 {
   HRESULT hr = S_OK;
   IDWriteFontFile *font_file = NULL;
-  gboolean collection_failed = FALSE;
   PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
   PangoWin32DWriteFontSetBuilder *win10_font_set_builder = win32fontmap->font_set_builder;
   wchar_t *filepath_w = reinterpret_cast<wchar_t*> (g_utf8_to_utf16 (filepath, -1, NULL, NULL, error));
@@ -893,7 +861,6 @@ add_custom_font_factory3 (PangoFontMap     *font_map,
               for (i = 0; i < num_fonts; i ++)
                 {
                   IDWriteFontFaceReference* ref = NULL;
-                  gboolean collection_failed = FALSE;
 
                   hr = factory3->CreateFontFaceReference (filepath_w,
                                                           nullptr,
