@@ -36,9 +36,16 @@ if build_pangoft2
   ]
 endif
 
+if host_system == 'windows'
+  win32_deps = [ libpangowin32_dep ]
+else
+  win32_deps = []
+endif
+
 if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
+    [ 'test-font-data', [ 'test-font-data.c' ], [ libpangocairo_dep ] + win32_deps ],
     [ 'test-bidi', [ 'test-bidi.c' ], [ libpangocairo_dep ] ],
     [ 'testcontext', [ 'testcontext.c' ], [ libpangocairo_dep ] ],
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
