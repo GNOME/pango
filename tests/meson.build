@@ -107,7 +107,7 @@ foreach t: tests
                    cpp_args: common_cppflags + pango_debug_cflags + test_cflags)
 
   test(name, bin,
-    args: ['-k', '--tap', '--verbose'],
+    args: ['-k', '--tap'],
     env: test_env,
     suite: 'pango',
     protocol: 'tap',
