@@ -84,6 +84,21 @@ msys2-mingw64:
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
+vs2017-x64:
+  # TODO: Uncomment this when ready to merge.
+  # rules:
+  #   - if: $CI_PROJECT_NAMESPACE == "GNOME"
+  stage: build
+  tags:
+    - win32-ps
+  needs: []
+  script:
+    - .gitlab-ci/test-msvc.bat
+  artifacts:
+    when: always
+    paths:  
+      - "${CI_PROJECT_DIR}/_build/meson-logs"
+
 macos:
   extends: .only-default
   only:
