@@ -886,10 +886,11 @@ pango_win32_font_describe (PangoFont *font)
 {
   PangoFontDescription *desc;
   PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
+  int size;
 
   desc = pango_font_description_copy (win32font->win32face->description);
-  pango_font_description_set_size (desc, win32font->size / (PANGO_SCALE / PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution));
-
+  size = (int) (0.5 + win32font->size * PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution / PANGO_SCALE);
+  pango_font_description_set_size (desc, size);
   return desc;
 }
 
