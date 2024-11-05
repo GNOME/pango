@@ -24,5 +24,4 @@ pacman --noconfirm -S --needed \
 
 meson setup --buildtype debug _build
 meson compile -C _build
-# FIXME: Fix tests
-meson test -C _build || true
+meson test -C _build -t "$MESON_TEST_TIMEOUT_MULTIPLIER" --print-errorlogs --suite pango
