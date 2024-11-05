@@ -77,6 +77,9 @@ msys2-mingw64:
   artifacts:
     name: "${env:CI_JOB_NAME}-${env:CI_COMMIT_REF_NAME}"
     when: always
+    reports:
+      junit:
+        - "${CI_PROJECT_DIR}/_build/meson-logs/testlog.junit.xml"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
       - "${CI_PROJECT_DIR}/_build/hello.png"
