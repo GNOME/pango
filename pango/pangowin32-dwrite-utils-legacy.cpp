@@ -196,7 +196,7 @@ pango_win32_font_file_enumerator_legacy::MoveNext (OUT BOOL* has_current_file)
       wchar_t *w_path = (wchar_t *)g_utf8_to_utf16 (*path, -1, NULL, NULL, NULL);
       gboolean supported;
       DWRITE_FONT_FILE_TYPE file_type;
-      UINT32 num_fonts, i;
+      UINT32 num_fonts;
 
       if (w_path == NULL)
         return E_FAIL;
@@ -238,7 +238,6 @@ pango_win32_font_collection_loader_legacy::CreateEnumeratorFromKey (IDWriteFacto
 
   HRESULT hr = S_OK;
   PangoWin32FontMap *map;
-  int i;
 
   if (key_size % sizeof (Win32CustomFontKey) != 0)
     return E_INVALIDARG;
@@ -248,12 +247,10 @@ pango_win32_font_collection_loader_legacy::CreateEnumeratorFromKey (IDWriteFacto
   if (enumerator == NULL)
     return E_OUTOFMEMORY;
 
-  Win32CustomFontKey const *collection_key =
-    static_cast<Win32CustomFontKey const*>(key);
-  UINT32 const collection_key_size = key_size;
+  Win32CustomFontKey const *collection_key = static_cast<Win32CustomFontKey const*>(key);
   map = collection_key->map;
 
-  for (i = 0; i < map->custom_fonts_legacy->paths->len; i ++)
+  for (guint i = 0; i < map->custom_fonts_legacy->paths->len; i ++)
     {
       const char **path = &g_array_index (map->custom_fonts_legacy->paths, const char *, i);
       legacy_enumerator->add_font_file_path (*path);

@@ -886,10 +886,11 @@ pango_win32_font_describe (PangoFont *font)
 {
   PangoFontDescription *desc;
   PangoWin32Font *win32font = PANGO_WIN32_FONT (font);
+  int size;
 
   desc = pango_font_description_copy (win32font->win32face->description);
-  pango_font_description_set_size (desc, win32font->size / (PANGO_SCALE / PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution));
-
+  size = (int) (0.5 + win32font->size * PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution / PANGO_SCALE);
+  pango_font_description_set_size (desc, size);
   return desc;
 }
 
@@ -1094,6 +1095,8 @@ pango_win32_render_layout_line (HDC              hdc,
 	case PANGO_UNDERLINE_ERROR_LINE:
           g_warning ("Underline value %d not implemented", uline);
           break;
+        default:
+          g_assert_not_reached ();
 	}
 
       if (uline != PANGO_UNDERLINE_NONE)
@@ -1176,7 +1179,7 @@ pango_win32_get_item_properties (PangoItem      *item,
     {
       PangoAttribute *attr = tmp_list->data;
 
-      switch (attr->klass->type)
+      switch ((int) attr->klass->type)
 	{
 	case PANGO_ATTR_UNDERLINE:
 	  if (uline)
@@ -1303,16 +1306,16 @@ static hb_font_t *
 pango_win32_font_create_hb_font (PangoFont *font)
 {
   PangoWin32Font *win32font = (PangoWin32Font *)font;
-  HFONT hfont;
   hb_face_t *face = NULL;
   hb_font_t *hb_font = NULL;
-  static hb_user_data_key_t key;
 
   g_return_val_if_fail (font != NULL, NULL);
 
 #ifdef USE_HB_DWRITE
   face = pango_win32_font_create_hb_face_dwrite (win32font);
 #else
+  HFONT hfont;
+
   hfont = _pango_win32_font_get_hfont (font);
 
 #ifdef USE_HB_GDI

@@ -181,52 +181,11 @@ logfontw_nosize_equal (const LOGFONTW *lfp1,
           lfp1->lfWeight == lfp2->lfWeight);
 }
 
-static int CALLBACK
-pango_win32_inner_enum_proc (LOGFONTW    *lfp,
-                             TEXTMETRICW *metrics,
-                             DWORD        fontType,
-                             LPARAM       lParam)
-{
-  PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)lParam;
-
-  /* Windows generates synthetic vertical writing versions of East
-   * Asian fonts with @ prepended to their name, ignore them.
-   */
-  if (lfp->lfFaceName[0] != '@')
-    pango_win32_insert_font (win32fontmap, lfp, NULL, FALSE);
-
-  return 1;
-}
-
 struct EnumProcData
 {
   HDC hdc;
   PangoWin32FontMap *font_map;
 };
-
-static int CALLBACK
-pango_win32_enum_proc (LOGFONTW       *lfp,
-                       NEWTEXTMETRICW *metrics,
-                       DWORD           fontType,
-                       LPARAM          lParam)
-{
-  LOGFONTW lf;
-  struct EnumProcData *data = (struct EnumProcData *) lParam;
-
-  PING (("%S: %lu %lx", lfp->lfFaceName, fontType, metrics->ntmFlags));
-
-  /* Do not enum Type-1 fonts */
-  if (fontType == TRUETYPE_FONTTYPE || metrics->ntmFlags & NTM_PS_OPENTYPE)
-    {
-      lf = *lfp;
-
-      EnumFontFamiliesExW (data->hdc, &lf,
-                           (FONTENUMPROCW) pango_win32_inner_enum_proc,
-                           (LPARAM) data->font_map, 0);
-    }
-
-  return 1;
-}
 
 static void
 synthesize_foreach (gpointer key,
@@ -1673,7 +1632,7 @@ charset_name (int charset, char* num)
 {
   switch (charset)
     {
-#define CASE(x) case x##_CHARSET: return #x
+#define CASE(x) case x##_CHARSET: return (char *) #x
       CASE (ANSI);
       CASE (DEFAULT);
       CASE (SYMBOL);
@@ -1705,7 +1664,7 @@ ff_name (int ff, char* num)
 {
   switch (ff)
     {
-#define CASE(x) case FF_##x: return #x
+#define CASE(x) case FF_##x: return (char *) #x
       CASE (DECORATIVE);
       CASE (DONTCARE);
       CASE (MODERN);

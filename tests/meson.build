@@ -36,6 +36,12 @@ if build_pangoft2
   ]
 endif
 
+if host_system == 'windows'
+  win32_deps = [ libpangowin32_dep ]
+else
+  win32_deps = []
+endif
+
 if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
@@ -46,7 +52,7 @@ if cairo_dep.found()
     [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-itemize', [ 'test-itemize.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'test-shape', [ 'test-shape.c', 'test-common.c' ], [ libpangocairo_dep ] ],
-    [ 'test-font', [ 'test-font.c' ], [ libpangocairo_dep ] ],
+    [ 'test-font', [ 'test-font.c' ], [ libpangocairo_dep ] + win32_deps ],
     [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] ],
     [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
     [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
