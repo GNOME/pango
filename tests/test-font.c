@@ -323,7 +323,7 @@ test_roundtrip_plain (void)
   desc = pango_font_description_from_string ("Cantarell 11");
 #endif
 
-  fontmap = pango_cairo_font_map_new ();
+  fontmap = get_font_map_with_cantarell ();
   context = pango_font_map_create_context (fontmap);
 
 
@@ -353,6 +353,13 @@ test_roundtrip_small_caps (void)
   if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
     {
       g_test_skip ("Small Caps support needs to be added to PangoCoreTextFontMap");
+      g_object_unref (fontmap);
+      return;
+    }
+
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
+    {
+      g_test_skip ("Small Caps support needs to be added to PangoWin32FontMap");
       g_object_unref (fontmap);
       return;
     }
@@ -633,7 +640,7 @@ test_font_scale (void)
 
   pango_cairo_context_set_font_options (context, options);
 
-  desc = pango_font_description_from_string ("Cantarell Small-Caps 11 @wght=444");
+  desc = pango_font_description_from_string ("Cantarell 11 @wght=444");
 
   font = pango_font_map_load_font (fontmap, context, desc);
 
@@ -641,7 +648,7 @@ test_font_scale (void)
 
   scaled_desc = pango_font_describe (scaled_font);
   str = pango_font_description_to_string (scaled_desc);
-  g_assert_cmpstr (str, ==, "Cantarell Small-Caps 16.5 @wght=444");
+  g_assert_cmpstr (str, ==, "Cantarell 16.5 @wght=444");
 
   /* check that we also preserve font options */
   options2 = cairo_font_options_create ();
@@ -664,7 +671,7 @@ test_font_scale (void)
 
   scaled_desc = pango_font_describe (scaled_font);
   str = pango_font_description_to_string (scaled_desc);
-  g_assert_cmpstr (str, ==, "Cantarell Small-Caps 11 @wght=444");
+  g_assert_cmpstr (str, ==, "Cantarell 11 @wght=444");
 
   sf = pango_cairo_font_get_scaled_font (PANGO_CAIRO_FONT (scaled_font));
   cairo_scaled_font_get_font_options (sf, options2);
@@ -683,7 +690,7 @@ test_font_scale (void)
 
   scaled_desc = pango_font_describe (scaled_font);
   str = pango_font_description_to_string (scaled_desc);
-  g_assert_cmpstr (str, ==, "Cantarell Small-Caps 11 @wght=666");
+  g_assert_cmpstr (str, ==, "Cantarell 11 @wght=666");
 
   g_object_unref (scaled_font);
   pango_font_description_free (scaled_desc);
