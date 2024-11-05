@@ -25,10 +25,4 @@ cd ${builddir}
 G_TEST_SRCDIR=${srcdir}/tests ./tests/test-font -p /pango/font/metrics --verbose
 ./utils/pango-view --no-display --output hello.png ${srcdir}/utils/HELLO.txt
 
-$srcdir/.gitlab-ci/meson-junit-report.py \
-        --project-name=pango \
-        --job-id="${CI_JOB_NAME}" \
-        --output=report.xml \
-        meson-logs/testlog.json
-
 exit $exit_code
