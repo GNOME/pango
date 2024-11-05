@@ -25,6 +25,32 @@
 
 #include <gio/gio.h>
 #include <pango/pangocairo.h>
+#ifdef G_OS_WIN32
+#include <pango/pangowin32.h>
+#endif
+
+static PangoFontMap *
+get_font_map_with_cantarell (void)
+{
+  PangoFontMap *fontmap;
+
+  fontmap = pango_cairo_font_map_new ();
+
+#ifdef G_OS_WIN32
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoWin32FontMap") == 0)
+    {
+      GError *error = NULL;
+      char *path;
+
+      path = g_test_build_filename (G_TEST_DIST, "tests", "fonts", "Cantarell-VF.otf", NULL);
+      pango_win32_font_map_add_font_file (fontmap, path, &error);
+      g_assert_no_error (error);
+      g_free (path);
+    }
+#endif
+
+  return fontmap;
+}
 
 static void
 test_parse (void)
@@ -238,7 +264,7 @@ test_enumerate (void)
   PangoFont *font;
   gboolean found_face;
 
-  fontmap = pango_cairo_font_map_new ();
+  fontmap = get_font_map_with_cantarell ();
   context = pango_font_map_create_context (fontmap);
 
   pango_font_map_list_families (fontmap, &families, &n_families);
@@ -487,8 +513,20 @@ test_font_models (void)
 
   g_assert_true (monospace_found);
 
-  g_print ("# %d font families, %d monospace, %d variable\n",
-           n_families, n_monospace_families, n_variable_families);
+  if (g_test_verbose ())
+    {
+      g_test_message ("# %d font families, %d monospace, %d variable",
+                      n_families, n_monospace_families, n_variable_families);
+
+      for (guint i = 0; i < g_list_model_get_n_items (G_LIST_MODEL (map)); i++)
+        {
+          GObject *obj = g_list_model_get_item (G_LIST_MODEL (map), i);
+
+          g_test_message ("%s", pango_font_family_get_name (PANGO_FONT_FAMILY (obj)));
+
+          g_object_unref (obj);
+        }
+    }
 
   g_object_unref (map);
 }
@@ -585,7 +623,7 @@ test_font_scale (void)
   cairo_scaled_font_t *sf;
   cairo_font_options_t *options2;
 
-  fontmap = pango_cairo_font_map_new ();
+  fontmap = get_font_map_with_cantarell ();
   context = pango_font_map_create_context (fontmap);
 
   options = cairo_font_options_create ();
