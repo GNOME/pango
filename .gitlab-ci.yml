@@ -28,14 +28,13 @@ linux-fedora:
     - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
   artifacts:
+    name: "${env:CI_JOB_NAME}-${env:CI_COMMIT_REF_NAME}"
     when: always
     reports:
       junit:
-        - "${CI_PROJECT_DIR}/_build/report.xml"
-    name: "gtk-${CI_COMMIT_REF_NAME}"
+        - "${CI_PROJECT_DIR}/_build/meson-logs/testlog.junit.xml"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
-      - "${CI_PROJECT_DIR}/_build/report.xml"
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
@@ -51,14 +50,13 @@ asan-build:
     - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
   artifacts:
+    name: "${env:CI_JOB_NAME}-${env:CI_COMMIT_REF_NAME}"
     when: always
     reports:
       junit:
-        - "${CI_PROJECT_DIR}/_build/report.xml"
-    name: "gtk-${CI_COMMIT_REF_NAME}"
+        - "${CI_PROJECT_DIR}/_build/meson-logs/testlog.junit.xml"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
-      - "${CI_PROJECT_DIR}/_build/report.xml"
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
@@ -95,8 +93,12 @@ vs2017-x64:
   script:
     - .gitlab-ci/test-msvc.bat
   artifacts:
+    name: "${env:CI_JOB_NAME}-${env:CI_COMMIT_REF_NAME}"
     when: always
-    paths:  
+    reports:
+      junit:
+        - "${CI_PROJECT_DIR}/_build/meson-logs/testlog.junit.xml"
+    paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
 
 macos:
@@ -143,7 +145,11 @@ macos:
     - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
   artifacts:
+    name: "${env:CI_JOB_NAME}-${env:CI_COMMIT_REF_NAME}"
     when: always
+    reports:
+      junit:
+        - "${CI_PROJECT_DIR}/_build/meson-logs/testlog.junit.xml"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
       - "${CI_PROJECT_DIR}/_build/hello.png"
