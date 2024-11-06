@@ -675,6 +675,18 @@ test_font_scale (void)
 
   font = pango_font_map_load_font (fontmap, context, desc);
 
+  if (strcmp (pango_font_family_get_name (pango_font_face_get_family (pango_font_get_face (font))), "Cantarell") != 0)
+    {
+      g_test_skip ("Fontmap has no Cantarell");
+
+      pango_font_description_free (desc);
+      cairo_font_options_destroy (options);
+      g_object_unref (context);
+      g_object_unref (fontmap);
+
+      return;
+    }
+
   scaled_font = pango_font_map_reload_font (fontmap, font, 1.5, NULL, NULL);
 
   g_assert_true (scaled_font != font);
