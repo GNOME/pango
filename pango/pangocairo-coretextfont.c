@@ -126,7 +126,7 @@ pango_cairo_core_text_font_describe_absolute (PangoFont *font)
 {
   PangoCairoCoreTextFont *cafont = (PangoCairoCoreTextFont *)font;
   PangoFontDescription *desc = pango_font_describe (font);
-  
+
   pango_font_description_set_absolute_size (desc, cafont->abs_size);
 
   return desc;
@@ -161,8 +161,8 @@ pango_cairo_core_text_font_init (PangoCairoCoreTextFont *cafont G_GNUC_UNUSED)
 }
 
 PangoCoreTextFont *
-_pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
-                                 PangoCoreTextFontKey       *key)
+_pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap *cafontmap,
+                                 PangoCoreTextFontKey      *key)
 {
   gboolean synthesize_italic = FALSE;
   PangoCairoCoreTextFont *cafont;
@@ -172,6 +172,8 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
   CGFontRef font_id;
   double size;
   cairo_matrix_t font_matrix;
+  cairo_font_options_t *options;
+  const char *variations;
 
   size = pango_units_to_double (pango_core_text_font_key_get_size (key));
 
@@ -204,12 +206,24 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,
  
   cairo_matrix_scale (&font_matrix, size, size);
 
+  options = pango_core_text_font_key_get_context_key (key);
+  if (options)
+    options = cairo_font_options_copy (options);
+  else
+    options = cairo_font_options_create ();
+
+  variations = pango_core_text_font_key_get_variations (key);
+  if (variations)
+    cairo_font_options_set_variations (options, variations);
+
   _pango_cairo_font_private_initialize (&cafont->cf_priv,
 					(PangoCairoFont *) cafont,
                                         pango_core_text_font_key_get_gravity (key),
-                                        pango_core_text_font_key_get_context_key (key),
+                                        options,
                                         pango_core_text_font_key_get_matrix (key),
 					&font_matrix);
+
+  cairo_font_options_destroy (options);
 
   return cfont;
 }
