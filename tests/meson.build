@@ -45,6 +45,7 @@ endif
 if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
+    # [ 'test-font-data', [ 'test-font-data.c' ], [ libpangocairo_dep ] + win32_deps ],
     [ 'test-bidi', [ 'test-bidi.c' ], [ libpangocairo_dep ] ],
     [ 'testcontext', [ 'testcontext.c' ], [ libpangocairo_dep ] ],
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
@@ -107,7 +108,7 @@ foreach t: tests
                    cpp_args: common_cppflags + pango_debug_cflags + test_cflags)
 
   test(name, bin,
-    args: ['-k', '--tap', '--verbose'],
+    args: ['-k', '--tap'],
     env: test_env,
     suite: 'pango',
     protocol: 'tap',

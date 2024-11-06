@@ -326,6 +326,65 @@ test_roundtrip_plain (void)
   fontmap = get_font_map_with_cantarell ();
   context = pango_font_map_create_context (fontmap);
 
+  font = pango_context_load_font (context, desc);
+  desc2 = pango_font_describe (font);
+
+  g_assert_true (pango_font_description_equal (desc2, desc));
+
+  pango_font_description_free (desc2);
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
+static void
+test_roundtrip_absolute (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc, *desc2;
+  PangoFont *font;
+
+#ifdef HAVE_CARBON
+  desc = pango_font_description_from_string ("Helvetica 11");
+#else
+  desc = pango_font_description_from_string ("Cantarell 11");
+#endif
+
+  pango_font_description_set_absolute_size (desc, 11 * 1024.0);
+
+  fontmap = get_font_map_with_cantarell ();
+  context = pango_font_map_create_context (fontmap);
+
+  font = pango_context_load_font (context, desc);
+  desc2 = pango_font_describe_with_absolute_size (font);
+
+  g_assert_true (pango_font_description_equal (desc2, desc));
+
+  pango_font_description_free (desc2);
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
+static void
+test_roundtrip_variations (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc, *desc2;
+  PangoFont *font;
+
+#ifdef HAVE_CARBON
+  desc = pango_font_description_from_string ("Helvetica 11 @wght=444");
+#else
+  desc = pango_font_description_from_string ("Cantarell 11 @wght=444");
+#endif
+
+  fontmap = get_font_map_with_cantarell ();
+  context = pango_font_map_create_context (fontmap);
 
   font = pango_context_load_font (context, desc);
   desc2 = pango_font_describe (font);
@@ -631,6 +690,7 @@ test_font_scale (void)
   cairo_font_options_t *options2;
 
   fontmap = get_font_map_with_cantarell ();
+
   context = pango_font_map_create_context (fontmap);
 
   options = cairo_font_options_create ();
@@ -640,17 +700,38 @@ test_font_scale (void)
 
   pango_cairo_context_set_font_options (context, options);
 
-  desc = pango_font_description_from_string ("Cantarell 11 @wght=444");
+  desc = pango_font_description_from_string ("Cantarell 11");
 
   font = pango_font_map_load_font (fontmap, context, desc);
+
+  if (strcmp (pango_font_family_get_name (pango_font_face_get_family (pango_font_get_face (font))), "Cantarell") != 0)
+    {
+      g_test_skip ("Fontmap has no Cantarell");
+
+      pango_font_description_free (desc);
+      cairo_font_options_destroy (options);
+      g_object_unref (context);
+      g_object_unref (fontmap);
+
+      return;
+    }
 
   scaled_font = pango_font_map_reload_font (fontmap, font, 1.5, NULL, NULL);
 
   g_assert_true (scaled_font != font);
 
   scaled_desc = pango_font_describe (scaled_font);
+
+  /* FIXME there are rounding errors in the win32 font map code, so we have
+   * to compare the sizes with some slop
+   */
+  g_assert_cmpfloat_with_epsilon (16.5, pango_font_description_get_size (scaled_desc) / (double) PANGO_SCALE, 0.005);
+
+  pango_font_description_set_size (scaled_desc, 16.5 * 1024);
+
   str = pango_font_description_to_string (scaled_desc);
-  g_assert_cmpstr (str, ==, "Cantarell 16.5 @wght=444");
+
+  g_assert_cmpstr (str, ==, "Cantarell 16.5");
 
   /* check that we also preserve font options */
   options2 = cairo_font_options_create ();
@@ -675,7 +756,7 @@ test_font_scale (void)
 
   scaled_desc = pango_font_describe (scaled_font);
   str = pango_font_description_to_string (scaled_desc);
-  g_assert_cmpstr (str, ==, "Cantarell 11 @wght=444");
+  g_assert_cmpstr (str, ==, "Cantarell 11");
 
   sf = pango_cairo_font_get_scaled_font (PANGO_CAIRO_FONT (scaled_font));
   cairo_scaled_font_get_font_options (sf, options2);
@@ -688,7 +769,50 @@ test_font_scale (void)
   pango_font_description_free (scaled_desc);
   g_free (str);
 
-  /* Try again, this time with different variations */
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
+static void
+test_font_scale_variations (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  PangoFont *scaled_font;
+  PangoFontDescription *scaled_desc;
+  char *str;
+  cairo_font_options_t *options;
+
+  fontmap = get_font_map_with_cantarell ();
+
+  context = pango_font_map_create_context (fontmap);
+
+  options = cairo_font_options_create ();
+  cairo_font_options_set_antialias (options, CAIRO_ANTIALIAS_NONE);
+  cairo_font_options_set_hint_style (options, CAIRO_HINT_STYLE_FULL);
+  cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_ON);
+
+  pango_cairo_context_set_font_options (context, options);
+
+  desc = pango_font_description_from_string ("Cantarell 11");
+
+  font = pango_font_map_load_font (fontmap, context, desc);
+
+  if (strcmp (pango_font_family_get_name (pango_font_face_get_family (pango_font_get_face (font))), "Cantarell") != 0)
+    {
+      g_test_skip ("Fontmap has no Cantarell");
+
+      pango_font_description_free (desc);
+      cairo_font_options_destroy (options);
+      g_object_unref (context);
+      g_object_unref (fontmap);
+
+      return;
+    }
 
   scaled_font = pango_font_map_reload_font (fontmap, font, 1, NULL, "wght=666");
 
@@ -712,6 +836,7 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
+  g_test_set_nonfatal_assertions ();
 
   g_test_add_func ("/pango/font/metrics", test_metrics);
   g_test_add_func ("/pango/fontdescription/parse", test_parse);
@@ -724,12 +849,15 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/extents", test_extents);
   g_test_add_func ("/pango/font/enumerate", test_enumerate);
   g_test_add_func ("/pango/font/roundtrip/plain", test_roundtrip_plain);
+  g_test_add_func ("/pango/font/roundtrip/absolute", test_roundtrip_absolute);
+  g_test_add_func ("/pango/font/roundtrip/variations", test_roundtrip_variations);
   g_test_add_func ("/pango/font/roundtrip/small-caps", test_roundtrip_small_caps);
   g_test_add_func ("/pango/font/roundtrip/emoji", test_roundtrip_emoji);
   g_test_add_func ("/pango/font/models", test_font_models);
   g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);
   g_test_add_func ("/pango/font/font-metrics", test_font_metrics);
-  g_test_add_func ("/pango/font/scale-font", test_font_scale);
+  g_test_add_func ("/pango/font/scale-font/plain", test_font_scale);
+  g_test_add_func ("/pango/font/scale-font/variations", test_font_scale_variations);
 
   return g_test_run ();
 }

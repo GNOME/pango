@@ -404,6 +404,7 @@ main (gint argc,
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
+  g_test_set_nonfatal_assertions ();
 
   g_test_add_func ("/text/break/grapheme", test_grapheme_break);
   g_test_add_func ("/text/break/word", test_word_break);
