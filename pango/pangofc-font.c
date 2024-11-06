@@ -928,37 +928,6 @@ get_font_size (PangoFcFontKey *key,
     }
 }
 
-static void
-parse_variations (const char            *variations,
-                  hb_ot_var_axis_info_t *axes,
-                  int                    n_axes,
-                  float                 *coords)
-{
-  const char *p;
-  const char *end;
-  hb_variation_t var;
-  int i;
-
-  p = variations;
-  while (p && *p)
-    {
-      end = strchr (p, ',');
-      if (hb_variation_from_string (p, end ? end - p: -1, &var))
-        {
-          for (i = 0; i < n_axes; i++)
-            {
-              if (axes[i].tag == var.tag)
-                {
-                  coords[axes[i].axis_index] = var.value;
-                  break;
-                }
-            }
-        }
-
-      p = end ? end + 1 : NULL;
-    }
-}
-
 static hb_font_t *
 pango_fc_font_create_hb_font (PangoFont *font)
 {
@@ -1060,11 +1029,11 @@ pango_fc_font_create_hb_font (PangoFont *font)
         }
 
       if (FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **)&variations) == FcResultMatch)
-        parse_variations (variations, axes, n_axes, coords);
+        pango_parse_variations (variations, axes, n_axes, coords);
 
       variations = pango_fc_font_key_get_variations (key);
       if (variations)
-        parse_variations (variations, axes, n_axes, coords);
+        pango_parse_variations (variations, axes, n_axes, coords);
 
       hb_font_set_var_coords_design (hb_font, coords, n_axes);
 

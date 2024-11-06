@@ -26,6 +26,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <pango/pango.h>
+#include <hb-ot.h>
 
 G_BEGIN_DECLS
 
@@ -254,6 +255,37 @@ pango_get_ignorable_size (gunichar  ch,
 #if !GLIB_CHECK_VERSION (2, 67, 3)
 # define g_memdup2(mem,size)    g_memdup((mem),(size))
 #endif
+
+static inline void
+pango_parse_variations (const char            *variations,
+                        hb_ot_var_axis_info_t *axes,
+                        int                    n_axes,
+                        float                 *coords)
+{
+  const char *p;
+  const char *end;
+  hb_variation_t var;
+  int i;
+
+  p = variations;
+  while (p && *p)
+    {
+      end = strchr (p, ',');
+      if (hb_variation_from_string (p, end ? end - p: -1, &var))
+        {
+          for (i = 0; i < n_axes; i++)
+            {
+              if (axes[i].tag == var.tag)
+                {
+                  coords[axes[i].axis_index] = var.value;
+                  break;
+                }
+            }
+        }
+
+      p = end ? end + 1 : NULL;
+    }
+}
 
 G_END_DECLS
 
