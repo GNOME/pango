@@ -326,7 +326,6 @@ test_roundtrip_plain (void)
   fontmap = get_font_map_with_cantarell ();
   context = pango_font_map_create_context (fontmap);
 
-
   font = pango_context_load_font (context, desc);
   desc2 = pango_font_describe (font);
 
@@ -662,6 +661,7 @@ test_font_scale (void)
   cairo_font_options_t *options2;
 
   fontmap = get_font_map_with_cantarell ();
+
   context = pango_font_map_create_context (fontmap);
 
   options = cairo_font_options_create ();
@@ -680,7 +680,16 @@ test_font_scale (void)
   g_assert_true (scaled_font != font);
 
   scaled_desc = pango_font_describe (scaled_font);
+
+  /* FIXME there are rounding errors in the win32 font map code, so we have
+   * to compare the sizes with some slop
+   */
+  g_assert_cmpfloat_with_epsilon (16.5, pango_font_description_get_size (scaled_desc) / (double) PANGO_SCALE, 0.005);
+
+  pango_font_description_set_size (scaled_desc, 16.5 * 1024);
+
   str = pango_font_description_to_string (scaled_desc);
+
   g_assert_cmpstr (str, ==, "Cantarell 16.5 @wght=444");
 
   /* check that we also preserve font options */
