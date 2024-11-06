@@ -137,6 +137,7 @@ struct _PangoWin32Font
 
   LOGFONTW logfontw;
   int size;
+  char *variations;
 
   GSList *metrics_by_lang;
 

@@ -33,6 +33,8 @@
 #include <hb-gdi.h>
 #endif
 
+#include <hb-ot.h>
+
 #include "pango-impl-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
@@ -878,6 +880,8 @@ pango_win32_font_finalize (GObject *object)
   if (win32font->fontmap)
     g_object_remove_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) &win32font->fontmap);
 
+  g_free (win32font->variations);
+
   G_OBJECT_CLASS (_pango_win32_font_parent_class)->finalize (object);
 }
 
@@ -891,6 +895,10 @@ pango_win32_font_describe (PangoFont *font)
   desc = pango_font_description_copy (win32font->win32face->description);
   size = (int) (0.5 + win32font->size * PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution / PANGO_SCALE);
   pango_font_description_set_size (desc, size);
+
+  if (win32font->variations)
+    pango_font_description_set_variations (desc, win32font->variations);
+
   return desc;
 }
 
@@ -902,6 +910,9 @@ pango_win32_font_describe_absolute (PangoFont *font)
 
   desc = pango_font_description_copy (win32font->win32face->description);
   pango_font_description_set_absolute_size (desc, win32font->size);
+
+  if (win32font->variations)
+    pango_font_description_set_variations (desc, win32font->variations);
 
   return desc;
 }
@@ -1302,6 +1313,37 @@ hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
 }
 #endif
 
+static void
+parse_variations (const char            *variations,
+                  hb_ot_var_axis_info_t *axes,
+                  int                    n_axes,
+                  float                 *coords)
+{
+  const char *p;
+
+  p = variations;
+  while (p && *p)
+    {
+      const char *end;
+      hb_variation_t var;
+
+      end = strchr (p, ',');
+      if (hb_variation_from_string (p, end ? end - p: -1, &var))
+        {
+          for (unsigned int i = 0; i < n_axes; i++)
+            {
+              if (axes[i].tag == var.tag)
+                {
+                  coords[axes[i].axis_index] = var.value;
+                  break;
+                }
+            }
+        }
+
+      p = end ? end + 1 : NULL;
+    }
+}
+
 static hb_font_t *
 pango_win32_font_create_hb_font (PangoFont *font)
 {
@@ -1328,6 +1370,29 @@ pango_win32_font_create_hb_font (PangoFont *font)
 
   hb_font = hb_font_create (face);
   hb_font_set_scale (hb_font, win32font->size, win32font->size);
+
+  if (win32font->variations)
+    {
+      unsigned int n_axes;
+
+      n_axes = hb_ot_var_get_axis_infos (face, 0, NULL, NULL);
+      if (n_axes > 0)
+        {
+          hb_ot_var_axis_info_t *axes;
+          float *coords;
+
+          axes = g_newa (hb_ot_var_axis_info_t, n_axes);
+          coords = g_newa (float, n_axes);
+
+          hb_ot_var_get_axis_infos (face, 0, &n_axes, axes);
+          for (unsigned int i = 0; i < n_axes; i++)
+            coords[axes[i].axis_index] = axes[i].default_value;
+
+          parse_variations (win32font->variations, axes, n_axes, coords);
+
+          hb_font_set_var_coords_design (hb_font, coords, n_axes);
+        }
+    }
   hb_face_destroy (face);
 
   return hb_font;
