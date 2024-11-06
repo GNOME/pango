@@ -248,6 +248,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 #endif
   cairo_matrix_t font_matrix;
   const cairo_font_options_t *options;
+  cairo_font_options_t *options2 = NULL;
   const char *variations;
 
   g_return_val_if_fail (PANGO_IS_CAIRO_WIN32_FONT_MAP (cwfontmap), NULL);
@@ -315,7 +316,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
    */
   win32font->size = size * PANGO_SCALE;
 
-  cairo_font_options_t *options2 = NULL;
   if (options)
     options2 = cairo_font_options_copy (options);
   else
