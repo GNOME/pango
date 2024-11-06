@@ -465,6 +465,7 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
+  g_test_set_nonfatal_assertions ();
 
   g_test_add_func ("/pango/font/cantarell/font-metrics", test_cantarell_font_metrics);
   g_test_add_func ("/pango/font/cantarell/glyph-metrics", test_cantarell_glyph_metrics);
