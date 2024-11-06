@@ -1313,37 +1313,6 @@ hfont_reference_table (hb_face_t *face, hb_tag_t tag, void *user_data)
 }
 #endif
 
-static void
-parse_variations (const char            *variations,
-                  hb_ot_var_axis_info_t *axes,
-                  int                    n_axes,
-                  float                 *coords)
-{
-  const char *p;
-
-  p = variations;
-  while (p && *p)
-    {
-      const char *end;
-      hb_variation_t var;
-
-      end = strchr (p, ',');
-      if (hb_variation_from_string (p, end ? end - p: -1, &var))
-        {
-          for (unsigned int i = 0; i < n_axes; i++)
-            {
-              if (axes[i].tag == var.tag)
-                {
-                  coords[axes[i].axis_index] = var.value;
-                  break;
-                }
-            }
-        }
-
-      p = end ? end + 1 : NULL;
-    }
-}
-
 static hb_font_t *
 pango_win32_font_create_hb_font (PangoFont *font)
 {
@@ -1388,7 +1357,7 @@ pango_win32_font_create_hb_font (PangoFont *font)
           for (unsigned int i = 0; i < n_axes; i++)
             coords[axes[i].axis_index] = axes[i].default_value;
 
-          parse_variations (win32font->variations, axes, n_axes, coords);
+          pango_parse_variations (win32font->variations, axes, n_axes, coords);
 
           hb_font_set_var_coords_design (hb_font, coords, n_axes);
         }

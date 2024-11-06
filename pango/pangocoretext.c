@@ -24,7 +24,9 @@
 
 #include "pangocoretext.h"
 #include "pangocoretext-private.h"
+#include "pango-impl-utils.h"
 #include <hb-coretext.h>
+#include <hb-ot.h>
 
 struct _PangoCoreTextFontPrivate
 {
@@ -62,10 +64,15 @@ pango_core_text_font_describe (PangoFont *font)
   PangoCoreTextFontPrivate *priv = ctfont->priv;
   CTFontDescriptorRef ctfontdesc;
   PangoFontDescription *desc;
+  const char *variations;
 
   ctfontdesc = CTFontCopyFontDescriptor (priv->font_ref);
   desc = _pango_core_text_font_description_from_ct_font_descriptor (ctfontdesc);
   CFRelease (ctfontdesc);
+
+  variations = pango_core_text_font_key_get_variations (priv->key);
+  if (variations)
+    pango_font_description_set_variations (desc, variations);
 
   return desc;
 }
@@ -179,12 +186,41 @@ pango_core_text_font_create_hb_font (PangoFont *font)
       hb_font_t *hb_font;
       double x_scale, y_scale;
       int size;
+      const char *variations;
 
       matrix = pango_core_text_font_key_get_matrix (ctfont->priv->key);
       pango_matrix_get_font_scale_factors (matrix, &x_scale, &y_scale);
       size = pango_core_text_font_key_get_size (ctfont->priv->key);
+      variations = pango_core_text_font_key_get_variations (ctfont->priv->key);
+
       hb_font = hb_coretext_font_create (ctfont->priv->font_ref);
       hb_font_set_scale (hb_font, size / x_scale, size / y_scale);
+
+      if (variations)
+        {
+          hb_face_t *face;
+          unsigned int n_axes;
+
+          face = hb_font_get_face (hb_font);
+          n_axes = hb_ot_var_get_axis_infos (face, 0, NULL, NULL);
+          if (n_axes > 0)
+            {
+              hb_ot_var_axis_info_t *axes;
+              float *coords;
+
+              axes = g_newa (hb_ot_var_axis_info_t, n_axes);
+              coords = g_newa (float, n_axes);
+
+              hb_ot_var_get_axis_infos (face, 0, &n_axes, axes);
+              for (unsigned int i = 0; i < n_axes; i++)
+                coords[axes[i].axis_index] = axes[i].default_value;
+
+              pango_parse_variations (variations, axes, n_axes, coords);
+
+              hb_font_set_var_coords_design (hb_font, coords, n_axes);
+            }
+        }
+
 
       return hb_font;
     }
