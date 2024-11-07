@@ -40,7 +40,14 @@ diff_with_file (const char  *file,
                 gssize       len,
                 GError     **error)
 {
+#ifdef G_OS_WIN32
+  const char *command[] = { "diff", "-u", "-i", "--strip-trailing-cr", file, NULL, NULL };
+  const int tmp_file_idx = 5;
+#else
   const char *command[] = { "diff", "-u", "-i", file, NULL, NULL };
+  const int tmp_file_idx = 4;
+#endif
+
   char *diff, *tmpfile;
   int fd;
 
@@ -63,7 +70,7 @@ diff_with_file (const char  *file,
       goto done;
     }
   close (fd);
-  command[4] = tmpfile;
+  command[tmp_file_idx] = tmpfile;
 
   /* run diff command */
   g_spawn_sync (NULL,
