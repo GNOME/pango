@@ -37,7 +37,7 @@ get_font_map_with_cantarell (void)
   fontmap = pango_cairo_font_map_new ();
 
 #ifdef G_OS_WIN32
-  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoWin32FontMap") == 0)
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
     {
       GError *error = NULL;
       char *path;
