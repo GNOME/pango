@@ -29,6 +29,13 @@
 #include "test-common.h"
 
 
+#ifdef HAVE_FREETYPE
+#include <pango/pangoft2.h>
+#include <pango/pangocairo-fc.h>
+#include <fontconfig/fontconfig.h>
+#endif
+#include <math.h>
+
 static PangoFontMetrics cantarell_unhinted_metrics = {
   .ascent = 14764,
   .descent = 3259,
@@ -154,6 +161,7 @@ test_cantarell_font_metrics (void)
   g_object_unref (fontmap);
 }
 
+#if 0
 typedef struct
 {
   char name[2];
@@ -327,35 +335,127 @@ static GlyphMetrics cantarell_hinted_glyphs[] = {
     .logical = (PangoRectangle) { 0, -15360, 11264, 19456 }
   },
 };
+#endif
 
-#if 0
+#ifdef HAVE_FREETYPE
+#include "pangofc-private.h"
+#endif
+
 static void
 print_glyph_metrics (PangoFont  *font,
                      const char *name)
 {
   hb_font_t *hb_font;
   hb_codepoint_t glyph;
+  PangoRectangle ink, logical;
+  hb_glyph_extents_t extents;
+  cairo_scaled_font_t *scaled_font;
 
   hb_font = pango_font_get_hb_font (font);
 
   if (!hb_font_get_glyph_from_name (hb_font, name, -1, &glyph))
     {
       g_print ("Not a glyph: %s\n", name);
+      return;
     }
-  else
+
+  pango_font_get_glyph_extents (font, glyph, &ink, &logical);
+
+  g_print ("name = \"%s\"\n", name);
+  g_print ("id = %u\n\n", glyph);
+  g_print ("ink_rect:\n"
+           "  .x = %d\n"
+           "  .y = %d\n"
+           "  .width = %d\n"
+           "  .height =  %d\n"
+           "\n",
+           ink.x, ink.y, ink.width, ink.height);
+  g_print ("logical_rect:\n"
+           "  .x = %d\n"
+           "  .y = %d\n"
+           "  .width = %d\n"
+           "  .height =  %d\n"
+           "\n",
+           logical.x, logical.y, logical.width, logical.height);
+  g_print ("},\n");
+
+  if (hb_font_get_glyph_extents (hb_font, glyph, &extents))
     {
-      PangoRectangle ink, logical;
-
-      pango_font_get_glyph_extents (font, glyph, &ink, &logical);
-
-      g_print ("{ .name = \"%s\",\n", name);
-      g_print ("  .id = %u,\n", glyph);
-      g_print ("  .ink = (PangoRectangle) { %d, %d, %d, %d },\n", ink.x, ink.y, ink.width, ink.height);
-      g_print ("  .logical = (PangoRectangle) { %d, %d, %d, %d }\n", logical.x, logical.y, logical.width, logical.height);
-      g_print ("},\n");
+      g_print ("hb_glyph_extents:\n"
+               "  .x_bearing = %d\n"
+               "  .y_bearing = %d\n"
+               "  .width = %d\n"
+               "  .height = %d\n"
+               "\n",
+               extents.x_bearing,
+               extents.y_bearing,
+               extents.width,
+               extents.height);
     }
-}
+  g_print ("hb h_advance: %d\n\n",
+           hb_font_get_glyph_h_advance (hb_font, glyph));
+
+#ifdef HAVE_FREETYPE
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+  FT_Face ft_face;
+
+  ft_face = pango_fc_font_lock_face (PANGO_FC_FONT (font));
+
+  FT_Load_Glyph (ft_face, glyph, FT_LOAD_NO_HINTING);
+
+  g_print ("FT_Glyph_Metrics: (in 26.6)\n"
+           "  .width = %ld (== %ld)\n"
+           "  .height = %ld (== %ld)\n"
+           "  .horiBearingX = %ld (== %ld)\n"
+           "  .horiBearingY = %ld (== %ld)\n"
+           "  .horiAdvance = %ld (== %ld)\n"
+           "\n",
+           ft_face->glyph->metrics.width,
+           PANGO_UNITS_26_6 (ft_face->glyph->metrics.width),
+           ft_face->glyph->metrics.height,
+           PANGO_UNITS_26_6 (ft_face->glyph->metrics.height),
+           ft_face->glyph->metrics.horiBearingX,
+           PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingX),
+           ft_face->glyph->metrics.horiBearingY,
+           PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiBearingY),
+           ft_face->glyph->metrics.horiAdvance,
+           PANGO_UNITS_26_6 (ft_face->glyph->metrics.horiAdvance));
+  g_print ("FT linearHoriAdvance: (in 16.16)\n"
+           "  %ld (== %ld)\n\n",
+           ft_face->glyph->linearHoriAdvance,
+           (ft_face->glyph->linearHoriAdvance * PANGO_SCALE / (1 << 16)));
+
+  pango_fc_font_unlock_face (PANGO_FC_FONT (font));
 #endif
+
+G_GNUC_END_IGNORE_DEPRECATIONS
+
+  cairo_glyph_t cg = { .index = glyph, .x = 0, .y = 0 };
+  cairo_text_extents_t ce;
+  scaled_font = pango_cairo_font_get_scaled_font (PANGO_CAIRO_FONT (font));
+  cairo_scaled_font_glyph_extents (scaled_font, &cg, 1, &ce);
+
+  g_print ("cairo_text_extents_t: (in pixels)\n"
+           "  .x_bearing = %f (== %d)\n"
+           "  .y_bearing = %f (== %d)\n"
+           "  .width = %f (== %d)\n"
+           "  .height = %f (== %d)\n"
+           "  .x_advance = %f (== %d)\n"
+           "  .y_advance = %f (== %d)\n"
+           "\n",
+           ce.x_bearing,
+           (int) round (ce.x_bearing * PANGO_SCALE),
+           ce.y_bearing,
+           (int) round (ce.y_bearing * PANGO_SCALE),
+           ce.width,
+           (int) round (ce.width * PANGO_SCALE),
+           ce.height,
+           (int) round (ce.height * PANGO_SCALE),
+           ce.x_advance,
+           (int) round (ce.x_advance * PANGO_SCALE),
+           ce.y_advance,
+           (int) round (ce.y_advance * PANGO_SCALE));
+}
 
 static gboolean
 pango_rectangle_equal (const PangoRectangle *a,
@@ -384,6 +484,10 @@ test_cantarell_glyph_metrics (void)
       return;
     }
 
+  print_glyph_metrics (font, "a");
+  return;
+
+#if 0
   for (int i = 0; i < G_N_ELEMENTS (cantarell_unhinted_glyphs); i++)
     {
       GlyphMetrics *gm = &cantarell_unhinted_glyphs[i];
@@ -393,6 +497,7 @@ test_cantarell_glyph_metrics (void)
       g_assert_true (pango_rectangle_equal (&ink, &gm->ink));
       g_assert_true (pango_rectangle_equal (&logical, &gm->logical));
     }
+#endif
 
   g_object_unref (font);
 
@@ -416,7 +521,6 @@ test_cantarell_glyph_metrics (void)
   print_glyph_metrics (font, "F");
   print_glyph_metrics (font, "G");
   print_glyph_metrics (font, "H");
-#endif
 
   for (int i = 0; i < G_N_ELEMENTS (cantarell_hinted_glyphs); i++)
     {
@@ -427,6 +531,7 @@ test_cantarell_glyph_metrics (void)
       g_assert_true (pango_rectangle_equal (&ink, &gm->ink));
       g_assert_true (pango_rectangle_equal (&logical, &gm->logical));
     }
+#endif
 
   g_object_unref (font);
 
