@@ -309,6 +309,8 @@ get_font_map_with_cantarell (void)
       char *path;
 
       path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
+      g_test_message ("adding %s to font map", path);
+
       pango_win32_font_map_add_font_file (fontmap, path, &error);
       g_assert_no_error (error);
       g_free (path);
