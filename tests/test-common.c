@@ -32,7 +32,13 @@
 #endif
 
 #include <pango/pangocairo.h>
+
+#ifdef G_OS_WIN32
+#include <pango/pangowin32.h>
+#endif
+
 #include "test-common.h"
+
 
 char *
 diff_with_file (const char  *file,
@@ -239,5 +245,30 @@ get_script_name (GUnicodeScript s)
   nick = value->value_nick;
   g_type_class_unref (class);
   return nick;
+}
+
+PangoFontMap *
+get_font_map_with_cantarell (void)
+{ 
+  PangoFontMap *fontmap;
+
+  fontmap = pango_cairo_font_map_new ();
+
+#ifdef G_OS_WIN32
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
+    {
+      GError *error = NULL;
+      char *path;
+
+      path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
+      pango_win32_font_map_add_font_file (fontmap, path, &error);
+      g_assert_no_error (error);
+      g_free (path);
+    }
+#endif
+
+  g_assert_true (pango_cairo_font_map_get_resolution (PANGO_CAIRO_FONT_MAP (fontmap)) == 96.0);
+
+  return fontmap;
 }
 

@@ -25,9 +25,9 @@
 
 #include <gio/gio.h>
 #include <pango/pangocairo.h>
-#ifdef G_OS_WIN32
-#include <pango/pangowin32.h>
-#endif
+
+#include "test-common.h"
+
 
 static PangoFontMetrics cantarell_unhinted_metrics = {
   .ascent = 14764,
@@ -72,31 +72,6 @@ print_metrics (PangoFont *font)
   pango_font_metrics_unref (metrics);
 }
 #endif
-
-static PangoFontMap *
-get_font_map_with_cantarell (void)
-{
-  PangoFontMap *fontmap;
-
-  fontmap = pango_cairo_font_map_new ();
-
-#ifdef G_OS_WIN32
-  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
-    {
-      GError *error = NULL;
-      char *path;
-
-      path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
-      pango_win32_font_map_add_font_file (fontmap, path, &error);
-      g_assert_no_error (error);
-      g_free (path);
-    }
-#endif
-
-  g_assert_true (pango_cairo_font_map_get_resolution (PANGO_CAIRO_FONT_MAP (fontmap)) == 96.0);
-
-  return fontmap;
-}
 
 static PangoFont *
 load_font_with_font_options (PangoFontMap         *fontmap,
