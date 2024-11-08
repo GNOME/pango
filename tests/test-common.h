@@ -25,5 +25,6 @@ void print_attr_list (PangoAttrList  *attrs,
 
 const char *get_script_name (GUnicodeScript s);
 
+PangoFontMap *get_font_map_with_cantarell (void);
 
 #endif

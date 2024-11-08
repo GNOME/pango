@@ -25,32 +25,9 @@
 
 #include <gio/gio.h>
 #include <pango/pangocairo.h>
-#ifdef G_OS_WIN32
-#include <pango/pangowin32.h>
-#endif
 
-static PangoFontMap *
-get_font_map_with_cantarell (void)
-{
-  PangoFontMap *fontmap;
+#include "test-common.h"
 
-  fontmap = pango_cairo_font_map_new ();
-
-#ifdef G_OS_WIN32
-  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
-    {
-      GError *error = NULL;
-      char *path;
-
-      path = g_test_build_filename (G_TEST_DIST, "tests", "fonts", "Cantarell-VF.otf", NULL);
-      pango_win32_font_map_add_font_file (fontmap, path, &error);
-      g_assert_no_error (error);
-      g_free (path);
-    }
-#endif
-
-  return fontmap;
-}
 
 static void
 test_parse (void)
