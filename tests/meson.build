@@ -29,35 +29,37 @@ tests = [
   [ 'testtabs' ],
 ]
 
+# deps for test-common.c
+common_deps = []
+
+if host_system == 'windows'
+  common_deps += [ libpangowin32_dep ]
+endif
+
 if build_pangoft2
   test_cflags += '-DHAVE_FREETYPE'
   tests += [
     [ 'test-ot-tags', [ 'test-ot-tags.c' ], [ libpangoft2_dep ] ],
   ]
-endif
-
-if host_system == 'windows'
-  win32_deps = [ libpangowin32_dep ]
-else
-  win32_deps = []
+  common_deps += [ libpangoft2_dep ]
 endif
 
 if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
-    # [ 'test-font-data', [ 'test-font-data.c', 'test-common.c' ], [ libpangocairo_dep ] + win32_deps ],
+    # [ 'test-font-data', [ 'test-font-data.c', 'test-common.c' ], [ libpangocairo_dep ] + common_deps ],
     [ 'test-bidi', [ 'test-bidi.c' ], [ libpangocairo_dep ] ],
     [ 'testcontext', [ 'testcontext.c' ], [ libpangocairo_dep ] ],
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
     [ 'test-ellipsize', [ 'test-ellipsize.c' ], [ libpangocairo_dep ] ],
-    [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ], [ libpangocairo_dep ] + win32_deps ],
-    [ 'test-itemize', [ 'test-itemize.c', 'test-common.c' ], [ libpangocairo_dep ] + win32_deps ],
-    [ 'test-shape', [ 'test-shape.c', 'test-common.c' ], [ libpangocairo_dep ] + win32_deps ],
-    [ 'test-font', [ 'test-font.c', 'test-common.c' ], [ libpangocairo_dep ] + win32_deps ],
-    [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] + win32_deps ],
+    [ 'markup-parse', [ 'markup-parse.c' , 'test-common.c' ], [ libpangocairo_dep ] + common_deps ],
+    [ 'test-itemize', [ 'test-itemize.c', 'test-common.c' ], [ libpangocairo_dep ] + common_deps ],
+    [ 'test-shape', [ 'test-shape.c', 'test-common.c' ], [ libpangocairo_dep ] + common_deps ],
+    [ 'test-font', [ 'test-font.c', 'test-common.c' ], [ libpangocairo_dep ] + common_deps ],
+    [ 'testattributes', [ 'testattributes.c', 'test-common.c' ], [ libpangocairo_dep ] + common_deps ],
     [ 'cxx-test', [ 'cxx-test.cpp' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
     [ 'test-harfbuzz', [ 'test-harfbuzz.c' ], [ libpangocairo_dep, gobject_dep, harfbuzz_dep ] ],
-    [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ], [libpangocairo_dep, glib_dep, harfbuzz_dep ] + win32_deps ],
+    [ 'test-break', [ 'test-break.c', 'test-common.c', 'validate-log-attrs.c' ], [libpangocairo_dep, glib_dep, harfbuzz_dep ] + common_deps ],
   ]
 
   if build_pangoft2
@@ -68,8 +70,8 @@ if cairo_dep.found()
 
     if host_system != 'darwin'
       tests += [
-        [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] + win32_deps ],
-        [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] + win32_deps ],
+        [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] + common_deps ],
+        [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] + common_deps ],
         [ 'test-no-fonts', [ 'test-no-fonts.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
       ]
     endif
