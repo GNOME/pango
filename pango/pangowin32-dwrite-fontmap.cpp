@@ -308,8 +308,6 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
       return;
     }
 
-  pango_win32_dwrite_font_map_populate_with_collection (map, sys_collection);
-
   /* the following code requires items from dwrite_3.h */
   if (dwrite_items->have_idwritefactory5 || dwrite_items->have_idwritefactory3)
     {
@@ -367,6 +365,8 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
       collection->Release ();
           map->custom_fonts_legacy->font_collection_temp = NULL;
     }
+
+  pango_win32_dwrite_font_map_populate_with_collection (map, sys_collection);
 
   sys_collection->Release ();
 }
