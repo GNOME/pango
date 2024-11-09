@@ -46,6 +46,10 @@ static PangoFont *pango_font_map_real_reload_font (PangoFontMap *fontmap,
                                                    PangoContext *context,
                                                    const char   *variations);
 
+static gboolean pango_font_map_real_add_font_file (PangoFontMap  *fontmap,
+                                                   const char    *filename,
+                                                   GError       **error);
+
 static guint pango_font_map_get_n_items (GListModel *list);
 
 static void pango_font_map_list_model_init (GListModelInterface *iface);
@@ -105,6 +109,7 @@ pango_font_map_class_init (PangoFontMapClass *class)
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_MAP);
 
   pclass->reload_font = pango_font_map_real_reload_font;
+  pclass->add_font_file = pango_font_map_real_add_font_file;
 
   /**
    * PangoFontMap:item-type:
@@ -569,6 +574,50 @@ pango_font_map_reload_font (PangoFontMap *fontmap,
                                      PANGO_TYPE_FONT_MAP);
 
   return pclass->reload_font (fontmap, font, scale, context, variations);
+}
+
+static gboolean
+pango_font_map_real_add_font_file (PangoFontMap  *fontmap,
+                                   const char    *filename,
+                                   GError       **error)
+{
+  g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+               "Adding font files not supported for %s",
+               G_OBJECT_TYPE_NAME (fontmap));
+
+  return FALSE;
+}
+
+/**
+ * pango_font_map_add_font_file:
+ * @fontmap: a `PangoFontMap`
+ * @filename: Path to the font file
+ * @error: return location for an error
+ *
+ * Loads a font file with one or more fonts into the `PangoFontMap`.
+ *
+ * The added fonts will take precedence over preexisting
+ * fonts with the same name.
+ *
+ * Return value: True if the font file is successfully loaded
+ *     into the fontmap, false if an error occurred.
+ *
+ * Since: 1.56
+ */
+gboolean
+pango_font_map_add_font_file (PangoFontMap  *fontmap,
+                              const char    *filename,
+                              GError       **error)
+{
+  PangoFontMapClassPrivate *pclass;
+
+  g_return_val_if_fail (PANGO_IS_FONT_MAP (fontmap), FALSE);
+  g_return_val_if_fail (filename != NULL, FALSE);
+
+  pclass = g_type_class_get_private ((GTypeClass *) PANGO_FONT_MAP_GET_CLASS (fontmap),
+                                     PANGO_TYPE_FONT_MAP);
+
+  return pclass->add_font_file (fontmap, filename, error);
 }
 
 static GType

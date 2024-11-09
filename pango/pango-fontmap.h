@@ -131,6 +131,10 @@ PangoFont *   pango_font_map_reload_font   (PangoFontMap                 *fontma
                                             PangoContext                 *context,
                                             const char                   *variations);
 
+PANGO_AVAILABLE_IN_1_56
+gboolean      pango_font_map_add_font_file (PangoFontMap                 *fontmap,
+                                            const char                   *filename,
+                                            GError                      **error);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontMap, g_object_unref)
 

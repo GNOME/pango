@@ -35,6 +35,10 @@ typedef struct {
                                PangoContext *context,
                                const char   *variations);
 
+  gboolean (* add_font_file)  (PangoFontMap  *fontmap,
+                               const char    *filename,
+                               GError       **error);
+
 } PangoFontMapClassPrivate;
 
 PANGO_DEPRECATED_IN_1_38
