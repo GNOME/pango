@@ -775,6 +775,7 @@ pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
+  PangoFontMapClassPrivate *pclass;
 
   class->find_font = pango_win32_font_map_real_find_font;
   object_class->finalize = pango_win32_font_map_finalize;
@@ -790,6 +791,10 @@ pango_win32_font_map_class_init (PangoWin32FontMapClass *class)
                                           (GEqualFunc)alias_equal,
                                           (GDestroyNotify)alias_free,
                                           NULL);
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_MAP);
+
+  pclass->add_font_file = pango_win32_font_map_add_font_file;
 
 #ifdef HAVE_CAIRO_WIN32
   read_windows_fallbacks (class->aliases);
@@ -2113,11 +2118,12 @@ pango_win32_font_map_cache_clear (PangoFontMap *font_map)
  *   otherwise FALSE.
  *
  * Since: 1.52
+ * Deprecated: 1.56: Use pango_font_map_add_font_file instead
  */
 gboolean
-pango_win32_font_map_add_font_file (PangoFontMap *font_map,
-                                    const char   *font_file_path,
-                                    GError      **error)
+pango_win32_font_map_add_font_file (PangoFontMap  *font_map,
+                                    const char    *font_file_path,
+                                    GError       **error)
 {
   g_return_val_if_fail (PANGO_WIN32_IS_FONT_MAP (font_map), FALSE);
 
