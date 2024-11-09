@@ -259,6 +259,10 @@ static PangoFont * pango_fc_font_map_reload_font (PangoFontMap *fontmap,
                                                   PangoContext *context,
                                                   const char   *variations);
 
+static gboolean  pango_fc_font_map_add_font_file (PangoFontMap  *fontmap,
+                                                  const char    *filename,
+                                                  GError       **error);
+
 static guint    pango_fc_font_face_data_hash  (PangoFcFontFaceData *key);
 static gboolean pango_fc_font_face_data_equal (PangoFcFontFaceData *key1,
 					       PangoFcFontFaceData *key2);
@@ -1590,6 +1594,7 @@ pango_fc_font_map_class_init (PangoFcFontMapClass *class)
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_MAP);
 
   pclass->reload_font = pango_fc_font_map_reload_font;
+  pclass->add_font_file = pango_fc_font_map_add_font_file;
 }
 
 
@@ -2601,8 +2606,8 @@ pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap)
 
       wait_for_fc_init ();
 
-      sets[0] = FcConfigGetFonts (fcfontmap->priv->config, 0);
-      sets[1] = FcConfigGetFonts (fcfontmap->priv->config, 1);
+      sets[0] = FcConfigGetFonts (fcfontmap->priv->config, FcSetApplication);
+      sets[1] = FcConfigGetFonts (fcfontmap->priv->config, FcSetSystem);
       fcfontmap->priv->fonts = filter_by_format (sets, 2);
     }
 
@@ -3694,4 +3699,36 @@ pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
     }
 
   return data->hb_face;
+}
+
+static gboolean
+pango_fc_font_map_add_font_file (PangoFontMap  *fontmap,
+                                 const char    *filename,
+                                 GError       **error)
+{
+  PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
+  FcConfig *config;
+
+  if (fcfontmap->priv->config)
+    config = fcfontmap->priv->config;
+  else
+    config = FcConfigGetCurrent ();
+
+  if (!FcConfigAppFontAddFile (config, (FcChar8 *) filename))
+    {
+      g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                   "Adding font %s to fontconfig configuration failed",
+                   filename);
+      return FALSE;
+    }
+
+  if (config != fcfontmap->priv->config)
+    pango_fc_font_map_set_config (fcfontmap, config);
+  else
+    {
+      g_clear_pointer (&fcfontmap->priv->fonts, FcFontSetDestroy);
+      pango_fc_font_map_config_changed (fcfontmap);
+    }
+
+  return TRUE;
 }
