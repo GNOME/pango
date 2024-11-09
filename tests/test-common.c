@@ -252,42 +252,6 @@ get_script_name (GUnicodeScript s)
   return nick;
 }
 
-#ifdef HAVE_FREETYPE
-static PangoFontMap *
-generate_font_map (void)
-{
-  FcConfig *config;
-  PangoFontMap *map;
-  char *path;
-  gsize len;
-  char *conf;
-  char *dir;
-
-  dir = g_test_build_filename (G_TEST_DIST, "fonts", NULL);
-
-  map = g_object_new (PANGO_TYPE_CAIRO_FC_FONT_MAP, NULL);
-
-  config = FcConfigCreate ();
-
-  path = g_build_filename (dir, "fonts.conf", NULL);
-  g_file_get_contents (path, &conf, &len, NULL);
-
-  if (!FcConfigParseAndLoadFromMemory (config, (const FcChar8 *) conf, TRUE))
-    g_error ("Failed to parse fontconfig configuration");
-
-  g_free (conf);
-  g_free (path);
-
-  FcConfigAppFontAddDir (config, (const FcChar8 *) dir);
-  pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (map), config);
-  FcConfigDestroy (config);
-
-  g_free (dir);
-
-  return map;
-}
-#endif
-
 /* Create a fontmap that will return our included Cantarell-VF.otf
  * for "Cantarell"
  *
@@ -297,25 +261,21 @@ PangoFontMap *
 get_font_map_with_cantarell (void)
 {
   PangoFontMap *fontmap;
+  GError *error = NULL;
+  char *path;
 
-#ifdef HAVE_FREETYPE
-  fontmap = generate_font_map ();
-#elif defined (G_OS_WIN32)
   fontmap = pango_cairo_font_map_new ();
 
-  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
+  /* FIXME: the coretext backend doesn't implement add_font_file */
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") != 0)
     {
-      GError *error = NULL;
-      char *path;
-
       path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
-      pango_win32_font_map_add_font_file (fontmap, path, &error);
+      if (g_test_verbose ())
+        g_test_message ("adding %s to font map", path);
+      pango_font_map_add_font_file (fontmap, path, &error);
       g_assert_no_error (error);
       g_free (path);
     }
-#else
-  fontmap = pango_cairo_font_map_new ();
-#endif
 
   g_assert_true (pango_cairo_font_map_get_resolution (PANGO_CAIRO_FONT_MAP (fontmap)) == 96.0);
 
