@@ -49,6 +49,10 @@ cc = meson.get_compiler('c')
 cpp = meson.get_compiler('cpp')
 host_system = host_machine.system()
 
+if host_system == 'windows'
+  add_project_arguments('-D_WIN32_WINNT=_WIN32_WINNT_WIN10', language: 'c')
+endif
+
 # Compiler and linker flags
 common_cflags = []
 common_cppflags = []
@@ -346,10 +350,8 @@ if host_system == 'darwin'
 endif
 
 # Check for dwrite_3.h (from more recent Windows SDK or mingw-w64)
-if host_system == 'windows'
-  if cpp.has_header('dwrite_3.h')
-    pango_conf.set('HAVE_DWRITE_3_H', 1)
-  endif
+if host_system == 'windows' and not cpp.has_header('dwrite_3.h')
+  error('Windows backend enabled but dwrite_3.h not found.')
 endif
 
 # Enable cairo-ft with FreeType and FontConfig support if
