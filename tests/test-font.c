@@ -19,6 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+
 #include <glib.h>
 #include <string.h>
 #include <locale.h>
@@ -28,6 +30,10 @@
 
 #include "test-common.h"
 
+#ifdef HAVE_FREETYPE
+#include <pango/pangoft2.h>
+#include <fontconfig/fontconfig.h>
+#endif
 
 static void
 test_parse (void)
@@ -807,6 +813,58 @@ test_font_scale_variations (void)
   g_object_unref (fontmap);
 }
 
+static void
+test_font_custom (void)
+{
+  PangoFontMap *fontmap;
+  char *path;
+  GError *error = NULL;
+
+  fontmap = pango_cairo_font_map_new ();
+
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
+    {
+      g_test_skip ("CoreText does not support adding custom fonts");
+      return;
+    }
+
+  path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
+  if (g_test_verbose ())
+    g_test_message ("adding %s to font map", path);
+  pango_font_map_add_font_file (fontmap, path, &error);
+  g_assert_no_error (error);
+
+  /* Check that we got our Cantarell, not the system one.
+   * FIXME: do a similar check for dwrite
+   */
+#ifdef HAVE_FREETYPE
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoFcFontMap") == 0)
+    {
+      PangoContext *context;
+      PangoFontDescription *desc;
+      PangoFont *font;
+      FcPattern *pattern;
+      const char *filename;
+
+      context = pango_font_map_create_context (fontmap);
+      desc = pango_font_description_from_string ("Cantarell 11");
+      font = pango_font_map_load_font (fontmap, context, desc);
+
+      pattern = pango_fc_font_get_pattern (PANGO_FC_FONT (font));
+      if (FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **)&filename) != FcResultMatch)
+        filename = "tough luck";
+
+      g_assert_cmpstr (filename, ==, path);
+
+      g_object_unref (font);
+      pango_font_description_free (desc);
+      g_object_unref (context);
+    }
+#endif
+
+  g_free (path);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -835,6 +893,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/font-metrics", test_font_metrics);
   g_test_add_func ("/pango/font/scale-font/plain", test_font_scale);
   g_test_add_func ("/pango/font/scale-font/variations", test_font_scale_variations);
+  g_test_add_func ("/pango/font/custom", test_font_custom);
 
   return g_test_run ();
 }
