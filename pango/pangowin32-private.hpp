@@ -35,21 +35,6 @@ struct _PangoWin32DWriteItems
   guint              have_idwritefactory3 : 1;
 };
 
-struct _PangoWin32CustomFontsLegacy
-{
-  /* custom fonts files that have been loaded */
-  GArray *paths;
-
-  /* our custom IDWriteFontCollectionLoader to be used on Windows 7/8.x */
-  IDWriteFontCollectionLoader *font_collection_loader;
-
-  /* whether custom loader has been registered in DirectWrite */
-  gboolean is_loader_registered;
-
-  /* temporary IDWriteFontCollection for legacy use */
-  IDWriteFontCollection *font_collection_temp;
-};
-
 /* Releases a COM object and clears it */
 template <typename com_interface>
 inline void pangowin32_release_com_obj (com_interface **curr_obj)
@@ -70,11 +55,5 @@ inline com_interface* pangowin32_acquire_com_obj (com_interface *new_obj)
 
   return new_obj;
 }
-
-HRESULT
-pango_win32_create_legacy_font_collection (PangoWin32FontMap          *map,
-                                           IDWriteFactory             *factory,
-                                           const char                 *path,
-                                           OUT IDWriteFontCollection **collection);
 
 #endif /* __PANGOWIN32_PRIVATE_HPP__ */

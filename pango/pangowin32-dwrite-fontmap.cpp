@@ -157,16 +157,8 @@ pango_win32_dwrite_release_font_set_builders (PangoWin32FontMap *win32fontmap)
 
   if (win10_font_set_builder != NULL)
     {
-       if (win10_font_set_builder->font_set_builder1 != NULL)
-         {
-           win10_font_set_builder->font_set_builder1->Release ();
-           win10_font_set_builder->font_set_builder1 = NULL;
-         }
-       if (win10_font_set_builder->font_set_builder != NULL)
-         {
-           win10_font_set_builder->font_set_builder->Release ();
-           win10_font_set_builder->font_set_builder = NULL;
-         }
+      pangowin32_release_com_obj (&win10_font_set_builder->font_set_builder1);
+      pangowin32_release_com_obj (&win10_font_set_builder->font_set_builder);
     }
 }
 
@@ -357,15 +349,6 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
         }
 
       fontset->Release ();
-    }
-  else if (map->custom_fonts_legacy != NULL &&
-           map->custom_fonts_legacy->font_collection_temp != NULL)
-    {
-      IDWriteFontCollection *collection = map->custom_fonts_legacy->font_collection_temp;
-
-      pango_win32_dwrite_font_map_populate_with_collection (map, collection);
-      collection->Release ();
-          map->custom_fonts_legacy->font_collection_temp = NULL;
     }
 
   sys_collection->Release ();
@@ -881,8 +864,7 @@ add_custom_font_factory3 (PangoFontMap     *font_map,
                        "Setting up IDWriteFontFaceReference with error code %x",
                        (unsigned)hr);
 
-          if (ref != NULL)
-            ref->Release ();
+          pangowin32_release_com_obj (&ref);
 
           break;
         }
@@ -894,33 +876,6 @@ out:
   g_free (filepath_w);
 
   return *error == NULL;
-}
-
-static gboolean
-add_custom_font_legacy (PangoFontMap    *font_map,
-                        IDWriteFactory  *factory,
-                        const char      *filepath,
-                        GError         **error)
-{
-  HRESULT hr = S_OK;
-  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
-  IDWriteFontCollection *collection;
-
-  hr = pango_win32_create_legacy_font_collection (win32fontmap,
-                                                  factory,
-                                                  filepath,
-                                                  &collection);
-
-  if (SUCCEEDED (hr))
-    win32fontmap->custom_fonts_legacy->font_collection_temp = collection;
-  else
-    g_set_error (error,
-                 G_FILE_ERROR,
-                 G_FILE_ERROR_FAILED,
-                 "Loading custom font file failed with error code %x\n", (unsigned)hr);
-
-
-  return (SUCCEEDED (hr));
 }
 
 gboolean
@@ -956,11 +911,6 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
                                           dwrite_items->dwrite_factory3,
                                           font_file_path,
                                           error);
-  else
-    succeeded = add_custom_font_legacy (font_map,
-                                        dwrite_items->dwrite_factory,
-                                        font_file_path,
-                                        error);
 
   if (succeeded)
     {
@@ -980,8 +930,7 @@ pango_win32_dwrite_font_release (gpointer dwrite_font)
 {
   IDWriteFont *font = static_cast<IDWriteFont *>(dwrite_font);
 
-  if (font != NULL)
-    font->Release ();
+  pangowin32_release_com_obj (&font);
 }
 
 void
@@ -989,6 +938,5 @@ pango_win32_dwrite_font_face_release (gpointer dwrite_font_face)
 {
   IDWriteFontFace *face = static_cast<IDWriteFontFace *>(dwrite_font_face);
 
-  if (face != NULL)
-    face->Release ();
+  pangowin32_release_com_obj (&face);
 }
