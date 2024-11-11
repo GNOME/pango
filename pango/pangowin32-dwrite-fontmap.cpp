@@ -293,15 +293,6 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
   PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
   PangoWin32DWriteFontSetBuilder *win10_font_set_builder = NULL;
 
-  hr = dwrite_items->dwrite_factory->GetSystemFontCollection (&sys_collection, FALSE);
-  if (FAILED (hr) || sys_collection == NULL)
-    {
-      g_error ("IDWriteFactory::GetSystemFontCollection failed with error code %x\n", (unsigned)hr);
-      return;
-    }
-
-  pango_win32_dwrite_font_map_populate_with_collection (map, sys_collection);
-
   /* the following code requires items from dwrite_3.h */
   if (dwrite_items->have_idwritefactory5 || dwrite_items->have_idwritefactory3)
     {
@@ -350,6 +341,15 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 
       fontset->Release ();
     }
+
+  hr = dwrite_items->dwrite_factory->GetSystemFontCollection (&sys_collection, FALSE);
+  if (FAILED (hr) || sys_collection == NULL)
+    {
+      g_error ("IDWriteFactory::GetSystemFontCollection failed with error code %x\n", (unsigned)hr);
+      return;
+    }
+
+  pango_win32_dwrite_font_map_populate_with_collection (map, sys_collection);
 
   sys_collection->Release ();
 }
