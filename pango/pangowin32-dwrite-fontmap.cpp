@@ -358,15 +358,6 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
 
       fontset->Release ();
     }
-  else if (map->custom_fonts_legacy != NULL &&
-           map->custom_fonts_legacy->font_collection_temp != NULL)
-    {
-      IDWriteFontCollection *collection = map->custom_fonts_legacy->font_collection_temp;
-
-      pango_win32_dwrite_font_map_populate_with_collection (map, collection);
-      collection->Release ();
-          map->custom_fonts_legacy->font_collection_temp = NULL;
-    }
 
   sys_collection->Release ();
 }
@@ -896,33 +887,6 @@ out:
   return *error == NULL;
 }
 
-static gboolean
-add_custom_font_legacy (PangoFontMap    *font_map,
-                        IDWriteFactory  *factory,
-                        const char      *filepath,
-                        GError         **error)
-{
-  HRESULT hr = S_OK;
-  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
-  IDWriteFontCollection *collection;
-
-  hr = pango_win32_create_legacy_font_collection (win32fontmap,
-                                                  factory,
-                                                  filepath,
-                                                  &collection);
-
-  if (SUCCEEDED (hr))
-    win32fontmap->custom_fonts_legacy->font_collection_temp = collection;
-  else
-    g_set_error (error,
-                 G_FILE_ERROR,
-                 G_FILE_ERROR_FAILED,
-                 "Loading custom font file failed with error code %x\n", (unsigned)hr);
-
-
-  return (SUCCEEDED (hr));
-}
-
 gboolean
 pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
                                   const char   *font_file_path,
@@ -956,11 +920,6 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
                                           dwrite_items->dwrite_factory3,
                                           font_file_path,
                                           error);
-  else
-    succeeded = add_custom_font_legacy (font_map,
-                                        dwrite_items->dwrite_factory,
-                                        font_file_path,
-                                        error);
 
   if (succeeded)
     {

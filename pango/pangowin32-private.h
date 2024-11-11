@@ -84,7 +84,6 @@ typedef struct _PangoWin32GlyphInfo    PangoWin32GlyphInfo;
 typedef struct _PangoWin32MetricsInfo  PangoWin32MetricsInfo;
 
 typedef struct _PangoWin32DWriteFontSetBuilder PangoWin32DWriteFontSetBuilder;
-typedef struct _PangoWin32CustomFontsLegacy PangoWin32CustomFontsLegacy;
 
 struct _PangoWin32FontMap
 {
@@ -115,9 +114,6 @@ struct _PangoWin32FontMap
 
   /* IDWriteFontSetBuilder for loading custom fonts on Windows 10+ */
   PangoWin32DWriteFontSetBuilder *font_set_builder;
-
-  /* Items for loading custom fonts on legacy Windows 7/8.x */
-  PangoWin32CustomFontsLegacy *custom_fonts_legacy;
 };
 
 struct _PangoWin32FontMapClass
@@ -348,8 +344,6 @@ gboolean              pango_win32_dwrite_add_font_file        (PangoFontMap     
 
 void
 pango_win32_dwrite_release_font_set_builders                  (PangoWin32FontMap     *win32fontmap);
-
-gboolean              pango_win32_release_legacy_font_loader  (PangoWin32FontMap     *win32fontmap);
 
 G_END_DECLS
 
