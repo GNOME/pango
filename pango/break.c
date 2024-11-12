@@ -893,11 +893,18 @@ default_break (const char    *text,
 
 		case G_UNICODE_DASH_PUNCTUATION:
 		  if (wc == 0x002D ||
+		      wc == 0x003B ||
+		      wc == 0x037E ||
 		      (wc >= 0x2013 && wc <= 0x2014) ||
+		      wc == 0xFE14 ||
 		      (wc >= 0xFE31 && wc <= 0xFE32) ||
+		      wc == 0xFE54 ||
 		      wc == 0xFE58 ||
 		      wc == 0xFE63 ||
-		      wc == 0xFF0D)
+		      wc == 0xFF0D ||
+		      wc == 0xFF1A ||
+		      wc == 0xFF1B ||
+		      wc == 0xFF64)
 		    SB_type = SB_SContinue;
 		  break;
 
