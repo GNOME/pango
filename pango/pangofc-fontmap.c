@@ -2740,7 +2740,7 @@ _pango_fc_font_map_get_coverage (PangoFcFontMap *fcfontmap,
        * doesn't require loading the font
        */
       if (FcPatternGetCharSet (fcfont->font_pattern, FC_CHARSET, 0, &charset) != FcResultMatch)
-        return NULL;
+        return pango_coverage_new ();
 
       data->coverage = _pango_fc_font_map_fc_to_coverage (charset);
     }
