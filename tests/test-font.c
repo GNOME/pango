@@ -392,16 +392,11 @@ test_roundtrip_small_caps (void)
   guint num = 0;
 
   fontmap = pango_cairo_font_map_new ();
-  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0 ||
+      strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
     {
-      g_test_skip ("Small Caps support needs to be added to PangoCoreTextFontMap");
-      g_object_unref (fontmap);
-      return;
-    }
-
-  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
-    {
-      g_test_skip ("Small Caps support needs to be added to PangoWin32FontMap");
+      g_test_incomplete_printf ("Small Caps support needs to be added to %s",
+                                G_OBJECT_TYPE_NAME (fontmap));
       g_object_unref (fontmap);
       return;
     }
@@ -824,7 +819,8 @@ test_font_custom (void)
 
   if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
     {
-      g_test_skip ("CoreText does not support adding custom fonts");
+      g_test_incomplete_printf ("%s does not support adding custom fonts",
+                                G_OBJECT_TYPE_NAME (fontmap));
       return;
     }
 
