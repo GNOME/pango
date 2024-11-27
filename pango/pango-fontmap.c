@@ -591,7 +591,7 @@ pango_font_map_real_add_font_file (PangoFontMap  *fontmap,
 /**
  * pango_font_map_add_font_file:
  * @fontmap: a `PangoFontMap`
- * @filename: Path to the font file
+ * @filename: (type filename): Path to the font file
  * @error: return location for an error
  *
  * Loads a font file with one or more fonts into the `PangoFontMap`.
