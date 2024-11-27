@@ -190,72 +190,67 @@ pango_ft2_font_get_face (PangoFont *font)
 
       /* disable antialiasing if requested */
       if (FcPatternGetBool (pattern,
-			    FC_ANTIALIAS, 0, &antialias) != FcResultMatch)
-	antialias = FcTrue;
+                            FC_ANTIALIAS, 0, &antialias) != FcResultMatch)
+        antialias = FcTrue;
 
       if (antialias)
-	ft2font->load_flags |= FT_LOAD_NO_BITMAP;
+        ft2font->load_flags |= FT_LOAD_NO_BITMAP;
       else
-	ft2font->load_flags |= FT_LOAD_TARGET_MONO;
+        ft2font->load_flags |= FT_LOAD_TARGET_MONO;
 
       /* disable hinting if requested */
       if (FcPatternGetBool (pattern,
-			    FC_HINTING, 0, &hinting) != FcResultMatch)
-	hinting = FcTrue;
+                            FC_HINTING, 0, &hinting) != FcResultMatch)
+        hinting = FcTrue;
 
-#ifdef FC_HINT_STYLE
       if (FcPatternGetInteger (pattern, FC_HINT_STYLE, 0, &hintstyle) != FcResultMatch)
-	hintstyle = FC_HINT_FULL;
+        hintstyle = FC_HINT_FULL;
 
       if (!hinting || hintstyle == FC_HINT_NONE)
           ft2font->load_flags |= FT_LOAD_NO_HINTING;
-      
+
       switch (hintstyle) {
       case FC_HINT_SLIGHT:
       case FC_HINT_MEDIUM:
-	ft2font->load_flags |= FT_LOAD_TARGET_LIGHT;
-	break;
+        ft2font->load_flags |= FT_LOAD_TARGET_LIGHT;
+        break;
       default:
-	ft2font->load_flags |= FT_LOAD_TARGET_NORMAL;
-	break;
+        ft2font->load_flags |= FT_LOAD_TARGET_NORMAL;
+        break;
       }
-#else
-      if (!hinting)
-          ft2font->load_flags |= FT_LOAD_NO_HINTING;
-#endif
 
       /* force autohinting if requested */
       if (FcPatternGetBool (pattern,
-			    FC_AUTOHINT, 0, &autohint) != FcResultMatch)
-	autohint = FcFalse;
+                            FC_AUTOHINT, 0, &autohint) != FcResultMatch)
+        autohint = FcFalse;
 
       if (autohint)
-	ft2font->load_flags |= FT_LOAD_FORCE_AUTOHINT;
+        ft2font->load_flags |= FT_LOAD_FORCE_AUTOHINT;
 
       if (FcPatternGetString (pattern, FC_FILE, 0, &filename) != FcResultMatch)
-	      goto bail0;
+              goto bail0;
 
       if (FcPatternGetInteger (pattern, FC_INDEX, 0, &id) != FcResultMatch)
-	      goto bail0;
+              goto bail0;
 
       error = FT_New_Face (_pango_ft2_font_map_get_library (fcfont->fontmap),
-			   (char *) filename, id, &ft2font->face);
+                           (char *) filename, id, &ft2font->face);
       if (error != FT_Err_Ok)
-	{
-	bail0:
-	  load_fallback_face (ft2font, (char *) filename);
-	}
+        {
+        bail0:
+          load_fallback_face (ft2font, (char *) filename);
+        }
 
       g_assert (ft2font->face);
 
       set_transform (ft2font);
 
       error = FT_Set_Char_Size (ft2font->face,
-				PANGO_PIXELS_26_6 (ft2font->size),
-				PANGO_PIXELS_26_6 (ft2font->size),
-				0, 0);
+                                PANGO_PIXELS_26_6 (ft2font->size),
+                                PANGO_PIXELS_26_6 (ft2font->size),
+                                0, 0);
       if (error)
-	g_warning ("Error in FT_Set_Char_Size: %d", error);
+        g_warning ("Error in FT_Set_Char_Size: %d", error);
     }
 
   return ft2font->face;
