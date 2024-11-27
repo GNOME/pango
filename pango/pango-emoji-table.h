@@ -7,13 +7,13 @@
  * on file with this header:
  *
  * # emoji-data.txt
- * # Date: 2023-02-01, 02:22:54 GMT
- * # © 2023 Unicode®, Inc.
+ * # Date: 2024-05-01, 21:25:24 GMT
+ * # © 2024 Unicode®, Inc.
  * # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
- * # For terms of use, see https://www.unicode.org/terms_of_use.html
+ * # For terms of use and license, see https://www.unicode.org/terms_of_use.html
  * #
  * # Emoji Data for UTS #51
- * # Used with Emoji Version 15.1 and subsequent minor revisions (if any)
+ * # Used with Emoji Version 16.0 and subsequent minor revisions (if any)
  * #
  * # For documentation and usage, see https://www.unicode.org/reports/tr51
  */
@@ -174,11 +174,10 @@ static const struct Interval _pango_Emoji_table[] =
   {0x1F93C, 0x1F945},
   {0x1F947, 0x1F9FF},
   {0x1FA70, 0x1FA7C},
-  {0x1FA80, 0x1FA88},
-  {0x1FA90, 0x1FABD},
-  {0x1FABF, 0x1FAC5},
-  {0x1FACE, 0x1FADB},
-  {0x1FAE0, 0x1FAE8},
+  {0x1FA80, 0x1FA89},
+  {0x1FA8F, 0x1FAC6},
+  {0x1FACE, 0x1FADC},
+  {0x1FADF, 0x1FAE9},
   {0x1FAF0, 0x1FAF8},
 };
 
@@ -259,11 +258,10 @@ static const struct Interval _pango_Emoji_Presentation_table[] =
   {0x1F93C, 0x1F945},
   {0x1F947, 0x1F9FF},
   {0x1FA70, 0x1FA7C},
-  {0x1FA80, 0x1FA88},
-  {0x1FA90, 0x1FABD},
-  {0x1FABF, 0x1FAC5},
-  {0x1FACE, 0x1FADB},
-  {0x1FAE0, 0x1FAE8},
+  {0x1FA80, 0x1FA89},
+  {0x1FA8F, 0x1FAC6},
+  {0x1FACE, 0x1FADC},
+  {0x1FADF, 0x1FAE9},
   {0x1FAF0, 0x1FAF8},
 };
 
