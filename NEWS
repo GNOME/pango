@@ -1,6 +1,16 @@
-Overview of changes in 1.55, xx-xx-xxxx
+Overview of changes in 1.55, 26-11-2024
 =======================================
-
+- Support Unicode 16
+- Add pango_font_map_add_font_file
+- fontconfig: Reject patterns without FC_FILE
+- coretext: Actually use .AppleSystemUIFont
+- coretext: Keep track of variations
+- win32: Use font options for caching
+- win32: Keep variations in PangoWin32Font
+- build: Require harfbuzz 8.4.0
+- build: Require fontconfig 2.15
+- build: Require meson 1.2.0
+- build: Require Window 10
 
 Overview of changes in 1.54.0, 09-06-2024
 =========================================
