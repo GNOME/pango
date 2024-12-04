@@ -52,10 +52,12 @@ struct _PangoWin32DWriteFontSetBuilder
 # define UUID_OF_IDWriteFactory __uuidof (IDWriteFactory)
 # define UUID_OF_IDWriteFont1 __uuidof (IDWriteFont1)
 # define UUID_OF_IDWriteFontCollection __uuidof (IDWriteFontCollection)
+# define UUID_OF_IDWriteTextAnalyzer2 __uuidof (IDWriteTextAnalyzer2)
 #else
 # define UUID_OF_IDWriteFactory IID_IDWriteFactory
 # define UUID_OF_IDWriteFont1 IID_IDWriteFont1
 # define UUID_OF_IDWriteFontCollection IID_IDWriteFontCollection
+# define UUID_OF_IDWriteTextAnalyzer2 IID_IDWriteTextAnalyzer2
 #endif
 
 PangoWin32DWriteItems *
@@ -66,9 +68,12 @@ pango_win32_init_direct_write (void)
   IDWriteFactory5 *factory5 = NULL;
   IDWriteFactory3 *factory3 = NULL;
   IDWriteFactory *factory = NULL;
+  IDWriteTextAnalyzer *analyzer = NULL;
+  IDWriteTextAnalyzer2 *analyzer2 = NULL;
   gboolean failed = FALSE;
   gboolean have_idwritefactory3 = FALSE;
   gboolean have_idwritefactory5 = FALSE;
+  gboolean teardown_on_fail = FALSE;
 
   /* Try to create a IDWriteFactory3 first, which is available on Windows 10+ */
   hr = DWriteCreateFactory (DWRITE_FACTORY_TYPE_SHARED,
@@ -102,6 +107,25 @@ pango_win32_init_direct_write (void)
       if (FAILED (hr) || gdi_interop == NULL)
         {
           g_error ("DWriteFactory::GetGdiInterop failed with error code %x", (unsigned)hr);
+          teardown_on_fail = TRUE;
+        }
+      else
+        {
+          hr = factory->CreateTextAnalyzer (&analyzer);
+          if (SUCCEEDED (hr))
+            hr = analyzer->QueryInterface (UUID_OF_IDWriteTextAnalyzer2, reinterpret_cast<void**> (&analyzer2));
+
+          if (FAILED (hr))
+            {
+              g_error ("DWriteFactory::CreateTextAnalyzer[2] failed with error code %x", (unsigned)hr);
+              teardown_on_fail = TRUE;
+            }
+        }
+
+      if (teardown_on_fail)
+        {
+          pangowin32_release_com_obj (&analyzer2);
+          pangowin32_release_com_obj (&analyzer);
           factory->Release ();
 
           if (have_idwritefactory5)
@@ -112,16 +136,20 @@ pango_win32_init_direct_write (void)
 
           failed = TRUE;
         }
+      else
+        {
+          if (have_idwritefactory3)
+            dwrite_items->dwrite_factory3 = factory3;
+          if (have_idwritefactory5)
+            dwrite_items->dwrite_factory5 = factory5;
 
-      if (have_idwritefactory3)
-        dwrite_items->dwrite_factory3 = factory3;
-      if (have_idwritefactory5)
-        dwrite_items->dwrite_factory5 = factory5;
-
-      dwrite_items->have_idwritefactory3 = have_idwritefactory3;
-      dwrite_items->have_idwritefactory5 = have_idwritefactory5;
-      dwrite_items->gdi_interop = gdi_interop;
-      dwrite_items->dwrite_factory = factory;
+          dwrite_items->have_idwritefactory3 = have_idwritefactory3;
+          dwrite_items->have_idwritefactory5 = have_idwritefactory5;
+          dwrite_items->gdi_interop = gdi_interop;
+          dwrite_items->dwrite_factory = factory;
+          dwrite_items->analyzer = analyzer;
+          dwrite_items->analyzer2 = analyzer2;
+        }
     }
   else
     {
@@ -138,6 +166,8 @@ pango_win32_init_direct_write (void)
 void
 pango_win32_dwrite_items_destroy (PangoWin32DWriteItems *dwrite_items)
 {
+  dwrite_items->analyzer2->Release ();
+  dwrite_items->analyzer->Release ();
   dwrite_items->gdi_interop->Release ();
   dwrite_items->dwrite_factory->Release ();
 

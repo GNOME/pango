@@ -27,12 +27,14 @@
 
 struct _PangoWin32DWriteItems
 {
-  IDWriteFactory5   *dwrite_factory5;
-  IDWriteFactory3   *dwrite_factory3;
-  IDWriteFactory    *dwrite_factory;
-  IDWriteGdiInterop *gdi_interop;
-  guint              have_idwritefactory5 : 1;
-  guint              have_idwritefactory3 : 1;
+  IDWriteFactory5      *dwrite_factory5;
+  IDWriteFactory3      *dwrite_factory3;
+  IDWriteFactory       *dwrite_factory;
+  IDWriteGdiInterop    *gdi_interop;
+  IDWriteTextAnalyzer  *analyzer;
+  IDWriteTextAnalyzer2 *analyzer2;
+  guint                 have_idwritefactory5 : 1;
+  guint                 have_idwritefactory3 : 1;
 };
 
 /* Releases a COM object and clears it */
