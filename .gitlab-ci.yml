@@ -202,10 +202,16 @@ release-test:
   image: $FEDORA_IMAGE
   stage: build
   script:
-    - meson setup -Ddocumentation=true --force-fallback-for gi-docgen build
-    - meson subprojects update gi-docgen
+    - git config --global --add safe.directory /builds/GNOME/pango
+    - meson setup -Ddocumentation=true build
     - meson compile -C build
-    - meson dist -C build --include-subprojects
+    - which git >/dev/null || echo "Oh dear. No git"
+    - git ls-files meson.build >/dev/null || echo "Oh dear. ls-files fail"
+    - meson dist -C build
+  artifacts:
+    when: always
+    paths:
+      - "${CI_PROJECT_DIR}/build/meson-logs"
 
 release-build:
   image: $FEDORA_IMAGE
