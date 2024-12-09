@@ -1,5 +1,5 @@
 project('pango', 'c', 'cpp',
-        version: '1.56.0',
+        version: '1.55.3',
         license: 'LGPLv2.1+',
         default_options: [
           'buildtype=debugoptimized',
