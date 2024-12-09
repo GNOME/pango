@@ -1,7 +1,5 @@
 include:
   - project: 'Infrastructure/gnome-release-service-ci-templates'
-    file: 'meson-dist.yml'
-  - project: 'Infrastructure/gnome-release-service-ci-templates'
     file: 'release-module.yml'
 
 stages:
@@ -13,7 +11,7 @@ stages:
 
 # Common variables
 variables:
-  COMMON_MESON_FLAGS:
+  COMMON_MESON_FLAGS: ""
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
   FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v12
 
@@ -31,9 +29,11 @@ linux-fedora:
   variables:
     EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both"
   script:
+    - git config --global --add safe.directory $CI_PROJECT_DIR
     - meson setup ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} _build
     - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
+    - meson dist -C _build --include-subprojects --no-tests
   artifacts:
     name: "${env:CI_JOB_NAME}-${env:CI_COMMIT_REF_NAME}"
     when: always
@@ -42,6 +42,7 @@ linux-fedora:
         - "${CI_PROJECT_DIR}/_build/meson-logs/testlog.junit.xml"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - "${CI_PROJECT_DIR}/_build/meson-dist/*.tar.xz"
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
@@ -51,7 +52,6 @@ asan-build:
   tags: [ asan ]
   stage: analysis
   needs: []
-  variables:
   script:
     - CC=clang meson setup --buildtype=debugoptimized -Db_sanitize=address -Db_lundef=false -Dintrospection=disabled _build
     - meson compile -C _build
@@ -196,17 +196,14 @@ pages:
   only:
     - main
 
-release-build:
-  image: $FEDORA_IMAGE
-  stage: build
-  extends: .meson-dist
-  rules:
-    - if: $CI_COMMIT_TAG
 
 release-dist:
   stage: release
+  needs:
+    - job: "linux-fedora"
+      artifacts: true
   variables:
-    TARBALL_ARTIFACT_PATH: build/meson-dist/$CI_PROJECT_NAME-$CI_COMMIT_TAG.tar.xz
+    TARBALL_ARTIFACT_PATH: _build/meson-dist/$CI_PROJECT_NAME-$CI_COMMIT_TAG.tar.xz
   extends: .release-module
   rules:
     - if: $CI_COMMIT_TAG
