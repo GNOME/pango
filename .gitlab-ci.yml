@@ -96,6 +96,7 @@ vs2019-x64:
   # TODO: Uncomment this when ready to merge.
   # rules:
   #   - if: $CI_PROJECT_NAMESPACE == "GNOME"
+  extends: .only-default
   stage: build
   tags:
     - win32-ps
@@ -195,6 +196,16 @@ pages:
       - public
   only:
     - main
+
+release-test:
+  extends: .only-default
+  image: $FEDORA_IMAGE
+  stage: build
+  script:
+    - meson setup -Ddocumentation=true --force-fallback-for gi-docgen build
+    - meson subprojects update gi-docgen
+    - meson compile -C build
+    - meson dist -C build --include-subprojects
 
 release-build:
   image: $FEDORA_IMAGE
