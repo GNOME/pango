@@ -22,7 +22,6 @@ variables:
     - tags
 
 linux-fedora:
-  extends: .only-default
   image: $FEDORA_IMAGE
   stage: build
   needs: []
