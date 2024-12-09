@@ -10,7 +10,13 @@ project('pango', 'c', 'cpp',
         ],
         meson_version : '>= 1.2.0')
 
-add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
+add_project_arguments([
+    '-D_POSIX_C_SOURCE=200809L',
+    '-D_POSIX_THREAD_SAFE_FUNCTIONS',
+    '-D_GNU_SOURCE',
+  ],
+  language: 'c'
+)
 
 pango_prefix = get_option('prefix')
 pango_libdir = join_paths(pango_prefix, get_option('libdir'))
@@ -52,6 +58,14 @@ host_system = host_machine.system()
 if host_system == 'windows'
   add_project_arguments('-D_WIN32_WINNT=_WIN32_WINNT_WIN10', language: 'c')
 endif
+
+# Keep in sync with glib_req_version
+add_project_arguments([
+    '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_70',
+    '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_70',
+  ],
+  language: 'c'
+)
 
 # Compiler and linker flags
 common_cflags = []
