@@ -1,6 +1,8 @@
 include:
-  - project: 'Infrastructure/gnome-release-service-ci-templates'
-    file: 'release-module.yml'
+  - component: gitlab.gnome.org/GNOME/citemplates/release-service@master
+    inputs:
+      dist-job-name: "linux-fedora"
+      tarball-artifact-path: "_build/meson-dist/$CI_PROJECT_NAME-$CI_COMMIT_TAG.tar.xz"
 
 stages:
   - build
@@ -194,15 +196,3 @@ pages:
       - public
   only:
     - main
-
-
-release-dist:
-  stage: release
-  needs:
-    - job: "linux-fedora"
-      artifacts: true
-  variables:
-    TARBALL_ARTIFACT_PATH: _build/meson-dist/$CI_PROJECT_NAME-$CI_COMMIT_TAG.tar.xz
-  extends: .release-module
-  rules:
-    - if: $CI_COMMIT_TAG
