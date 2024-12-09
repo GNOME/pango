@@ -1,8 +1,15 @@
+include:
+  - project: 'Infrastructure/gnome-release-service-ci-templates'
+    file: 'meson-dist.yml'
+  - project: 'Infrastructure/gnome-release-service-ci-templates'
+    file: 'release-module.yml'
+
 stages:
   - build
   - analysis
   - docs
   - deploy
+  - release
 
 # Common variables
 variables:
@@ -188,3 +195,18 @@ pages:
       - public
   only:
     - main
+
+release-build:
+  image: $FEDORA_IMAGE
+  stage: build
+  extends: .meson-dist
+  rules:
+    - if: $CI_COMMIT_TAG
+
+release-dist:
+  stage: release
+  variables:
+    TARBALL_ARTIFACT_PATH: build/meson-dist/$CI_PROJECT_NAME-$CI_COMMIT_TAG.tar.xz
+  extends: .release-module
+  rules:
+    - if: $CI_COMMIT_TAG
