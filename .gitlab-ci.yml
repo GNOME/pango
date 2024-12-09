@@ -199,9 +199,13 @@ pages:
 release-build:
   image: $FEDORA_IMAGE
   stage: build
-  extends: .meson-dist
   rules:
     - if: $CI_COMMIT_TAG
+  script:
+    - meson subprojects update gi-docgen
+    - meson setup -Ddocumentation=true --force-fallback-for gi-docgen build
+    - meson compile -C build
+    - meson dist -C build --include-subprojects
 
 release-dist:
   stage: release
