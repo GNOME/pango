@@ -95,6 +95,7 @@ vs2019-x64:
   # TODO: Uncomment this when ready to merge.
   # rules:
   #   - if: $CI_PROJECT_NAMESPACE == "GNOME"
+  extends: .only-default
   stage: build
   tags:
     - win32-ps
@@ -165,6 +166,7 @@ macos:
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
 reference:
+  extends: .only-default
   image: $FEDORA_IMAGE
   stage: docs
   needs: []
