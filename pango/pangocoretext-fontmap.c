@@ -267,7 +267,7 @@ ct_font_descriptor_get_traits (CTFontDescriptorRef desc)
    */
   dict = CTFontDescriptorCopyAttribute (desc, kCTFontTraitsAttribute);
   cf_number = (CFNumberRef)CFDictionaryGetValue (dict, kCTFontSymbolicTrait);
-  if (!CFNumberGetValue (cf_number, kCFNumberSInt64Type, &traits))
+  if (!(cf_number && CFNumberGetValue (cf_number, kCFNumberSInt64Type, &traits)))
     traits = 0;
   CFRelease (dict);
 
