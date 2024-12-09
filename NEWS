@@ -1,6 +1,9 @@
+Overview of changes in 1.55.4, 09-12-2024
+=========================================
+- Test release, no changes
+
 Overview of changes in 1.55.3, 09-12-2024
 =========================================
-
 - Test the new release process
 - Update Emoji support to Unicode 16
 - Require GLib 2.70
