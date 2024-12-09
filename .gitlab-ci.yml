@@ -31,9 +31,11 @@ linux-fedora:
   variables:
     EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both"
   script:
+    - git config --global --add safe.directory $CI_PROJECT_DIR
     - meson setup ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} _build
     - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
+    - meson dist -C _build --include-subprojects --no-tests
   artifacts:
     name: "${env:CI_JOB_NAME}-${env:CI_COMMIT_REF_NAME}"
     when: always
@@ -42,6 +44,7 @@ linux-fedora:
         - "${CI_PROJECT_DIR}/_build/meson-logs/testlog.junit.xml"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - "${CI_PROJECT_DIR}/_build/meson-dist/*.tar.xz"
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
