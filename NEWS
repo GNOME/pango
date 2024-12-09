@@ -1,5 +1,10 @@
-Overview of changes in 1.56, xx-xx-xxxx
-=======================================
+Overview of changes in 1.55.2, 09-12-2024
+=========================================
+
+- Test the new release process
+- Update Emoji support to Unicode 16
+- Require GLib 2.70
+- Handle GLib deprecations properly
 
 Overview of changes in 1.55, 26-11-2024
 =======================================
