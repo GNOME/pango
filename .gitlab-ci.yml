@@ -1,6 +1,6 @@
 include:
-  - project: 'Infrastructure/gnome-release-service-ci-templates'
-    file: 'release-module.yml'
+  - project: 'gnome/citemplates'
+    file: 'templates/release-service.yml'
 
 stages:
   - build
