@@ -506,6 +506,65 @@ static PangoVariant
 util_to_pango_variant (IDWriteFont *font)
 {
   PangoVariant variant = PANGO_VARIANT_NORMAL;
+  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
+
+  if (dwrite_items != NULL)
+    {
+      IDWriteFontFace *face = static_cast<IDWriteFontFace *>(_pango_win32_get_dwrite_font_face_from_dwrite_font (font));
+      DWRITE_SCRIPT_ANALYSIS analysis = {0, DWRITE_SCRIPT_SHAPES_DEFAULT};
+      unsigned int num_features;
+      DWRITE_FONT_FEATURE_TAG *feature_tags, tmp[1];
+      HRESULT result;
+      gboolean do_free_tags = FALSE;
+      gboolean is_all_caps = FALSE;
+
+      /*
+       * Do an initial round to try grabbing a single typographic feature; if it fails with ERROR_INSUFFICIENT_BUFFER,
+       * try again with the actual number of features
+       */
+      result = dwrite_items->analyzer2->GetTypographicFeatures (face, analysis, NULL, 1, &num_features, tmp);
+      if (SUCCEEDED (result))
+        feature_tags = tmp;
+      else if (HRESULT_CODE(result) == ERROR_INSUFFICIENT_BUFFER)
+        {
+          feature_tags = g_new0 (DWRITE_FONT_FEATURE_TAG, num_features);
+          result = dwrite_items->analyzer2->GetTypographicFeatures (face, analysis, NULL, num_features, &num_features, feature_tags);
+          do_free_tags = TRUE;
+        }
+      if (SUCCEEDED (result))
+        {
+          for (int i = 0; i < num_features; i++)
+            {
+              if (feature_tags[i] == DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS)
+                variant = is_all_caps ? PANGO_VARIANT_ALL_SMALL_CAPS : PANGO_VARIANT_SMALL_CAPS;
+              else if (feature_tags[i] == DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS_FROM_CAPITALS)
+                {
+                  if (variant == PANGO_VARIANT_SMALL_CAPS)
+                    variant = PANGO_VARIANT_ALL_SMALL_CAPS;
+                  else
+                    is_all_caps = TRUE;
+                }
+              else if (feature_tags[i] == DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS)
+                variant = is_all_caps ? PANGO_VARIANT_ALL_PETITE_CAPS : PANGO_VARIANT_PETITE_CAPS;
+              else if (feature_tags[i] == DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS_FROM_CAPITALS)
+                {
+                  if (variant == PANGO_VARIANT_PETITE_CAPS)
+                    variant = PANGO_VARIANT_ALL_PETITE_CAPS;
+                  else
+                    is_all_caps = TRUE;
+                }
+              else if (feature_tags[i] == DWRITE_FONT_FEATURE_TAG_UNICASE)
+                variant = PANGO_VARIANT_UNICASE;
+              else if (feature_tags[i] == DWRITE_FONT_FEATURE_TAG_TITLING)
+                variant = PANGO_VARIANT_TITLE_CAPS;
+            }
+        }
+
+      if (do_free_tags)
+        g_free (feature_tags);
+
+      face->Release ();
+    }
 
   return variant;
 }
