@@ -574,7 +574,7 @@ if not meson.is_subproject()
 endif
 
 summary('Fontconfig', pango_font_backends.contains('freetype'), section: 'Font backends')
-summary('DirectWrite', pango_font_backends.contains('windows'), section: 'Font backends')
+summary('DirectWrite', pango_font_backends.contains('win32'), section: 'Font backends')
 summary('CoreText', pango_font_backends.contains('quartz'), section: 'Font backends')
 
 summary('Cairo', cairo_dep.found(), section: 'Features')
