@@ -2495,7 +2495,7 @@ _pango_attr_list_has_attributes (const PangoAttrList *list)
  * @list: a `PangoAttrList`
  * @func: (scope call) (closure data): callback function;
  *   returns %TRUE if an attribute should be filtered out
- * @data: (closure): Data to be passed to @func
+ * @data: Data to be passed to @func
  *
  * Given a `PangoAttrList` and callback function, removes
  * any elements of @list for which @func returns %TRUE and
