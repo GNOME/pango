@@ -623,7 +623,7 @@ pango_win32_dwrite_font_check_is_hinted (PangoWin32Font *font)
     {
       UINT32 gasp_tag = DWRITE_MAKE_OPENTYPE_TAG ('g', 'a', 's', 'p');
       UINT32 table_size;
-      const unsigned short *table_data;
+      const unsigned char *table_data;
       void *table_ctx;
       gboolean exists;
 
