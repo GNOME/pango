@@ -5637,7 +5637,7 @@ pango_layout_run_get_extents_and_height (PangoLayoutRun *run,
   if (!run_logical && line_logical)
     run_logical = &logical;
 
-  if (properties.shape_set)
+  if (properties.shape_set && !(run->item->analysis.flags & PANGO_ANALYSIS_FLAG_IS_ELLIPSIS))
     _pango_shape_get_extents (run->item->num_chars,
                               properties.shape_ink_rect,
                               properties.shape_logical_rect,
