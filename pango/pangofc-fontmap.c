@@ -1833,6 +1833,15 @@ is_alias_family (const char *family_name)
   return FALSE;
 }
 
+static int
+compare_font_family_names (const void *a, const void *b)
+{
+  const PangoFcFamily *family_a = *(const PangoFcFamily **)a;
+  const PangoFcFamily *family_b = *(const PangoFcFamily **)b;
+  
+  return g_strcmp0 (family_a->family_name, family_b->family_name);
+}
+
 static void
 ensure_families (PangoFcFontMap *fcfontmap)
 {
@@ -1906,10 +1915,13 @@ ensure_families (PangoFcFontMap *fcfontmap)
       priv->families[count++] = create_family (fcfontmap, "Serif", FC_PROPORTIONAL);
       priv->families[count++] = create_family (fcfontmap, "Monospace", FC_MONO);
       priv->families[count++] = create_family (fcfontmap, "System-ui", FC_PROPORTIONAL);
+      
+      qsort (priv->families, count, sizeof (PangoFcFamily *), compare_font_family_names);
 
       priv->n_families = count;
     }
 }
+
 
 static void
 pango_fc_font_map_list_families (PangoFontMap      *fontmap,
