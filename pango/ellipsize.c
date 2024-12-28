@@ -326,16 +326,37 @@ shape_ellipsis (EllipsizeState *state)
       state->ellipsis_run->item = NULL;
     }
 
-  /* Create an attribute list
+  /* Create an attribute list by copying font attributes,
+   * leaving out things that could be problematic like shapes,
+   * or super/subscripts
    */
   run_attrs = pango_attr_iterator_get_attrs (state->gap_start_attr);
   for (l = run_attrs; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
-      attr->start_index = 0;
-      attr->end_index = G_MAXINT;
 
-      pango_attr_list_insert (&attrs, attr);
+      switch ((guint) attr->klass->type)
+        {
+        case PANGO_ATTR_LANGUAGE:
+        case PANGO_ATTR_FAMILY:
+        case PANGO_ATTR_STYLE:
+        case PANGO_ATTR_WEIGHT:
+        case PANGO_ATTR_VARIANT:
+        case PANGO_ATTR_STRETCH:
+        case PANGO_ATTR_SIZE:
+        case PANGO_ATTR_FONT_DESC:
+        case PANGO_ATTR_SCALE:
+        case PANGO_ATTR_LETTER_SPACING:
+        case PANGO_ATTR_ABSOLUTE_SIZE:
+          attr->start_index = 0;
+          attr->end_index = G_MAXINT;
+          pango_attr_list_insert (&attrs, attr);
+          break;
+
+        default:
+          pango_attribute_destroy (attr);
+          break;
+        }
     }
 
   g_slist_free (run_attrs);
