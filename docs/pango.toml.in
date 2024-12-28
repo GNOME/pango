@@ -64,6 +64,7 @@ content_files = [
   "pango_markup.md",
   "pango_fonts.md",
   "pango_bidi.md",
+  "tools.md",
 ]
 
 content_images = [

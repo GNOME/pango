@@ -208,3 +208,59 @@ if fontconfig_dep.found()
     install_dir: docs_dir,
   )
 endif
+
+rst2man = find_program('rst2man', 'rst2man.py', required: get_option('man-pages'))
+rst2html5 = find_program('rst2html5', 'rst2html5.py', required: get_option('documentation'))
+
+rst_files = [
+  [ 'pango-view', '1' ],
+  [ 'pango-list', '1' ],
+  [ 'pango-segmentation', '1' ],
+]
+
+rst2x_flags = [
+  '--syntax-highlight=none',
+]
+
+if get_option('man-pages')
+
+  foreach rst: rst_files
+    man_name = rst[0]
+    man_section = rst.get(1, '1')
+
+    custom_target('man-@0@'.format(man_name),
+      input: '@0@.rst'.format(man_name),
+      output: '@0@.@1@'.format(man_name, man_section),
+      command: [
+        rst2man,
+        rst2x_flags,
+        '@INPUT@',
+      ],
+      capture: true,
+      install: true,
+      install_dir: get_option('mandir') / 'man@0@'.format(man_section),
+      install_tag: 'doc',
+    )
+  endforeach
+endif
+
+if get_option('documentation')
+
+  foreach rst: rst_files
+    man_name = rst[0]
+
+    custom_target(
+      input: '@0@.rst'.format(man_name),
+      output: '@0@.html'.format(man_name),
+      command: [
+        rst2html5,
+        rst2x_flags,
+        '@INPUT@',
+      ],
+      capture: true,
+      install: true,
+      install_dir: docs_dir / 'Pango',
+      install_tag: 'doc',
+    )
+  endforeach
+endif
