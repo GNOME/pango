@@ -261,6 +261,8 @@ PANGO_AVAILABLE_IN_1_6
 PangoEllipsizeMode pango_layout_get_ellipsize (PangoLayout        *layout);
 PANGO_AVAILABLE_IN_1_16
 gboolean           pango_layout_is_ellipsized (PangoLayout        *layout);
+PANGO_AVAILABLE_IN_1_56
+gboolean           pango_layout_is_truncated  (PangoLayout        *layout);
 
 PANGO_AVAILABLE_IN_1_16
 int      pango_layout_get_unknown_glyphs_count (PangoLayout    *layout);
