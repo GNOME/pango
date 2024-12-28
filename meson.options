@@ -9,6 +9,11 @@ option('gtk_doc',
        description: 'Build API reference',
        deprecated: 'documentation')
 
+option('man-pages',
+       type: 'boolean',
+       value: false,
+       description : 'Build man pages for installed tools')
+
 option('introspection',
        type: 'feature',
        value: 'auto',
