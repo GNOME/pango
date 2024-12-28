@@ -49,13 +49,9 @@
 PangoBidiType
 pango_bidi_type_for_unichar (gunichar ch)
 {
-  FriBidiCharType fribidi_ch_type;
-
   G_STATIC_ASSERT (sizeof (FriBidiChar) == sizeof (gunichar));
 
-  fribidi_ch_type = fribidi_get_bidi_type (ch);
-
-  switch (fribidi_ch_type)
+  switch ((guint) fribidi_get_bidi_type (ch))
     {
     case FRIBIDI_TYPE_LTR:  return PANGO_BIDI_TYPE_L;
     case FRIBIDI_TYPE_LRE:  return PANGO_BIDI_TYPE_LRE;
@@ -80,7 +76,6 @@ pango_bidi_type_for_unichar (gunichar ch)
     case FRIBIDI_TYPE_RLI:  return PANGO_BIDI_TYPE_RLI;
     case FRIBIDI_TYPE_FSI:  return PANGO_BIDI_TYPE_FSI;
     case FRIBIDI_TYPE_PDI:  return PANGO_BIDI_TYPE_PDI;
-    case _FRIBIDI_TYPE_SENTINEL:
     default:
       return PANGO_BIDI_TYPE_ON;
     }
