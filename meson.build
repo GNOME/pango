@@ -289,18 +289,7 @@ fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
 
 if fontconfig_dep.found()
   pango_deps += fontconfig_dep
-
-  if fontconfig_dep.version().version_compare('>=2.12.92')
-    pango_conf.set('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE', 1)
-  endif
 endif
-
-if pango_conf.has('HAVE_FCWEIGHTFROMOPENTYPEDOUBLE')
-  res = 'YES'
-else
-  res = 'NO'
-endif
-message('fontconfig has FcWeightFromOpenTypeDouble: ' + res)
 
 # If option is 'auto' or 'enabled' it is not required to find freetype2 on the
 # system because a fallback is done at the end. Override 'disabled' option on
