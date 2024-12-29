@@ -332,6 +332,8 @@ pango_cairo_font_map_reload_font (PangoFontMap *fontmap,
       pango_cairo_context_set_font_options (context, options);
     }
 
+  fprintf (stderr, "pango_cairo_font_map_reload_font: variations=%s\n", variations);
+
   if (variations)
     pango_font_description_set_variations_static (desc, variations);
 

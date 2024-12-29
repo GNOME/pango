@@ -1025,6 +1025,9 @@ pango_win32_font_map_real_load_font (PangoFontMap               *fontmap,
   else
     language = NULL;
 
+  fprintf (stderr, "pango_win32_font_map_real_load_font: variations=%s\n",
+           pango_font_description_get_variations (description));
+
   fontset = pango_font_map_load_fontset (fontmap, context,
                                          description, language);
 
@@ -1100,6 +1103,9 @@ pango_win32_font_map_load_font (PangoFontMap               *fontmap,
     }
   
   g_strfreev (families);
+
+  fprintf (stderr, "pango_win32_font_map_load_font: variations=%s\n",
+           pango_font_description_get_variations (description));
 
   if (best_match)
     result = PANGO_WIN32_FONT_MAP_GET_CLASS (win32fontmap)->find_font (win32fontmap, context,

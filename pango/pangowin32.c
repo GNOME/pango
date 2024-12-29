@@ -896,6 +896,8 @@ pango_win32_font_describe (PangoFont *font)
   size = (int) (0.5 + win32font->size * PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution / PANGO_SCALE);
   pango_font_description_set_size (desc, size);
 
+  fprintf (stderr, "pango_win32_font_describe: variations=%s\n", win32font->variations);
+
   if (win32font->variations)
     pango_font_description_set_variations (desc, win32font->variations);
 

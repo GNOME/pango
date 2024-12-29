@@ -324,6 +324,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   variations = pango_font_description_get_variations (desc);
   if (variations)
     {
+      fprintf (stderr, "_pango_cairo_win32_font_new: variations=%s\n", variations);
       win32font->variations = g_strdup (variations);
       cairo_font_options_set_variations (options2, variations);
     }
