@@ -1,8 +1,10 @@
 [wrap-git]
 directory = cairo
-url = https://gitlab.freedesktop.org/cairo/cairo.git
-push-url = ssh://git@gitlab.freedesktop.org:cairo/cairo.git
-revision = master
+#url = https://gitlab.freedesktop.org/cairo/cairo.git
+#push-url = ssh://git@gitlab.freedesktop.org:cairo/cairo.git
+#revision = master
+url = https://gitlab.freedesktop.org/lb90/cairo.git
+revision = dwrite-font-variations
 depth = 1
 
 [provide]
