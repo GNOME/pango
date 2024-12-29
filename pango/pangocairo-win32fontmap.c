@@ -112,11 +112,16 @@ pango_cairo_win32_font_map_class_init (PangoCairoWin32FontMapClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   PangoFontMapClass *fontmap_class = PANGO_FONT_MAP_CLASS (class);
   PangoWin32FontMapClass *win32fontmap_class = PANGO_WIN32_FONT_MAP_CLASS (class);
+  PangoFontMapClassPrivate *pclass;
 
   gobject_class->finalize  = pango_cairo_win32_font_map_finalize;
   fontmap_class->get_serial = pango_cairo_win32_font_map_get_serial;
   fontmap_class->changed = pango_cairo_win32_font_map_changed;
   win32fontmap_class->find_font = pango_cairo_win32_font_map_find_font;
+
+  pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_MAP);
+
+  pclass->reload_font = pango_cairo_font_map_reload_font;
 }
 
 static void
