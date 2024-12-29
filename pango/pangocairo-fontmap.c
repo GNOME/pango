@@ -301,3 +301,45 @@ pango_cairo_font_map_get_font_type (PangoCairoFontMap *fontmap)
 
   return (* PANGO_CAIRO_FONT_MAP_GET_IFACE (fontmap)->get_font_type) (fontmap);
 }
+
+PangoFont *
+pango_cairo_font_map_reload_font (PangoFontMap *fontmap,
+                                  PangoFont    *font,
+                                  double        scale,
+                                  PangoContext *context,
+                                  const char   *variations)
+{
+  PangoFontDescription *desc;
+  PangoContext *freeme = NULL;
+  PangoFont *scaled;
+
+  desc = pango_font_describe_with_absolute_size (font);
+
+  if (scale != 1.0)
+    {
+      int size = pango_font_description_get_size (desc);
+
+      pango_font_description_set_absolute_size (desc, size * scale);
+    }
+
+  if (!context)
+    {
+      const cairo_font_options_t *options;
+
+      freeme = context = pango_font_map_create_context (fontmap);
+
+      options = pango_cairo_font_get_font_options ((PangoCairoFont *) font);
+      pango_cairo_context_set_font_options (context, options);
+    }
+
+  if (variations)
+    pango_font_description_set_variations_static (desc, variations);
+
+  scaled = pango_font_map_load_font (fontmap, context, desc);
+
+  g_clear_object (&freeme);
+
+  pango_font_description_free (desc);
+
+  return scaled;
+}
