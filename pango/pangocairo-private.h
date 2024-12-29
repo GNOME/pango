@@ -134,6 +134,12 @@ GType pango_cairo_renderer_get_type    (void) G_GNUC_CONST;
 
 const cairo_font_options_t *_pango_cairo_context_get_merged_font_options (PangoContext *context);
 
+const cairo_font_options_t *pango_cairo_font_get_font_options (PangoCairoFont *cfont);
+PangoFont *                 pango_cairo_font_map_reload_font  (PangoFontMap   *fontmap,
+                                                               PangoFont      *font,
+                                                               double          scale,
+                                                               PangoContext   *context,
+                                                               const char     *variations);
 
 G_END_DECLS
 
