@@ -273,6 +273,9 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   if (!pango_font_description_get_size_is_absolute (desc))
     size *= dpi / 72.;
 
+  variations = pango_font_description_get_variations (desc);
+  fprintf (stderr, "_pango_cairo_win32_font_new: variations=%s\n", variations);
+
 #ifdef USE_FACE_CACHED_FONTS
   win32fontmap = PANGO_WIN32_FONT_MAP (cwfontmap);
 
@@ -283,7 +286,8 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
       cwfont = PANGO_CAIRO_WIN32_FONT (win32font);
 
       if (ABS (win32font->size - size * PANGO_SCALE) < 2 &&
-          cairo_font_options_equal (options, pango_cairo_font_private_get_font_options (&cwfont->cf_priv)))
+          cairo_font_options_equal (options, pango_cairo_font_private_get_font_options (&cwfont->cf_priv)) &&
+          g_strcmp0 (variations, win32font->variations) == 0)
 	{
 	  g_object_ref (win32font);
 	  if (win32font->in_cache)
@@ -321,10 +325,8 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   else
     options2 = cairo_font_options_create ();
 
-  variations = pango_font_description_get_variations (desc);
   if (variations)
     {
-      fprintf (stderr, "_pango_cairo_win32_font_new: variations=%s\n", variations);
       win32font->variations = g_strdup (variations);
       cairo_font_options_set_variations (options2, variations);
     }
