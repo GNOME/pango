@@ -161,6 +161,19 @@ pango_cairo_font_get_scaled_font (PangoCairoFont *cfont)
   return _pango_cairo_font_private_get_scaled_font (cf_priv);
 }
 
+const cairo_font_options_t *
+pango_cairo_font_get_font_options (PangoCairoFont *cfont)
+{
+  PangoCairoFontPrivate *cf_priv;
+
+  if (G_UNLIKELY (!cfont))
+    return NULL;
+
+  cf_priv = PANGO_CAIRO_FONT_PRIVATE (cfont);
+
+  return pango_cairo_font_private_get_font_options (cf_priv);
+}
+
 /**
  * _pango_cairo_font_install:
  * @font: a `PangoCairoFont`
