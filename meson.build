@@ -59,8 +59,9 @@ endif
 
 # Keep in sync with glib_req_version
 add_project_arguments([
-    '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_70',
-    '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_70',
+    '-DG_LOG_USE_STRUCTURED=1',
+    '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_80',
+    '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_80',
   ],
   language: 'c'
 )
@@ -213,13 +214,13 @@ endif
 # Dependencies
 pango_deps = []
 
-glib_req_version = '>= 2.70'
+glib_req_version = '>= 2.80'
 fribidi_req_version = '>= 1.0.6'
 libthai_req_version = '>= 0.1.9'
 harfbuzz_req_version = '>= 8.4.0'
 fontconfig_req_version = '>= 2.15.0'
 xft_req_version = '>= 2.0.0'
-cairo_req_version = '>= 1.12.10'
+cairo_req_version = '>= 1.18.0'
 
 # libm
 mathlib_dep = cc.find_library('m', required: false)
