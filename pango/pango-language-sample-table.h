@@ -520,9 +520,9 @@ LANGUAGE(
 	)
 LANGUAGE(
 	 pt-br	/* Brazilian Portuguese */,
-	 WP-PANG,
-	 "À noite, vovô Kowalsky vê o ímã cair no pé do pingüim queixoso e vovó põe açúcar no chá de tâmaras do jabuti feliz."
-	 /* At night, grandpa Kowalsky sees the magnet falling in the complaining penguin's foot and grandma puts sugar in the happy tortoise's date tea.*/
+	 MISC, /* https://gitlab.gnome.org/GNOME/pango/-/issues/547 */
+         "Vejo galã sexy pôr quinze kiwis à força em baú achatado."
+         /* I see a sexy hunk forcefully stuff fifteen kiwis in a shallow trunk */
 	)
 LANGUAGE(
 	 ro	/* Romanian */,
