@@ -450,7 +450,7 @@ update_ellipsis_shape (EllipsizeState *state)
    * time we back up we need to go forward to find the new position. To make
    * this not utterly slow, we cache an iterator at the start of the line
    */
-  if (!state->line_start_attr)
+  if (!state->line_start_attr && state->n_runs > 0)
     {
       state->line_start_attr = pango_attr_list_get_iterator (state->attrs);
       advance_iterator_to (state->line_start_attr, state->run_info[0].run->item->offset);
@@ -473,7 +473,7 @@ update_ellipsis_shape (EllipsizeState *state)
 
   /* Check whether we need to recompute the ellipsis because of new font attributes
    */
-  if (!state->gap_start_attr)
+  if (!state->gap_start_attr && state->n_runs > 0)
     {
       state->gap_start_attr = pango_attr_iterator_copy (state->line_start_attr);
       advance_iterator_to (state->gap_start_attr,
@@ -583,6 +583,40 @@ find_initial_span (EllipsizeState *state)
       line_iter_next_cluster (state, &state->gap_end_iter);
       state->gap_end_x += get_cluster_width (&state->gap_end_iter);
     }
+
+  update_ellipsis_shape (state);
+}
+
+static void
+fabricate_initial_empty_span (EllipsizeState *state)
+{
+  switch (state->layout->ellipsize)
+    {
+    case PANGO_ELLIPSIZE_NONE:
+    default:
+      g_assert_not_reached ();
+    case PANGO_ELLIPSIZE_START:
+      state->gap_center = 0;
+      state->gap_start_iter.run_index = 0;
+      pango_glyph_item_iter_init_start (&state->gap_start_iter.run_iter,
+                                        state->run_info[0].run,
+                                        state->layout->text);
+      break;
+    case PANGO_ELLIPSIZE_MIDDLE:
+      state->gap_center = state->total_width / 2;
+      // TODO...
+      break;
+    case PANGO_ELLIPSIZE_END:
+      state->gap_center = state->total_width;
+      state->gap_start_iter.run_index = state->n_runs - 1;
+      pango_glyph_item_iter_init_end (&state->gap_start_iter.run_iter,
+                                      state->run_info[state->n_runs - 1].run,
+                                      state->layout->text);
+      break;
+    }
+
+  state->gap_start_x = state->gap_end_x = state->gap_center;
+  state->gap_end_iter = state->gap_start_iter;
 
   update_ellipsis_shape (state);
 }
@@ -758,6 +792,7 @@ current_width (EllipsizeState *state)
  * @line: a `PangoLayoutLine`
  * @attrs: Attributes being used for itemization/shaping
  * @shape_flags: Flags to use when shaping
+ * @force_ellipsize: Ellipsize even if the line fits as-is
  *
  * Given a `PangoLayoutLine` with the runs still in logical order, ellipsize
  * it according the layout's policy to fit within the set width of the layout.
@@ -768,27 +803,41 @@ gboolean
 _pango_layout_line_ellipsize (PangoLayoutLine *line,
 			      PangoAttrList   *attrs,
                               PangoShapeFlags  shape_flags,
-			      int              goal_width)
+			      int              goal_width,
+                              gboolean         force_ellipsize)
 {
   EllipsizeState state;
   gboolean is_ellipsized = FALSE;
+  int extra_width;
 
-  g_return_val_if_fail (line->layout->ellipsize != PANGO_ELLIPSIZE_NONE && goal_width >= 0, is_ellipsized);
+  g_return_val_if_fail (line->layout->ellipsize != PANGO_ELLIPSIZE_NONE, FALSE);
+  g_return_val_if_fail (goal_width >= 0 || force_ellipsize, FALSE);
 
   init_state (&state, line, attrs, shape_flags);
 
-  if (state.total_width <= goal_width)
+  if (state.total_width <= goal_width && !force_ellipsize)
     goto out;
+  else if (force_ellipsize)
+    {
+      fabricate_initial_empty_span (&state);
+      if (goal_width < 0 || current_width (&state) <= goal_width)
+        goto found;
+    }
 
   find_initial_span (&state);
 
-  while (current_width (&state) > goal_width)
+  while (goal_width >= 0 && current_width (&state) > goal_width)
     {
       if (!remove_one_span (&state))
 	break;
     }
 
-  fixup_ellipsis_run (&state, MAX (goal_width - current_width (&state), 0));
+ found:
+  if (goal_width >= 0)
+    extra_width = MAX (goal_width - current_width (&state), 0);
+  else
+    extra_width = 0;
+  fixup_ellipsis_run (&state, extra_width);
 
   g_slist_free (line->runs);
   line->runs = get_run_list (&state);

@@ -148,7 +148,8 @@ struct _PangoLayoutIter
 gboolean _pango_layout_line_ellipsize (PangoLayoutLine *line,
 				       PangoAttrList   *attrs,
                                        PangoShapeFlags  shape_flags,
-				       int              goal_width);
+				       int              goal_width,
+                                       gboolean         force_ellipsize);
 
 void     _pango_layout_get_iter (PangoLayout     *layout,
                                  PangoLayoutIter *iter);
