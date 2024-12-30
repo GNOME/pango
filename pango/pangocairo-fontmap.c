@@ -324,12 +324,14 @@ pango_cairo_font_map_reload_font (PangoFontMap *fontmap,
 
   if (!context)
     {
-      const cairo_font_options_t *options;
+      cairo_font_options_t *options;
 
       freeme = context = pango_font_map_create_context (fontmap);
 
-      options = pango_cairo_font_get_font_options ((PangoCairoFont *) font);
+      options = cairo_font_options_create ();
+      pango_cairo_font_get_font_options ((PangoCairoFont *) font, options);
       pango_cairo_context_set_font_options (context, options);
+      cairo_font_options_destroy (options);
     }
 
   if (variations)

@@ -161,17 +161,18 @@ pango_cairo_font_get_scaled_font (PangoCairoFont *cfont)
   return _pango_cairo_font_private_get_scaled_font (cf_priv);
 }
 
-const cairo_font_options_t *
-pango_cairo_font_get_font_options (PangoCairoFont *cfont)
+void
+pango_cairo_font_get_font_options (PangoCairoFont       *cfont,
+                                   cairo_font_options_t *options)
 {
   PangoCairoFontPrivate *cf_priv;
 
   if (G_UNLIKELY (!cfont))
-    return NULL;
+    return;
 
   cf_priv = PANGO_CAIRO_FONT_PRIVATE (cfont);
 
-  return pango_cairo_font_private_get_font_options (cf_priv);
+  pango_cairo_font_private_get_font_options (cf_priv, options);
 }
 
 /**
@@ -648,16 +649,14 @@ _pango_cairo_font_private_is_metrics_hinted (PangoCairoFontPrivate *cf_priv)
   return cf_priv->is_hinted;
 }
 
-cairo_font_options_t *
-pango_cairo_font_private_get_font_options (PangoCairoFontPrivate *cf_priv)
+void
+pango_cairo_font_private_get_font_options (PangoCairoFontPrivate *cf_priv,
+                                           cairo_font_options_t  *options)
 {
-  if (G_UNLIKELY (cf_priv->data == NULL))
-    {
-      /* we have tried to create and failed before */
-      return NULL;
-    }
-
-  return cf_priv->data->options;
+  if (cf_priv->scaled_font)
+    cairo_scaled_font_get_font_options (cf_priv->scaled_font, options);
+  else if (cf_priv->data)
+    return cairo_font_options_merge (options, cf_priv->data->options);
 }
 
 static void
