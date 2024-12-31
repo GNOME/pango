@@ -7,13 +7,13 @@
  * on file with this header:
  *
  * # emoji-data-14.0.0.txt
- * # Date: 2021-08-26, 17:22:22 GMT
- * # © 2021 Unicode®, Inc.
+ * # Date: 2023-02-01, 02:22:54 GMT
+ * # © 2023 Unicode®, Inc.
  * # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
  * # For terms of use, see http://www.unicode.org/terms_of_use.html
  * #
  * # Emoji Data for UTS #51
- * # Used with Emoji Version 14.0 and subsequent minor revisions (if any)
+ * # Used with Emoji Version 15.1 and subsequent minor revisions (if any)
  * #
  * # For documentation and usage, see http://www.unicode.org/reports/tr51
  */
