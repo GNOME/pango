@@ -1070,7 +1070,7 @@ default_break (const char     *text,
             }
 
           if (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-              break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS)
+              break_type == G_UNICODE_BREAK_CLOSE_PARENTHESIS)
             {
               if (prev_LB_type == LB_Numeric)
                 LB_type = LB_Numeric_Close;
@@ -1107,7 +1107,7 @@ default_break (const char     *text,
               !_pango2_is_EastAsianWide (wc))
             break_op = BREAK_PROHIBITED;
 
-          if (prev_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS &&
+          if (prev_break_type == G_UNICODE_BREAK_CLOSE_PARENTHESIS &&
               !_pango2_is_EastAsianWide (prev_wc)&&
               (break_type == G_UNICODE_BREAK_ALPHABETIC ||
                break_type == G_UNICODE_BREAK_HEBREW_LETTER ||
@@ -1206,7 +1206,7 @@ default_break (const char     *text,
                break_type == G_UNICODE_BREAK_SYMBOL ||
                break_type == G_UNICODE_BREAK_INFIX_SEPARATOR ||
                break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-               break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS))
+               break_type == G_UNICODE_BREAK_CLOSE_PARENTHESIS))
             break_op = BREAK_PROHIBITED;
 
           if ((prev_LB_type == LB_Numeric ||
@@ -1289,7 +1289,7 @@ default_break (const char     *text,
             break_op = BREAK_PROHIBITED; /* Rule LB17 */
 
           if ((row_break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-               row_break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS) &&
+               row_break_type == G_UNICODE_BREAK_CLOSE_PARENTHESIS) &&
               break_type == G_UNICODE_BREAK_NON_STARTER)
             break_op = BREAK_PROHIBITED; /* Rule LB16 */
 
@@ -1306,7 +1306,7 @@ default_break (const char     *text,
 
           if (prev_break_type != G_UNICODE_BREAK_NUMERIC &&
               (break_type == G_UNICODE_BREAK_CLOSE_PUNCTUATION ||
-               break_type == G_UNICODE_BREAK_CLOSE_PARANTHESIS ||
+               break_type == G_UNICODE_BREAK_CLOSE_PARENTHESIS ||
                break_type == G_UNICODE_BREAK_INFIX_SEPARATOR ||
                break_type == G_UNICODE_BREAK_SYMBOL))
             break_op = BREAK_PROHIBITED;
