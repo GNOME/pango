@@ -379,7 +379,6 @@ summary('Debugging', get_option('debug'), section: 'Build')
 summary('Optimization', get_option('optimization'), section: 'Build')
 summary('Introspection', get_option('introspection').enabled(), section: 'Build')
 summary('Documentation', get_option('documentation'), section: 'Build')
-summary('Install tests', get_option('install-tests'), section: 'Build')
 
 summary('prefix', pango_prefix, section: 'Directories')
 summary('includedir', pango_includedir, section: 'Directories')
