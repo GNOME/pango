@@ -97,7 +97,7 @@ static emoji_text_iter_t
 scan_emoji_presentation (emoji_text_iter_t p,
 const emoji_text_iter_t pe,
 EmojiPresentation *state,
-gboolean *explicit)
+bool *explicit)
 {
 	emoji_text_iter_t ts, te;
 	const emoji_text_iter_t eof = pe;

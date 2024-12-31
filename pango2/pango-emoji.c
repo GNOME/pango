@@ -48,6 +48,7 @@
 #include "config.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "pango-types.h"
 #include "pango-emoji-private.h"
@@ -201,8 +202,6 @@ _pango2_EmojiSegmentationCategory (gunichar codepoint)
   return kMaxEmojiScannerCategory;
 }
 
-typedef gboolean bool;
-enum { false = FALSE, true = TRUE };
 typedef unsigned char *emoji_text_iter_t;
 
 #pragma GCC diagnostic push
@@ -256,7 +255,7 @@ pango2_emoji_iter_next (Pango2EmojiIter *iter)
 {
   unsigned int old_cursor, cursor;
   EmojiPresentation state;
-  gboolean explicit;
+  bool explicit;
 
   if (iter->end >= iter->text_end)
     return FALSE;
