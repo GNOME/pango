@@ -126,6 +126,16 @@ test_parse (gconstpointer d)
   test_file (filename, string);
 
   diff = diff_with_file (expected_file, string->str, string->len, &error);
+  if (g_error_matches (error, G_SPAWN_ERROR, G_SPAWN_ERROR_NOENT))
+    {
+      g_test_skip ("diff binary not found");
+
+      g_string_free (string, TRUE);
+      g_free (expected_file);
+
+      return;
+    }
+
   g_assert_no_error (error);
 
   if (diff && diff[0])
@@ -238,6 +248,16 @@ test_parse_incrementally (gconstpointer d)
   else
     {
       diff = diff_with_file (expected_file, string->str, string->len, &error);
+      if (g_error_matches (error, G_SPAWN_ERROR, G_SPAWN_ERROR_NOENT))
+        {
+          g_test_skip ("diff binary not found");
+
+          g_string_free (string, TRUE);
+          g_free (expected_file);
+
+          return;
+        }
+
       g_assert_no_error (error);
 
       if (diff && diff[0])
