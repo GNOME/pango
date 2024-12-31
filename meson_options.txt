@@ -14,7 +14,7 @@ option('install-tests',
 option('sysprof',
        type : 'feature',
        value : 'disabled',
-       description : 'include tracing support for sysprof')
+       description : 'Include tracing support for sysprof')
 option('libthai',
        type : 'feature',
        value : 'auto',
