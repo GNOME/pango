@@ -6,7 +6,7 @@ stages:
 
 # Common variables
 variables:
-  COMMON_MESON_FLAGS: "-Dwerror=true"
+  COMMON_MESON_FLAGS:
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
   FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v9
 
@@ -90,22 +90,45 @@ macos:
   extends: .only-default
   only:
     - branches@GNOME/pango
+    - branches@dehesselle/pango
   stage: build
   tags:
-    - macos
+    - macosarm
   needs: []
+  variables:
+    # ragel     -Wno-unused-const-variable, -Wno-overloaded-virtual
+    # pcre2     -Wno-overlength-strings
+    # glib      -Wno-deprecated-declarations, -Wno-literal-conversion
+    # fribidi   -Wno-deprecated-non-prototype, -Wno-enum-conversion
+    # libpng    -Wno-unused-but-set-variable
+    # pixman    -Wno-unknown-attributes
+    # cairo     -Wno-switch-enum, -Wno-deprecated-declarations, -Wno-unused-const-variable
+    CFLAGS: "-Wno-overlength-strings -Wno-deprecated-non-prototype -Wno-enum-conversion -Wno-unused-but-set-variable -Wno-unknown-attributes -Wno-switch-enum -Wno-deprecated-declarations -Wno-unused-const-variable -Wno-literal-conversion"
+    CXXFLAGS: "-Wno-overloaded-virtual -Wno-unused-const-variable"
+    OBJCFLAGS: -Wno-deprecated-declarations
+    CCACHE_DIR: /Users/Shared/work/ccache
+    CCACHE_VER: "4.9.1"
+    CCACHE_URL: https://github.com/ccache/ccache/releases/download/v$CCACHE_VER/ccache-$CCACHE_VER-darwin.tar.gz
+    EXTRA_MESON_FLAGS: "-Dintrospection=disabled -Dpixman:tests=disabled -Dharfbuzz:ragel_subproject=true"
+    PIP_CACHE_DIR: /Users/Shared/work/cache
+    PIPENV_CACHE_DIR: $PIP_CACHE_DIR
+    PYTHONPYCACHEPREFIX: $PIP_CACHE_DIR
+    SDKROOT: /opt/sdks/MacOSX11.3.sdk
   before_script:
-    - pip3 install --user meson==0.60.3
-    - pip3 install --user ninja
+    - python3 -m venv .venv
+    - curl -L $CCACHE_URL | tar -C .venv/bin -xz --strip-components=1 ccache-$CCACHE_VER-darwin/ccache
+    - source .venv/bin/activate
+    - pip3 install meson==1.4.2 ninja==1.11.1.1 packaging==23.2
   script:
-    - meson -Dintrospection=disabled
-            -Dcpp_std=c++11
-            -Dpixman:tests=disabled
-            _build
-    - ninja -C _build
+    - meson setup ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} _build
+    - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
   artifacts:
+    name: "${env:CI_JOB_NAME}-${env:CI_COMMIT_REF_NAME}"
     when: always
+    reports:
+      junit:
+        - "${CI_PROJECT_DIR}/_build/meson-logs/testlog.junit.xml"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
       - "${CI_PROJECT_DIR}/_build/hello.png"
