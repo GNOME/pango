@@ -248,12 +248,25 @@ get_pair_index (gunichar ch)
   return -1;
 }
 
+static gboolean
+is_cluster_extender (gunichar ch)
+{
+  GUnicodeType type = g_unichar_type (ch);
+  return (type >= G_UNICODE_SPACING_MARK && type <= G_UNICODE_NON_SPACING_MARK) ||
+        (ch >= 0x200C && ch <= 0x200D) ||    /* ZWJ, ZWNJ */
+        (ch >= 0xFF9E && ch <= 0xFF9F) ||    /* katakana sound marks */
+        (ch >= 0x1F3FB && ch <= 0x1F3FF) ||  /* fitzpatrick skin tone modifiers */
+        (ch >= 0xE0020 && ch <= 0xE007F);    /* emoji (flag) tag characters */
+}
+
 /* duplicated in pango-language.c */
 #define REAL_SCRIPT(script) \
   ((script) > G_UNICODE_SCRIPT_INHERITED && (script) != G_UNICODE_SCRIPT_UNKNOWN)
 
-#define SAME_SCRIPT(script1, script2) \
-  (!REAL_SCRIPT (script1) || !REAL_SCRIPT (script2) || (script1) == (script2))
+#define SAME_SCRIPT(script1, script2, ch) \
+  (!REAL_SCRIPT (script1) || !REAL_SCRIPT (script2) || \
+  (script1) == (script2) || \
+  is_cluster_extender (ch))
 
 #define IS_OPEN(pair_index) (((pair_index) & 1) == 0)
 
@@ -332,7 +345,7 @@ pango2_script_iter_next (Pango2ScriptIter *iter)
             }
         }
 
-      if (SAME_SCRIPT (iter->script_code, sc))
+      if (SAME_SCRIPT (iter->script_code, sc, ch))
         {
           if (!REAL_SCRIPT (iter->script_code) && REAL_SCRIPT (sc))
             {
