@@ -502,7 +502,7 @@ get_glyph_extents_missing (Pango2HbFont    *self,
     {
       ink_rect->x = PANGO2_SCALE * hbi->pad_x;
       ink_rect->y = PANGO2_SCALE * (hbi->box_descent - hbi->box_height);
-      ink_rect->width = PANGO2_SCALE * (3 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
+      ink_rect->width = PANGO2_SCALE * (4 * hbi->pad_x + cols * (hbi->digit_width + hbi->pad_x));
       ink_rect->height = PANGO2_SCALE * hbi->box_height;
     }
 
