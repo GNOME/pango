@@ -358,15 +358,7 @@ _pango2_cairo_font_private_get_hex_box_info (Pango2CairoFontPrivate *cf_priv)
     rows = 2;
     mini_size = size / 2.2;
     if (is_hinted)
-      {
-        mini_size = HINT_Y (mini_size);
-
-        if (mini_size < 6.0)
-          {
-            rows = 1;
-            mini_size = MIN (MAX (size - 1, 0), 6.0);
-          }
-      }
+      mini_size = HINT_Y (mini_size);
 
     pango2_font_description_set_absolute_size (desc, pango2_units_from_double (mini_size));
 
