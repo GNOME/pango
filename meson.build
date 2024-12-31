@@ -60,6 +60,10 @@ cc = meson.get_compiler('c')
 cxx = meson.get_compiler('cpp')
 host_system = host_machine.system()
 
+if host_system == 'windows'
+  add_project_arguments('-D_WIN32_WINNT=_WIN32_WINNT_WIN10', language: 'c')
+endif
+
 # Compiler and linker flags
 common_cflags = []
 common_cppflags = []
