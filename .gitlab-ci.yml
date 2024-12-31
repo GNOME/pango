@@ -24,10 +24,8 @@ linux-fedora:
   variables:
     EXTRA_MESON_FLAGS: "--buildtype=debug --default-library=both -Dharfbuzz:docs=disabled -Dharfbuzz:werror=false"
   script:
-    - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS}
-            _build
-    - meson _build
-    - ninja -C _build
+    - meson setup ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} _build
+    - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
   artifacts:
     when: always
@@ -49,8 +47,8 @@ asan-build:
   needs: []
   variables:
   script:
-    - CC=clang meson --buildtype=debugoptimized -Db_sanitize=address -Db_lundef=false -Dintrospection=disabled _build
-    - ninja -C _build
+    - CC=clang meson setup --buildtype=debugoptimized -Db_sanitize=address -Db_lundef=false -Dintrospection=disabled _build
+    - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
   artifacts:
     when: always
@@ -141,8 +139,8 @@ reference:
   variables:
     EXTRA_MESON_FLAGS: ""
   script:
-    - meson ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} -Ddocumentation=true _build
-    - ninja -C _build
+    - meson setup ${COMMON_MESON_FLAGS} ${EXTRA_MESON_FLAGS} -Ddocumentation=true _build
+    - meson compile -C _build
     - mkdir -p _reference/
     - mv _build/docs/Pango2/ _reference/
   artifacts:
