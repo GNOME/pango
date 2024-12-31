@@ -320,6 +320,35 @@ test_roundtrip_plain (void)
 }
 
 static void
+test_roundtrip_absolute (void)
+{
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
+  Pango2FontDescription *desc, *desc2;
+  Pango2Font *font;
+
+  desc = pango2_font_description_from_string ("Cantarell 11");
+
+  pango2_font_description_set_absolute_size (desc, 11 * 1024.0);
+
+  fontmap = get_font_map_with_cantarell ();
+  context = pango2_context_new_with_font_map (fontmap);
+
+  font = pango2_context_load_font (context, desc);
+  desc2 = pango2_font_describe_with_absolute_size (font);
+
+  pango2_font_description_set_faceid_static (desc, pango2_font_description_get_faceid (desc2));
+
+  g_assert_true (pango2_font_description_equal (desc2, desc));
+
+  pango2_font_description_free (desc2);
+  g_object_unref (font);
+  pango2_font_description_free (desc);
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
+static void
 test_roundtrip_small_caps (void)
 {
   Pango2Context *context;
@@ -794,6 +823,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/roundtrip/plain", test_roundtrip_plain);
   g_test_add_func ("/pango/font/roundtrip/small-caps", test_roundtrip_small_caps);
   g_test_add_func ("/pango/font/roundtrip/emoji", test_roundtrip_emoji);
+  g_test_add_func ("/pango/font/roundtrip/absolute", test_roundtrip_absolute);
   g_test_add_func ("/pango/fontmap/enumerate", test_fontmap_enumerate);
   g_test_add_func ("/pango/fontmap/models", test_fontmap_models);
   g_test_add_func ("/pango/fontmap/fallback", test_fontmap_fallback);
