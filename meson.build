@@ -9,7 +9,7 @@ project('pango2', 'c', 'cpp',
           'c_std=gnu99',
           'cpp_std=c++11',
         ],
-        meson_version : '>= 0.55.3')
+        meson_version : '>= 1.2.0')
 
 add_project_arguments([ '-D_POSIX_C_SOURCE=200809L', '-D_POSIX_THREAD_SAFE_FUNCTIONS', '-D_GNU_SOURCE', ], language: 'c')
 
