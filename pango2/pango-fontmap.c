@@ -1091,7 +1091,7 @@ pango2_font_map_remove_face (Pango2FontMap  *self,
 /**
  * pango2_font_map_add_file:
  * @self: a `Pango2FontMap`
- * @file: font filename
+ * @file: (type filename): font filename
  *
  * Creates a new `Pango2HbFace` and adds it.
  *
