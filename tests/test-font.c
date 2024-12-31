@@ -31,8 +31,6 @@
 
 #include "test-common.h"
 
-static Pango2Context *context;
-
 static void
 test_parse (void)
 {
@@ -157,9 +155,14 @@ test_empty_variations (void)
 static void
 test_metrics (void)
 {
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
   Pango2FontDescription *desc;
   Pango2FontMetrics *metrics;
   char *str;
+
+  fontmap = pango2_font_map_new_default ();
+  context = pango2_context_new_with_font_map (fontmap);
 
   desc = pango2_font_description_from_string ("Cantarell 11");
 
@@ -187,6 +190,9 @@ test_metrics (void)
   pango2_font_metrics_free (metrics);
   g_free (str);
   pango2_font_description_free (desc);
+
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -235,7 +241,7 @@ test_fontmap_enumerate (void)
   Pango2Font *font;
   gboolean found_face;
 
-  fontmap = pango2_font_map_get_default ();
+  fontmap = pango2_font_map_new_default ();
   context = pango2_context_new_with_font_map (fontmap);
 
   g_assert_cmpint (g_list_model_get_n_items (G_LIST_MODEL (fontmap)), >, 0);
@@ -282,6 +288,7 @@ test_fontmap_enumerate (void)
   g_object_unref (font);
   pango2_font_description_free (desc);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -419,7 +426,7 @@ test_roundtrip_emoji (void)
 static void
 test_fontmap_models (void)
 {
-  Pango2FontMap *map = pango2_font_map_get_default ();
+  Pango2FontMap *map = pango2_font_map_new_default ();
   int n_families = 0;
 
   g_assert_true (g_list_model_get_item_type (G_LIST_MODEL (map)) == PANGO2_TYPE_FONT_FAMILY);
@@ -447,6 +454,7 @@ test_fontmap_models (void)
     }
 
   g_print ("# %d font families\n", n_families);
+  g_object_unref (map);
 }
 
 static void
@@ -619,6 +627,7 @@ static void
 test_fontmap_fallback (void)
 {
   Pango2FontMap *map;
+  Pango2Context *context;
   Pango2UserFace *custom;
   Pango2FontDescription *desc;
   Pango2Fontset *fontset;
@@ -626,6 +635,7 @@ test_fontmap_fallback (void)
   int count;
 
   map = pango2_font_map_new ();
+  context = pango2_context_new_with_font_map (map);
 
   desc = pango2_font_description_from_string ("CustomFont");
   custom = pango2_user_face_new (font_info_cb,
@@ -670,6 +680,7 @@ test_fontmap_fallback (void)
   pango2_fontset_foreach (fontset, count_fonts, &count);
   g_assert_true (count > 1);
 
+  g_object_unref (context);
   g_object_unref (map);
 }
 
@@ -686,7 +697,7 @@ test_font_scale (void)
   cairo_font_options_t *options;
   const cairo_font_options_t *options2;
 
-  fontmap = pango2_font_map_get_default ();
+  fontmap = pango2_font_map_new_default ();
   context = pango2_context_new_with_font_map (fontmap);
 
   options = cairo_font_options_create ();
@@ -751,6 +762,7 @@ test_font_scale (void)
   g_object_unref (font);
   pango2_font_description_free (desc);
   g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 int
@@ -761,8 +773,6 @@ main (int argc, char *argv[])
   g_test_init (&argc, &argv, NULL);
 
   install_fonts ();
-
-  context = pango2_context_new ();
 
   g_test_add_func ("/pango/fontdescription/parse", test_parse);
   g_test_add_func ("/pango/fontdescription/roundtrip", test_roundtrip);

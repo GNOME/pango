@@ -33,8 +33,6 @@
 #include "validate-log-attrs.h"
 
 
-static Pango2Context *context;
-
 static gboolean opt_hex_chars;
 
 static gboolean
@@ -53,6 +51,8 @@ test_file (const char *filename, GString *string)
   char *text;
   Pango2AttrList *attributes;
   Pango2Layout *layout;
+  Pango2Context *context;
+  Pango2FontMap *fontmap;
 
   g_file_get_contents (filename, &contents, &length, &error);
   g_assert_no_error (error);
@@ -69,6 +69,8 @@ test_file (const char *filename, GString *string)
   pango2_parse_markup (test, -1, 0, &attributes, &text, NULL, &error);
   g_assert_no_error (error);
 
+  fontmap = pango2_font_map_new_default ();
+  context = pango2_context_new_with_font_map (fontmap);
   layout = pango2_layout_new (context);
   pango2_layout_set_text (layout, text, length);
   pango2_layout_set_attributes (layout, attributes);
@@ -84,6 +86,8 @@ test_file (const char *filename, GString *string)
       g_free (msg);
       g_free (contents);
       g_object_unref (layout);
+      g_object_unref (context);
+      g_object_unref (fontmap);
       pango2_attr_list_unref (attributes);
       g_free (text);
       return FALSE;
@@ -277,6 +281,9 @@ test_file (const char *filename, GString *string)
   g_string_free (s6, TRUE);
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
+
   g_free (contents);
   g_free (text);
   pango2_attr_list_unref (attributes);
@@ -386,7 +393,6 @@ main (int argc, char *argv[])
   g_option_context_free (option_context);
 
   install_fonts ();
-  context = pango2_context_new ();
 
   if (opt_legend)
     {

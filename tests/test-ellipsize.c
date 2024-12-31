@@ -22,18 +22,20 @@
 #include <pango2/pango.h>
 #include "test-common.h"
 
-static Pango2Context *context;
-
 /* Test that ellipsization does not change the height of a layout.
  * See https://gitlab.gnome.org/GNOME/pango/issues/397
  */
 static void
 test_ellipsize_height (void)
 {
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
   Pango2Layout *layout;
   int height1, height2;
   Pango2FontDescription *desc;
 
+  fontmap = pango2_font_map_new_default ();
+  context = pango2_context_new_with_font_map (fontmap);
   layout = pango2_layout_new (context);
 
   desc = pango2_font_description_from_string ("Fixed 7");
@@ -54,6 +56,8 @@ test_ellipsize_height (void)
   g_assert_cmpint (height1, ==, height2);
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Test that ellipsization without attributes does not crash
@@ -61,8 +65,12 @@ test_ellipsize_height (void)
 static void
 test_ellipsize_crash (void)
 {
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
   Pango2Layout *layout;
 
+  fontmap = pango2_font_map_new_default ();
+  context = pango2_context_new_with_font_map (fontmap);
   layout = pango2_layout_new (context);
 
   pango2_layout_set_text (layout, "some text that should be ellipsized", -1);
@@ -75,6 +83,8 @@ test_ellipsize_crash (void)
   g_assert_true (pango2_lines_is_ellipsized (pango2_layout_get_lines (layout)));
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Check that the width of a fully ellipsized paragraph
@@ -83,10 +93,14 @@ test_ellipsize_crash (void)
 static void
 test_ellipsize_fully (void)
 {
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
   Pango2Layout *layout;
   Pango2Rectangle ink, logical;
   Pango2Rectangle ink2, logical2;
 
+  fontmap = pango2_font_map_new_default ();
+  context = pango2_context_new_with_font_map (fontmap);
   layout = pango2_layout_new (context);
 
   pango2_layout_set_text (layout, "…", -1);
@@ -103,13 +117,13 @@ test_ellipsize_fully (void)
   g_assert_cmpint (logical.width, ==, logical2.width);
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 int
 main (int argc, char *argv[])
 {
-  context = pango2_context_new ();
-
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/layout/ellipsize/height", test_ellipsize_height);

@@ -22,8 +22,6 @@
 #include <locale.h>
 #include <pango2/pango.h>
 
-static Pango2Context *context;
-
 #if 0
 static void
 test_bidi_embedding_levels (void)
@@ -92,7 +90,11 @@ test_move_cursor_line (void)
   };
   Pango2Layout *layout;
   gboolean fail = FALSE;
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
 
+  fontmap = pango2_font_map_new_default ();
+  context = pango2_context_new_with_font_map (fontmap);
   layout = pango2_layout_new (context);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
@@ -191,8 +193,8 @@ test_move_cursor_line (void)
               while (trailing--)
                 index = g_utf8_next_char (text + index) - text;
 
-              g_asser_true (index == -1 || index == G_MAXINT ||
-                            (0 <= index && index <= strlen (tests[i])));
+              g_assert_true (index == -1 || index == G_MAXINT ||
+                             (0 <= index && index <= strlen (tests[i])));
 
               if (index == -1 || index == G_MAXINT)
                 break;
@@ -250,6 +252,8 @@ test_move_cursor_line (void)
     }
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 
   if (fail)
     g_test_fail ();
@@ -279,7 +283,11 @@ test_move_cursor_para (void)
   Pango2Line *line;
   Pango2Lines *lines;
   Pango2Line *new_line;
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
 
+  fontmap = pango2_font_map_new_default ();
+  context = pango2_context_new_with_font_map (fontmap);
   layout = pango2_layout_new (context);
 
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
@@ -368,6 +376,8 @@ test_move_cursor_para (void)
     }
 
   g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static void
@@ -376,7 +386,11 @@ test_sinhala_cursor (void)
   const char *text = "ර් á ";
   Pango2Layout *layout;
   Pango2Lines *lines;
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
 
+  fontmap = pango2_font_map_new_default ();
+  context = pango2_context_new_with_font_map (fontmap);
   layout = pango2_layout_new (context);
 
   pango2_layout_set_text (layout, text, -1);
@@ -385,6 +399,8 @@ test_sinhala_cursor (void)
   if (pango2_lines_get_unknown_glyphs_count (lines) > 0)
     {
       g_object_unref (layout);
+      g_object_unref (context);
+      g_object_unref (fontmap);
       g_test_skip ("missing Sinhala fonts");
       return;
     }
@@ -415,6 +431,10 @@ test_sinhala_cursor (void)
           g_assert_true (strong.width == weak.width);
         }
     }
+
+  g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 static struct
@@ -471,6 +491,11 @@ test_bidi_nested (void)
       Pango2Layout *layout;
       Pango2Lines *lines;
       Pango2LineIter *iter;
+      Pango2FontMap *fontmap;
+      Pango2Context *context;
+
+      fontmap = pango2_font_map_new_default ();
+      context = pango2_context_new_with_font_map (fontmap);
 
       codes = g_utf8_to_ucs4_fast (text, -1, &n_chars);
       g_assert_nonnull (codes);
@@ -483,6 +508,8 @@ test_bidi_nested (void)
       if (pango2_lines_get_unknown_glyphs_count (lines) > 0)
         {
           g_object_unref (layout);
+          g_object_unref (context);
+          g_object_unref (fontmap);
           g_test_skip ("missing fonts");
           return;
         }
@@ -543,6 +570,8 @@ test_bidi_nested (void)
       pango2_line_iter_free (iter);
 
       g_object_unref (layout);
+      g_object_unref (context);
+      g_object_unref (fontmap);
 
       g_free (codes);
     }
@@ -552,8 +581,6 @@ int
 main (int argc, char *argv[])
 {
   setlocale (LC_ALL, "");
-
-  context = pango2_context_new ();
 
   g_test_init (&argc, &argv, NULL);
 
