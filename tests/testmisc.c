@@ -822,6 +822,7 @@ int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
+  g_test_set_nonfatal_assertions ();
 
   g_test_add_func ("/layout/itemize-empty-crash", test_itemize_empty_crash);
   g_test_add_func ("/layout/itemize-utf8", test_itemize_utf8);

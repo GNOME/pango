@@ -142,6 +142,7 @@ main (int argc, char *argv[])
     }
 
   g_test_init (&argc, &argv, NULL);
+  g_test_set_nonfatal_assertions ();
 
   path = g_test_build_filename (G_TEST_DIST, "layouts", NULL);
   dir = g_dir_open (path, 0, &error);

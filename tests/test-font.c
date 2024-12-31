@@ -863,6 +863,7 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
+  g_test_set_nonfatal_assertions ();
 
   install_fonts ();
 

@@ -577,6 +577,7 @@ int
 main (int argc, char *argv[])
 {
   g_test_init (&argc, &argv, NULL);
+  g_test_set_nonfatal_assertions ();
 
   g_test_add_func ("/hbfont/monospace", test_hbfont_monospace);
   g_test_add_func ("/hbface/roundtrip", test_hbface_roundtrip);
