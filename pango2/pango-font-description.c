@@ -1235,7 +1235,7 @@ parse_variations (const char  *word,
  *
  * The string must have the form
  *
- *     "\[FAMILY-LIST] \[STYLE-OPTIONS] \[SIZE] \[VARIATIONS] \[FACEID]",
+ *     "[FAMILY-LIST] [STYLE-OPTIONS] [SIZE] [VARIATIONS] [FACEID]",
  *
  * where FAMILY-LIST is a comma-separated list of families optionally
  * terminated by a comma, STYLE_OPTIONS is a whitespace-separated list
@@ -1244,11 +1244,11 @@ parse_variations (const char  *word,
  * or optionally followed by the unit modifier "px" for absolute size.
  *
  * VARIATIONS is a comma-separated list of font variation
- * specifications of the form "\@axis=value" (the = sign is optional),
+ * specifications of the form "@‍axis=value" (the = sign is optional),
  * where "axis" is a 3-character name of an OpenType variation axis
  * like "wght", "wdth" or "opsz".
  *
- * FACEID must have the form "\@faceid=string" with the literal string
+ * FACEID must have the form "@‍faceid=string" with the literal string
  * "faceid".
  *
  * The VARIATION, FACEID parts can appear in any order,
@@ -1283,7 +1283,7 @@ parse_variations (const char  *word,
  *
  * A typical example:
  *
- *     "Cantarell Italic Light 15 \@wght=200"
+ *     "Cantarell Italic Light 15 @‍wght=200"
  *
  * Return value: a new `Pango2FontDescription`.
  */
