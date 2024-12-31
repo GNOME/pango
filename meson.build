@@ -368,12 +368,13 @@ if not meson.is_subproject()
   meson.add_dist_script('build-aux/meson/dist-docs.py')
 endif
 
-summary('Fontconfig support', host_system == 'linux', section: 'Features')
-summary('CoreText support', host_system == 'darwin', section: 'Features')
-summary('DirectWrite support', host_system == 'windows', section: 'Features')
-summary('Cairo support', cairo_dep.found(), section: 'Features')
-summary('Thai support', thai_dep.found(), section: 'Features')
-summary('Sysprof support', libsysprof_capture_dep.found(), section: 'Features')
+summary('Fontconfig', host_system == 'linux', section: 'Font backends')
+summary('CoreText', host_system == 'darwin', section: 'Font backends')
+summary('DirectWrite', host_system == 'windows', section: 'Font backends')
+
+summary('Cairo', cairo_dep.found(), section: 'Features')
+summary('Thai', thai_dep.found(), section: 'Features')
+summary('Sysprof', libsysprof_capture_dep.found(), section: 'Features')
 
 summary('Compiler', cc.get_id(), section: 'Toolchain')
 summary('Linker', cc.get_linker_id(), section: 'Toolchain')
