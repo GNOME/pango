@@ -353,13 +353,16 @@ pango_inc = include_directories('pango2')
 
 subdir('pango2')
 subdir('utils')
-subdir('examples')
-subdir('tests')
-subdir('tools')
-
 if get_option('documentation')
   subdir('docs')
 endif
+if get_option('build-testsuite')
+  subdir('tests')
+endif
+if get_option('build-examples')
+  subdir('examples')
+endif
+subdir('tools')
 
 if not meson.is_subproject()
   meson.add_dist_script('build-aux/meson/dist-docs.py')
@@ -379,6 +382,8 @@ summary('Debugging', get_option('debug'), section: 'Build')
 summary('Optimization', get_option('optimization'), section: 'Build')
 summary('Introspection', get_option('introspection').enabled(), section: 'Build')
 summary('Documentation', get_option('documentation'), section: 'Build')
+summary('Build Testsuite', get_option('build-testsuite'), section: 'Build')
+summary('Build Examples', get_option('build-examples'), section: 'Build')
 
 summary('prefix', pango_prefix, section: 'Directories')
 summary('includedir', pango_includedir, section: 'Directories')

@@ -23,3 +23,12 @@ option('cairo',
        type : 'feature',
        value : 'enabled',
        description : 'Build with cairo support')
+option('build-testsuite',
+       description : 'Build the test suite',
+       type: 'boolean',
+       value: true)
+option('build-examples',
+       description : 'Build example test programs',
+       type: 'boolean',
+       value: true)
+
