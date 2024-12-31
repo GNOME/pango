@@ -370,6 +370,53 @@ test_move_cursor_para (void)
   g_object_unref (layout);
 }
 
+static void
+test_sinhala_cursor (void)
+{
+  const char *text = "ර් á ";
+  Pango2Layout *layout;
+  Pango2Lines *lines;
+
+  layout = pango2_layout_new (context);
+
+  pango2_layout_set_text (layout, text, -1);
+  lines = pango2_layout_get_lines (layout);
+
+  if (pango2_lines_get_unknown_glyphs_count (lines) > 0)
+    {
+      g_object_unref (layout);
+      g_test_skip ("missing Sinhala fonts");
+      return;
+    }
+
+  for (int i = 0; i < pango2_lines_get_line_count (lines); i++)
+    {
+      Pango2Line *line;
+      const Pango2LogAttr *attrs;
+      Pango2Rectangle strong, weak;
+      int start, n_attrs;
+      const char *text, *text_start, *text_end, *p;
+      int start_index, length, j;
+
+      line = pango2_lines_get_lines (lines)[i];
+      text = pango2_line_get_text (line, &start_index, &length);
+      text_start = text + start_index;
+      text_end = text_start + length;
+      attrs = pango2_line_get_log_attrs (line, &start, &n_attrs);
+      for (p = text_start, j = 0; p < text_end; p = g_utf8_next_char (p), j++)
+        {
+          if (!attrs[start + j].is_cursor_position)
+            continue;
+
+          //g_assert_true (pango2_layout_get_direction (layout, index) == PANGO_DIRECTION_LTR);
+
+          pango2_line_get_cursor_pos (line, p - text, &strong, &weak);
+          g_assert_true (strong.x == weak.x);
+          g_assert_true (strong.width == weak.width);
+        }
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -384,6 +431,7 @@ main (int argc, char *argv[])
 #endif
   g_test_add_func ("/bidi/move-cursor-line", test_move_cursor_line);
   g_test_add_func ("/bidi/move-cursor-para", test_move_cursor_para);
+  g_test_add_func ("/bidi/sinhala-cursor", test_sinhala_cursor);
 
   return g_test_run ();
 }
