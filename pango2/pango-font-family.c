@@ -135,7 +135,7 @@ pango2_font_family_get_property (GObject    *object,
       break;
 
     case PROP_ITEM_TYPE:
-      g_value_set_gtype (value, PANGO2_TYPE_FONT);
+      g_value_set_gtype (value, PANGO2_TYPE_FONT_FACE);
       break;
 
     case PROP_N_ITEMS:
