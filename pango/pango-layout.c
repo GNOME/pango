@@ -3577,6 +3577,8 @@ can_break_at (PangoLayout   *layout,
 {
   if (offset == layout->n_chars)
     return TRUE;
+  else if (wrap == PANGO_WRAP_NONE)
+    return FALSE;
   else if (wrap == PANGO_WRAP_CHAR)
     return layout->log_attrs[offset].is_char_break;
   else
@@ -4444,6 +4446,9 @@ should_ellipsize_current_line (PangoLayout    *layout,
 {
   if (G_LIKELY (layout->ellipsize == PANGO_ELLIPSIZE_NONE || layout->width < 0))
     return FALSE;
+
+  if (layout->wrap == PANGO_WRAP_NONE)
+    return TRUE;
 
   if (layout->height >= 0)
     {

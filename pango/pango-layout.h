@@ -79,10 +79,19 @@ typedef enum {
  * breaking at grapheme boundaries that are determined by the Unicode text
  * segmentation algorithm.
  */
+
+/**
+ * PANGO_WRAP_NONE:
+ *
+ * do not wrap.
+ *
+ * Since: 1.56
+ */
 typedef enum {
   PANGO_WRAP_WORD,
   PANGO_WRAP_CHAR,
-  PANGO_WRAP_WORD_CHAR
+  PANGO_WRAP_WORD_CHAR,
+  PANGO_WRAP_NONE PANGO_AVAILABLE_ENUMERATOR_IN_1_56
 } PangoWrapMode;
 
 /**
