@@ -40,6 +40,13 @@ Pango2Fontset *          pango2_font_map_load_fontset             (Pango2FontMap
                                                                    const Pango2FontDescription *desc,
                                                                    Pango2Language              *language);
 PANGO2_AVAILABLE_IN_ALL
+Pango2Font *             pango2_font_map_reload_font              (Pango2FontMap               *self,
+                                                                   Pango2Font                  *font,
+                                                                   double                       scale,
+                                                                   Pango2Context               *context,
+                                                                   const char                  *variations);
+
+PANGO2_AVAILABLE_IN_ALL
 guint                    pango2_font_map_get_serial               (Pango2FontMap               *self);
 
 PANGO2_AVAILABLE_IN_ALL

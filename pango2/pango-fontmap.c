@@ -654,6 +654,46 @@ done_no_cache:
   return g_object_ref (PANGO2_FONTSET (fontset));
 }
 
+static Pango2Font *
+pango2_font_map_default_reload_font (Pango2FontMap *self,
+                                     Pango2Font    *font,
+                                     double         scale,
+                                     Pango2Context *context,
+                                     const char    *variations)
+{
+  Pango2FontDescription *desc;
+  Pango2Context *freeme = NULL;
+  Pango2Font *scaled;
+
+  desc = pango2_font_describe_with_absolute_size (font);
+
+  if (scale != 1.0)
+    {
+      int size = pango2_font_description_get_size (desc);
+      pango2_font_description_set_absolute_size (desc, size * scale);
+    }
+
+  if (variations)
+    pango2_font_description_set_variations_static (desc, variations);
+
+  if (!context)
+    {
+      freeme = context = pango2_context_new_with_font_map (self);
+#ifdef HAVE_CAIRO
+      pango2_cairo_context_set_font_options (context,
+                                             pango2_cairo_font_get_font_options (font));
+#endif
+    }
+
+  scaled = pango2_font_map_load_font (self, context, desc);
+
+  g_clear_object (&freeme);
+
+  pango2_font_description_free (desc);
+
+  return scaled;
+}
+
 static Pango2FontFamily *
 pango2_font_map_default_get_family (Pango2FontMap *self,
                                     const char    *name)
@@ -691,6 +731,7 @@ pango2_font_map_class_init (Pango2FontMapClass *class)
 
   class->load_font = pango2_font_map_default_load_font;
   class->load_fontset = pango2_font_map_default_load_fontset;
+  class->reload_font = pango2_font_map_default_reload_font;
   class->get_serial = pango2_font_map_default_get_serial;
   class->changed = pango2_font_map_default_changed;
   class->get_family = pango2_font_map_default_get_family;
@@ -872,6 +913,38 @@ pango2_font_map_load_fontset (Pango2FontMap               *self,
   g_return_val_if_fail (desc != NULL, NULL);
 
   return PANGO2_FONT_MAP_GET_CLASS (self)->load_fontset (self, context, desc, language);
+}
+
+/**
+ * pango2_font_map_reload_font:
+ * @self: a `Pango2FontMap`
+ * @font: a font in @fontmap
+ * @scale: the scale factor to apply
+ * @context: (nullable): a `Pango2Context`
+ * @variations: (nullable): font variations to use
+ *
+ * Returns a modified version of a font.
+ *
+ * The new font is like @font, except that its size is multiplied
+ * by @scale, its backend-dependent configuration (e.g. cairo font
+ * options) is replaced by the one in @context, and its variations
+ * are replaced by @variations.
+ *
+ * Returns: (transfer full): the modified font
+ */
+Pango2Font *
+pango2_font_map_reload_font (Pango2FontMap *self,
+                             Pango2Font    *font,
+                             double         scale,
+                             Pango2Context *context,
+                             const char    *variations)
+{
+  g_return_val_if_fail (PANGO2_IS_FONT_MAP (self), NULL);
+  g_return_val_if_fail (PANGO2_IS_FONT (font), NULL);
+  g_return_val_if_fail (scale > 0, NULL);
+  g_return_val_if_fail (context == NULL || PANGO2_IS_CONTEXT (context), NULL);
+
+  return PANGO2_FONT_MAP_GET_CLASS (self)->reload_font (self, font, scale, context, variations);
 }
 
 /**

@@ -27,6 +27,7 @@
 #include <pango2/pango.h>
 #include <pango2/pango-item-private.h>
 #include <pango2/pango-font-private.h>
+#include <pango2/pangocairo.h>
 
 #include "test-common.h"
 
@@ -672,6 +673,86 @@ test_fontmap_fallback (void)
   g_object_unref (map);
 }
 
+static void
+test_font_scale (void)
+{
+  Pango2FontMap *fontmap;
+  Pango2Context *context;
+  Pango2FontDescription *desc;
+  Pango2Font *font;
+  Pango2Font *scaled_font;
+  Pango2FontDescription *scaled_desc;
+  char *str;
+  cairo_font_options_t *options;
+  const cairo_font_options_t *options2;
+
+  fontmap = pango2_font_map_get_default ();
+  context = pango2_context_new_with_font_map (fontmap);
+
+  options = cairo_font_options_create ();
+  cairo_font_options_set_antialias (options, CAIRO_ANTIALIAS_NONE);
+  cairo_font_options_set_hint_style (options, CAIRO_HINT_STYLE_FULL);
+  cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_ON);
+
+  pango2_cairo_context_set_font_options (context, options);
+
+  desc = pango2_font_description_from_string ("Cantarell 11 @wght=444");
+
+  font = pango2_font_map_load_font (fontmap, context, desc);
+
+  scaled_font = pango2_font_map_reload_font (fontmap, font, 1.5, NULL, NULL);
+
+  scaled_desc = pango2_font_describe (scaled_font);
+  str = pango2_font_description_to_string (scaled_desc);
+  g_assert_cmpstr (str, ==, "Cantarell 16.5 @faceid=hb:Cantarell-Regular:0:-2:0:1:1:0 @wght=444");
+
+  /* check that we also preserve font options */
+  options2 = pango2_cairo_font_get_font_options (scaled_font);
+  g_assert_true (cairo_font_options_equal (options, options2));
+
+  g_object_unref (scaled_font);
+  pango2_font_description_free (scaled_desc);
+  g_free (str);
+
+  /* Try again, this time with different font options */
+
+  cairo_font_options_set_hint_style (options, CAIRO_HINT_STYLE_NONE);
+  cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_OFF);
+
+  pango2_cairo_context_set_font_options (context, options);
+
+  scaled_font = pango2_font_map_reload_font (fontmap, font, 1, context, NULL);
+
+  scaled_desc = pango2_font_describe (scaled_font);
+  str = pango2_font_description_to_string (scaled_desc);
+  g_assert_cmpstr (str, ==, "Cantarell 11 @faceid=hb:Cantarell-Regular:0:-2:0:1:1:0 @wght=444");
+
+  options2 = pango2_cairo_font_get_font_options (scaled_font);
+  g_assert_true (cairo_font_options_equal (options, options2));
+
+  cairo_font_options_destroy (options);
+
+  g_object_unref (scaled_font);
+  pango2_font_description_free (scaled_desc);
+  g_free (str);
+
+  /* Try again, this time with different variations */
+
+  scaled_font = pango2_font_map_reload_font (fontmap, font, 1, NULL, "wght=666");
+
+  scaled_desc = pango2_font_describe (scaled_font);
+  str = pango2_font_description_to_string (scaled_desc);
+  g_assert_cmpstr (str, ==, "Cantarell 11 @faceid=hb:Cantarell-Regular:0:-2:0:1:1:0 @wght=666");
+
+  g_object_unref (scaled_font);
+  pango2_font_description_free (scaled_desc);
+  g_free (str);
+
+  g_object_unref (font);
+  pango2_font_description_free (desc);
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -700,6 +781,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontmap/enumerate", test_fontmap_enumerate);
   g_test_add_func ("/pango/fontmap/models", test_fontmap_models);
   g_test_add_func ("/pango/fontmap/fallback", test_fontmap_fallback);
+  g_test_add_func ("/pango/font/scale-font", test_font_scale);
 
   return g_test_run ();
 }

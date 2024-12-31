@@ -59,6 +59,11 @@ struct _Pango2FontMapClass
                                         Pango2Context               *context,
                                         const Pango2FontDescription *desc,
                                         Pango2Language              *language);
+  Pango2Font *       (* reload_font)   (Pango2FontMap               *self,
+                                        Pango2Font                  *font,
+                                        double                       scale,
+                                        Pango2Context               *context,
+                                        const char                  *variations);
   guint              (* get_serial)    (Pango2FontMap               *self);
   void               (* changed)       (Pango2FontMap               *self);
   Pango2FontFamily * (* get_family)    (Pango2FontMap               *self,
