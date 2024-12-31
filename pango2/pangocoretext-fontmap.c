@@ -391,7 +391,7 @@ pango2_core_text_font_map_populate (Pango2FontMap *map)
     const char *alias_name;
     const char *family_name;
   } aliases[] = {
-    { "Monospace",  "Courier" },
+    { "Monospace",  "Menlo" },
     { "Sans-serif", "Helvetica" },
     { "Sans", "Helvetica" },
     { "Serif",      "Times" },
