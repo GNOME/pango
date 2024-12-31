@@ -519,3 +519,22 @@ dump_fonts (void)
     }
 }
 
+/* Create a fontmap that will return our included Cantarell-VF.otf
+ * for "Cantarell"
+ */
+Pango2FontMap *
+get_font_map_with_cantarell (void)
+{
+  Pango2FontMap *fontmap;
+  char *path;
+
+  fontmap = pango2_font_map_new_default ();
+
+  path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
+  if (g_test_verbose ())
+    g_test_message ("adding %s to font map", path);
+  pango2_font_map_add_file (fontmap, path);
+  g_free (path);
+
+  return fontmap;
+}

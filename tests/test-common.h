@@ -28,4 +28,7 @@ const char *get_script_name (GUnicodeScript s);
 void    install_fonts      (void);
 void    dump_fonts         (void);
 
+Pango2FontMap *get_font_map_with_cantarell (void);
+
+
 #endif
