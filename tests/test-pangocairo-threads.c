@@ -119,7 +119,7 @@ pangocairo_threads (void)
 
     /* cairo_surface_write_to_png (ref_surface, "test-pangocairo-threads-reference.png"); */
 
-    g_assert (WIDTH == cairo_format_stride_for_width (CAIRO_FORMAT_A8, WIDTH));
+    g_assert_true (WIDTH == cairo_format_stride_for_width (CAIRO_FORMAT_A8, WIDTH));
 
     for (i = 0; i < num_threads; i++)
       {

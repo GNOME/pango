@@ -296,7 +296,7 @@ add_generic_family (Pango2FontMap *map,
   GError *error = NULL;
   Pango2GenericFamily *generic;
 
-  g_assert (g_str_has_suffix (name, ".generic"));
+  g_assert_true (g_str_has_suffix (name, ".generic"));
 
   fullname = g_build_filename (path, name, NULL);
 
@@ -353,7 +353,7 @@ add_synthetic_faces (Pango2FontMap *map,
   GSList *newfaces, *l;
   Pango2HbFaceBuilder *builder;
 
-  g_assert (g_str_has_suffix (name, ".synthetic"));
+  g_assert_true (g_str_has_suffix (name, ".synthetic"));
 
   fullname = g_build_filename (path, name, NULL);
 

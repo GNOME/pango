@@ -44,7 +44,7 @@ test_parse (void)
   descs[0] = desc = pango2_font_description_from_string ("Cantarell 14");
 
   g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Cantarell");
-  g_assert (!pango2_font_description_get_size_is_absolute (desc));
+  g_assert_false (pango2_font_description_get_size_is_absolute (desc));
   g_assert_cmpint (pango2_font_description_get_size (desc), ==, 14 * PANGO2_SCALE);
   g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_NORMAL);
   g_assert_cmpint (pango2_font_description_get_variant (desc), ==, PANGO2_VARIANT_NORMAL);
@@ -56,7 +56,7 @@ test_parse (void)
   descs[1] = desc = pango2_font_description_from_string ("Sans Bold Italic Condensed 22.5px");
 
   g_assert_cmpstr (pango2_font_description_get_family (desc), ==, "Sans");
-  g_assert (pango2_font_description_get_size_is_absolute (desc)); 
+  g_assert_true (pango2_font_description_get_size_is_absolute (desc));
   g_assert_cmpint (pango2_font_description_get_size (desc), ==, 225 * PANGO2_SCALE / 10);
   g_assert_cmpint (pango2_font_description_get_style (desc), ==, PANGO2_STYLE_ITALIC);
   g_assert_cmpint (pango2_font_description_get_variant (desc), ==, PANGO2_VARIANT_NORMAL); 

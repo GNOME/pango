@@ -191,8 +191,8 @@ test_move_cursor_line (void)
               while (trailing--)
                 index = g_utf8_next_char (text + index) - text;
 
-              g_assert (index == -1 || index == G_MAXINT ||
-                        (0 <= index && index <= strlen (tests[i])));
+              g_asser_true (index == -1 || index == G_MAXINT ||
+                            (0 <= index && index <= strlen (tests[i])));
 
               if (index == -1 || index == G_MAXINT)
                 break;
@@ -312,8 +312,8 @@ test_move_cursor_para (void)
           while (trailing--)
             index = g_utf8_next_char (text + index) - text;
 
-          g_assert (index == -1 || index == G_MAXINT ||
-                    (0 <= index && index <= strlen (tests[i].text)));
+          g_assert_true (index == -1 || index == G_MAXINT ||
+                         (0 <= index && index <= strlen (tests[i].text)));
 
           if (index == -1 || index == G_MAXINT)
             break;
@@ -351,8 +351,8 @@ test_move_cursor_para (void)
           while (trailing--)
             index = g_utf8_next_char (text + index) - text;
 
-          g_assert (index == -1 || index == G_MAXINT ||
-                    (0 <= index && index <= strlen (tests[i].text)));
+          g_assert_true (index == -1 || index == G_MAXINT ||
+                         (0 <= index && index <= strlen (tests[i].text)));
 
           if (index == -1 || index == G_MAXINT)
             break;

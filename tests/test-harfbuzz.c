@@ -52,12 +52,12 @@ test_hb_font (void)
 
   hb_font = pango2_font_get_hb_font (font);
 
-  g_assert (hb_font != NULL);
+  g_assert_nonnull (hb_font);
 
   res = hb_font_get_nominal_glyph (hb_font, 0x20, &glyph);
 
-  g_assert (res);
-  g_assert (glyph != 0);
+  g_assert_true (res);
+  g_assert_true (glyph != 0);
 
   g_object_unref (font);
   g_object_unref (face);

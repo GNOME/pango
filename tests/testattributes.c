@@ -195,7 +195,7 @@ assert_attr_list_order (Pango2AttrList *list)
   for (l = attrs; l; l = l->next)
     {
       Pango2Attribute *attr = l->data;
-      g_assert (start <= attr->start_index);
+      g_assert_cmpuint (start, <=, attr->start_index);
       start = attr->start_index;
     }
 
@@ -421,9 +421,9 @@ test_list_change5 (void)
 
   /* insertion with joining */
   attr = attribute_from_string ("5 15 style italic");
-  g_assert (attr->start_index == 5);
-  g_assert (attr->end_index == 15);
-  g_assert (attr->int_value == PANGO2_STYLE_ITALIC);
+  g_assert_true (attr->start_index == 5);
+  g_assert_true (attr->end_index == 15);
+  g_assert_true (attr->int_value == PANGO2_STYLE_ITALIC);
   pango2_attr_list_change (list, attr);
 
   assert_attr_list (list, "0 3 weight ultrabold\n"
