@@ -360,7 +360,7 @@ pango_layout_get_context (PangoLayout *layout)
  *   wrapping or ellipsization should be performed.
  *
  * Sets the width to which the lines of the `PangoLayout` should wrap or
- * ellipsized.
+ * get ellipsized.
  *
  * The default value is -1: no width set.
  */
@@ -524,7 +524,6 @@ pango_layout_get_wrap (PangoLayout *layout)
  * Queries whether the layout had to wrap any paragraphs.
  *
  * This returns %TRUE if a positive width is set on @layout,
- * ellipsization mode of @layout is set to %PANGO_ELLIPSIZE_NONE,
  * and there are paragraphs exceeding the layout width that have
  * to be wrapped.
  *
