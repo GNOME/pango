@@ -22,6 +22,7 @@
 #include "config.h"
 #include <stdlib.h>
 #include <math.h>
+#include <locale.h>
 
 #include "pango-font-description-private.h"
 
@@ -1423,6 +1424,51 @@ append_field (GString        *str,
   g_string_append_printf (str, "%s=%d", what, val);
 }
 
+
+static void
+g_ascii_format_nearest_multiple (char   *buf,
+                                 gsize   len,
+                                 double  value,
+                                 double  factor)
+{
+  double eps, lo, hi;
+  char buf1[24];
+  char buf2[24];
+  int i, j;
+  const char *dot;
+
+  value = round (value / factor) * factor;
+  eps = 0.5 * factor;
+  lo = value - eps;
+  hi = value + eps;
+
+  if (floor (lo) != floor (hi))
+    {
+      g_snprintf (buf, len, "%d", (int) round (value));
+      return;
+    }
+
+  g_ascii_formatd (buf1, sizeof (buf1), "%.8f", lo);
+  g_ascii_formatd (buf2, sizeof (buf2), "%.8f", hi);
+
+  g_assert (strlen (buf1) == strlen (buf2));
+
+  for (i = 0; buf1[i]; i++)
+    {
+      if (buf1[i] != buf2[i])
+        break;
+    }
+
+  dot = strchr (buf1, '.');
+
+  j = dot - buf1;
+
+  g_assert (j < i);
+
+  g_snprintf (buf1, sizeof (buf1), "%%.%df", i - j);
+  g_ascii_formatd (buf, len, buf1, value);
+}
+
 /**
  * pango2_font_description_to_string:
  * @desc: a `Pango2FontDescription`
@@ -1490,7 +1536,9 @@ pango2_font_description_to_string (const Pango2FontDescription *desc)
       if (result->len > 0 || result->str[result->len -1] != ' ')
         g_string_append_c (result, ' ');
 
-      g_ascii_dtostr (buf, sizeof (buf), (double)desc->size / PANGO2_SCALE);
+      g_ascii_format_nearest_multiple (buf, sizeof (buf),
+                                       desc->size / (double) PANGO2_SCALE,
+                                       1 / (double) PANGO2_SCALE);
       g_string_append (result, buf);
 
       if (desc->size_is_absolute)

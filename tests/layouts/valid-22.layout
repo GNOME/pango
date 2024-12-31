@@ -238,7 +238,7 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell 7.1494140625",
+                "description" : "Cantarell 7.148",
                 "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
@@ -320,7 +320,7 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell 7.1494140625",
+                "description" : "Cantarell 7.148",
                 "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
@@ -359,7 +359,7 @@
               "language" : "en-us",
               "script" : "Latn",
               "font" : {
-                "description" : "Cantarell 4.6474609375",
+                "description" : "Cantarell 4.646",
                 "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
               },
               "flags" : 0,
