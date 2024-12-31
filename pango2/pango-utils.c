@@ -32,13 +32,11 @@
 
 #include <glib/gstdio.h>
 
-#ifndef HAVE_FLOCKFILE
+#ifdef G_OS_WIN32
+
 #  define flockfile(f) (void)1
 #  define funlockfile(f) (void)1
 #  define getc_unlocked(f) getc(f)
-#endif /* !HAVE_FLOCKFILE */
-
-#ifdef G_OS_WIN32
 
 #include <sys/types.h>
 
