@@ -1114,7 +1114,7 @@ pango2_context_get_round_glyph_positions (Pango2Context *context)
  * names select those.
  *
  * To associate custom names with palettes in fonts,
- * use [method@Pango2.HbFace.set_palette_name].
+ * use [method@Pango2.HbFaceBuilder.set_palette_name].
  */
 void
 pango2_context_set_palette (Pango2Context *context,
