@@ -1,3 +1,42 @@
+Overview of changes in 0.92, xx-xx-xxxx
+=======================================
+
+- Allow specifying tab positions in spaces
+
+- Support Emoji presentation
+
+- Add an example for optical margins
+
+- Fix indent and alignment handling in Pango2Layout
+
+- Use hb-cairo for creating scaled fonts
+
+- Improve script itemization for marks and cluster extenders
+
+- Improve formatting of font sizes
+
+- Add pango2_font_map_reload_font
+
+- Fix drawing of hex boxes
+
+- coretext: Replace Courier by Menlo
+
+- Stop doing 'height for width' for hex boxes
+
+- Move palette name api to PangoHbFaceBuilder
+
+- Bump requirements:
+  C11
+  harfbuzz 8.4.0
+  GLib 2.80
+  fontconfig 2.15
+  cairo 1.18
+  meson 1.2.0
+  Windows 10
+
+- Support Unicode 16
+
+
 Overview of changes in 0.91.0, 04-07-2022
 =========================================
 
