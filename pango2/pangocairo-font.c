@@ -80,8 +80,6 @@ create_cairo_font_face (Pango2Font *font)
     }
 }
 
-#ifdef CAIRO_COLOR_PALETTE_DEFAULT
-
 static int
 find_palette_index_for_font (Pango2Font *font,
                              GQuark      palette)
@@ -93,8 +91,6 @@ find_palette_index_for_font (Pango2Font *font,
 
   return CAIRO_COLOR_PALETTE_DEFAULT;
 }
-
-#endif
 
 static cairo_scaled_font_t *
 _pango2_cairo_font_private_get_scaled_font (Pango2CairoFontPrivate *cf_priv,
@@ -139,11 +135,9 @@ _pango2_cairo_font_private_get_scaled_font (Pango2CairoFontPrivate *cf_priv,
   if (G_UNLIKELY (font_face == NULL))
     goto done;
 
-#ifdef CAIRO_COLOR_PALETTE_DEFAULT
   cairo_font_options_set_color_mode (options, CAIRO_COLOR_MODE_COLOR);
   cairo_font_options_set_color_palette (options,
                                         find_palette_index_for_font (cf_priv->cfont, palette));
-#endif
 
   cf_priv->palette = palette;
   cf_priv->scaled_font = cairo_scaled_font_create (font_face, font_matrix, ctm, options);
