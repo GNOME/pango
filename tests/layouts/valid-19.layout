@@ -159,7 +159,7 @@
     "ellipsized" : false,
     "hypenated" : false,
     "unknown-glyphs" : 6,
-    "width" : 174080,
+    "width" : 172032,
     "height" : 18305,
     "lines" : [
       {
@@ -182,8 +182,8 @@
           "runs" : [
             {
               "offset" : 0,
-              "length" : 8,
-              "text" : "😊︎ ",
+              "length" : 7,
+              "text" : "😊︎",
               "bidi-level" : 0,
               "gravity" : "south",
               "language" : "en-us",
@@ -208,12 +208,31 @@
                   "width" : 0,
                   "is-cluster-start" : true,
                   "log-cluster" : 4
-                },
+                }
+              ]
+            },
+            {
+              "offset" : 7,
+              "length" : 1,
+              "text" : " ",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Zyyy",
+              "font" : {
+                "description" : "Cantarell 11",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
                 {
-                  "glyph" : 3,
-                  "width" : 5120,
+                  "glyph" : 1109,
+                  "width" : 3072,
                   "is-cluster-start" : true,
-                  "log-cluster" : 7
+                  "log-cluster" : 0
                 }
               ]
             },
@@ -516,8 +535,8 @@
             },
             {
               "offset" : 65,
-              "length" : 3,
-              "text" : " ©",
+              "length" : 1,
+              "text" : " ",
               "bidi-level" : 0,
               "gravity" : "south",
               "language" : "en-us",
@@ -536,12 +555,31 @@
                   "width" : 3072,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
-                },
+                }
+              ]
+            },
+            {
+              "offset" : 66,
+              "length" : 2,
+              "text" : "©",
+              "bidi-level" : 0,
+              "gravity" : "south",
+              "language" : "en-us",
+              "script" : "Zyyy",
+              "font" : {
+                "description" : "Cantarell 11",
+                "checksum" : "5bcb6ee14ee9d210b2e91d643de1fe456e9d1aea770983fdb05951545efebbe2"
+              },
+              "flags" : 0,
+              "y-offset" : 0,
+              "start-x-offset" : 0,
+              "end-x-offset" : 0,
+              "glyphs" : [
                 {
                   "glyph" : 1182,
                   "width" : 13312,
                   "is-cluster-start" : true,
-                  "log-cluster" : 1
+                  "log-cluster" : 0
                 }
               ]
             }

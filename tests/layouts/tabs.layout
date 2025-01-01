@@ -17,7 +17,7 @@
   "text" : "\t0.1\t100.5\tso\tmore\tso\n\t0.02\t20.25\tand\tand\tand\n\t0.003\t1.9\tmore\tso\tmore",
   "font" : "Cantarell 14 @wght=400",
   "tabs" : {
-    "positions-in-pixels" : true,
+    "position-units" : "pixels",
     "positions" : [
       {
         "position" : 50,

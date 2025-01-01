@@ -19,7 +19,7 @@
   "text" : "a\tb\tc\td e\tf\tg\th",
   "font" : "Cantarell 11",
   "tabs" : {
-    "positions-in-pixels" : true,
+    "position-units" : "pixels",
     "positions" : [
       {
         "position" : 0,
@@ -183,8 +183,8 @@
     "wrapped" : true,
     "ellipsized" : false,
     "hypenated" : false,
-    "unknown-glyphs" : 1,
-    "width" : 173056,
+    "unknown-glyphs" : 0,
+    "width" : 161792,
     "height" : 36044,
     "lines" : [
       {
@@ -398,8 +398,8 @@
               "end-x-offset" : 0,
               "glyphs" : [
                 {
-                  "glyph" : 268443688,
-                  "width" : 11264,
+                  "glyph" : 268435455,
+                  "width" : 0,
                   "is-cluster-start" : true,
                   "log-cluster" : 0
                 }
