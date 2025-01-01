@@ -311,9 +311,7 @@ pango2_parse_flags (GType        type,
               g_string_append (s, v->value_nick);
             }
 
-          *possible_values = s->str;
-
-          g_string_free (s, FALSE);
+          *possible_values = g_string_free (s, FALSE);
         }
     }
 
