@@ -71,13 +71,34 @@ _pango2_cairo_font_private_scaled_font_data_destroy (Pango2CairoFontPrivateScale
 static cairo_font_face_t *
 create_cairo_font_face (Pango2Font *font)
 {
+  cairo_font_face_t *cairo_face;
+  hb_font_t *hbfont;
+
   if (PANGO2_IS_USER_FONT (font))
     return create_cairo_user_font_face (font);
-  else
-    {
-      hb_font_t *hbfont = pango2_font_get_hb_font (font);
-      return hb_cairo_font_face_create_for_font (hbfont);
-    }
+
+#ifdef CAIRO_HAS_FT_FONT
+  cairo_face = create_cairo_ft_font_face (font);
+  if (cairo_face)
+    return cairo_face;
+#endif
+
+#if 0
+#ifdef HAVE_CORE_TEXT
+  cairo_face = create_cairo_core_text_font_face (font);
+  if (cairo_face)
+    return cairo_face;
+#endif
+
+#ifdef HAVE_DIRECT_WRITE
+  cairo_face = create_cairo_dwrite_font_face (font);
+  if (cairo_face)
+    return cairo_face;
+#endif
+#endif
+
+  hbfont = pango2_font_get_hb_font (font);
+  return hb_cairo_font_face_create_for_font (hbfont);
 }
 
 static int
