@@ -68,30 +68,22 @@ static gboolean
 is_supported_font_format (FcPattern *pattern)
 {
   FcResult res;
-  const char *fontformat;
   const char *file;
+  const char *fontwrapper;
 
-  /* Harfbuzz loads woff fonts, but we don't get any glyphs */
+  /* Patterns without FC_FILE are problematic, since our caching is based
+   * on filenames.
+   */
   res = FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **)(void*)&file);
-  if (res == FcResultMatch &&
-      (g_str_has_suffix (file, ".woff") || g_str_has_suffix (file, ".woff2")))
-    return FALSE;
-
-  res = FcPatternGetString (pattern, FC_FONTFORMAT, 0, (FcChar8 **)(void*)&fontformat);
   if (res != FcResultMatch)
     return FALSE;
 
-  /* Harfbuzz supports only SFNT fonts */
+  /* Harfbuzz supports only SFNT fonts. */
+  res = FcPatternGetString (pattern, FC_FONT_WRAPPER, 0, (FcChar8 **)(void*)&fontwrapper);
+  if (res != FcResultMatch)
+    return FALSE;
 
-  /* FIXME: "CFF" is used for both CFF in OpenType and bare CFF files, but
-   * HarfBuzz does not support the later and FontConfig does not seem
-   * to have a way to tell them apart.
-   */
-  if (g_ascii_strcasecmp (fontformat, "TrueType") == 0 ||
-      g_ascii_strcasecmp (fontformat, "CFF") == 0)
-    return TRUE;
-
-  return FALSE;
+  return strcmp (fontwrapper, "SFNT") == 0;
 }
 
 static Pango2Style
