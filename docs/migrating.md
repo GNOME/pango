@@ -77,8 +77,8 @@ before including the corresponding header file.
 ### PangoFontMap changes
 
 The [class@Pango2.FontMap] class has seen some significant changes. It is now possible
-to instantiate a `PangoFontMap`, and populate it manually with `PangoFontFamily`
-and `PangoFontFace` objects. If you simply want to obtain the default fontmap
+to instantiate a `Pango2FontMap`, and populate it manually with `Pango2FontFamily`
+and `Pango2FontFace` objects. If you simply want to obtain the default fontmap
 that is populated with the native font enumeration APIs, use
 [func@Pango2.FontMap.get_default]. It is no longer necessary to use cairo-specific
 APIs to obtain a suitable fontmap, or set the resolution.
@@ -110,7 +110,7 @@ copy/free semantics instead of ref/unref.
 
 ### PangoContext changes
 
-[ctor@Pango2.Context.new] creates a `PangoContext` that uses the default
+[ctor@Pango2.Context.new] creates a `Pango2Context` that uses the default
 font map. To create a context with a custom font map, use
 [ctor@Pango2.Context.new_with_font_map].
 
@@ -123,7 +123,7 @@ and have getters. APIs for creating items have been dropped.
 
 Most APIs that provide information about the formatted output have been
 moved from [class@Pango2.Layout] to the new objects [class@Pango2.Lines] and
-[struct@Pango2.LineIter]. To obtain these from a `PangoLayout`, use
+[struct@Pango2.LineIter]. To obtain these from a `Pango2Layout`, use
 [method@Pango2.Layout.get_lines] and [method@Pango2.Layout.get_iter].
 
 The `PangoLayoutLine` struct has been replaced by [struct@Pango2.Line],
@@ -203,3 +203,8 @@ to make them available like any other font.
 
 [class@Pango2.UserFace] is a callback-based implementation of fonts that allows
 for entirely appication-defined font handling, including glyph drawing.
+
+### Color fonts
+
+Pango supports color palettes in fonts, with apis like [method@Pango2.Context.set_palette],
+[func@Pango2.attr_palette_new] and [func@Pango2.cairo_show_color_glyph_string].

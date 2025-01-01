@@ -44,7 +44,7 @@ show_index_summary = true
 show_class_hierarchy = true
 
 [source-location]
-base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/main/"
+base_url = "https://gitlab.gnome.org/GNOME/pango/-/blob/pango2/"
 
 [extra]
 content_files = [

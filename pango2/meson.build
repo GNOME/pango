@@ -265,10 +265,10 @@ if build_gir
     nsversion: pango_api_version,
     identifier_prefix: 'Pango2',
     symbol_prefix: 'pango2',
-    export_packages: 'pango',
+    export_packages: [ 'pango2', 'pango2cairo' ],
     dependencies: pango_deps,
     includes: pango_gir_includes,
-    header: 'pango/pango.h',
+    header: 'pango2/pango.h',
     install: true,
     extra_args: gir_args,
   )

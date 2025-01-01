@@ -62,7 +62,7 @@ pango_content_files = [
 ]
 
 doc_conf = configuration_data()
-doc_conf.set('PANGO_VERSION', meson.project_version())
+doc_conf.set('PANGO2_VERSION', meson.project_version())
 
 docs_dir = pango_datadir / 'doc'
 

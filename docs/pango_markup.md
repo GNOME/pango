@@ -33,7 +33,7 @@ to italicize could be in a different position.
 The solution is to include the text attributes in the string to be translated.
 Pango provides this feature with a small markup language. You can parse a marked-up
 string into the string text plus a [struct@Pango2.AttrList] using either of
-[func@parse_markup] or [func@markup_parser_new].
+[func@Pango2.parse_markup] or [func@Pango2.markup_parser_new].
 
 A simple example of a marked-up string might be:
 
@@ -102,14 +102,15 @@ font_stretch
 stretch
 : One of 'ultra-condensed', 'extra-condensed',
   'condensed', 'semi-condensed', 'normal', 'semi-expanded', 'expanded',
-  'extra-expanded', 'ultra-expanded'.
+  'extra-expanded', 'ultra-expanded', or a numeric stretch.
 
 font_features
 : A comma-separated list of OpenType font feature settings, in the same syntax as
   accepted by CSS. E.g: `font_features='dlig=1, -kern, afrc on'`.
 
 palette
-: The name of a palette to use.
+: The name of a palette to use, one of 'default', 'light', 'dark', 'palette0',
+  'palette1', ..., or a custom name.
 
 foreground
 fgcolor

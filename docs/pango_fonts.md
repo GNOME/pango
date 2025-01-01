@@ -5,7 +5,7 @@ Title: Fonts and Glyphs
 # Fonts
 
 Pango supports a flexible architecture where platform-specific code can supply
-an implementation of font enumeration. The `PangoFont` structure represents a
+an implementation of font enumeration. The `Pango2Font` structure represents a
 rendering-system-independent font. Pango provides routines to list available
 fonts, and to load a font matching a given description.
 
@@ -22,10 +22,10 @@ The central object for dealing with the available fonts on a system and caching
 loaded fonts is a [class@Pango2.FontMap]. An application typically uses a single
 font map.
 
-Since the font map depends on the platform in use, you'll need to use the backend
-function [func@Pango2.FontMap.get_default] to obtain the default fontmap. Depending
-on the platform, it will return a `PangoFcFontMap`, a `PangoDirectWriterFontMap`
-or a `PangoCoreTextFontMap`.
+Since the font map depends on the platform in use, you'll need to use the function
+[func@Pango2.FontMap.get_default] to obtain the default fontmap. Depending on the
+platform, it will return a `Pango2FcFontMap`, a `Pango2DirectWriteFontMap`
+or a `Pango2CoreTextFontMap`.
 
 Once you have a fontmap, you can enumerate the available font families using
 the [iface@Gio.ListModel] implementation of the fontmap. To enumerate the faces

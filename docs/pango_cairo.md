@@ -10,13 +10,13 @@ Multiple backends for Cairo are available, to allow rendering to images, to PDF
 files, and to the screen on X and on other windowing systems. The functions in
 this section allow using Pango to render to Cairo surfaces.
 
-Using Pango with Cairo is straightforward. A `PangoContext` created with
+Using Pango with Cairo is straightforward. A `Pango2Context` created with
 [func@Pango2.cairo_create_context] can be used on any Cairo context (`cairo_t`),
 but needs to be updated to match the current transformation matrix and target
 surface of the Cairo context using [func@Pango2.cairo_update_context].
 The convenience functions [func@Pango2.cairo_create_layout] and
 [func@Pango2.cairo_update_layout] handle the common case where the program
-doesn't need to manipulate the properties of the `PangoContext`.
+doesn't need to manipulate the properties of the `Pango2Context`.
 
 When you get the metrics of a layout or of a piece of a layout using functions
 such as [method@Pango2.Lines.get_extents], the reported metrics are in user-space
@@ -26,7 +26,7 @@ results will be affected by hinting (that is, the process of adjusting the text
 to look good on the pixel grid), so you shouldn't assume they are completely
 independent of the current transformation matrix. Note that the basic metrics
 functions in Pango report results in integer Pango units. To get to the floating
-point units used in Cairo divide by `PANGO_SCALE`.
+point units used in Cairo divide by `PANGO2_SCALE`.
 
 ## Using Pango with Cairo
 

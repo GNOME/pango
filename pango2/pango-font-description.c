@@ -1100,7 +1100,7 @@ find_field (const char     *what,
         }
     }
 
-  for (i=0; i<n_elements; i++)
+  for (i = 0; i < n_elements; i++)
     {
       if (map[i].str[0] && field_matches (map[i].str, str, len))
         {
@@ -1671,7 +1671,7 @@ pango2_parse_variant (const char    *str,
  * Parses a font weight.
  *
  * The allowed values are "heavy",
- * "ultrabold", "bold", "normal", "light", "ultraleight"
+ * "ultrabold", "bold", "normal", "light", "ultralight"
  * and integers. Case variations are ignored.
  *
  * Return value: %TRUE if @str was successfully parsed.
