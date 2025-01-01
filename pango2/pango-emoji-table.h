@@ -6,16 +6,16 @@
  *
  * on file with this header:
  *
- * # emoji-data-14.0.0.txt
- * # Date: 2023-02-01, 02:22:54 GMT
- * # © 2023 Unicode®, Inc.
+ * # emoji-data.txt
+ * # Date: 2024-05-01, 21:25:24 GMT
+ * # © 2024 Unicode®, Inc.
  * # Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
- * # For terms of use, see http://www.unicode.org/terms_of_use.html
+ * # For terms of use and license, see https://www.unicode.org/terms_of_use.html
  * #
  * # Emoji Data for UTS #51
- * # Used with Emoji Version 15.1 and subsequent minor revisions (if any)
+ * # Used with Emoji Version 16.0 and subsequent minor revisions (if any)
  * #
- * # For documentation and usage, see http://www.unicode.org/reports/tr51
+ * # For documentation and usage, see https://www.unicode.org/reports/tr51
  */
 
 #ifndef PANGO2_EMOJI_TABLE_H
@@ -163,7 +163,7 @@ static const struct Interval _pango2_Emoji_table[] =
   {0x1F680, 0x1F6C5},
   {0x1F6CB, 0x1F6D2},
   {0x1F6D5, 0x1F6D7},
-  {0x1F6DD, 0x1F6E5},
+  {0x1F6DC, 0x1F6E5},
   {0x1F6E9, 0x1F6E9},
   {0x1F6EB, 0x1F6EC},
   {0x1F6F0, 0x1F6F0},
@@ -173,15 +173,12 @@ static const struct Interval _pango2_Emoji_table[] =
   {0x1F90C, 0x1F93A},
   {0x1F93C, 0x1F945},
   {0x1F947, 0x1F9FF},
-  {0x1FA70, 0x1FA74},
-  {0x1FA78, 0x1FA7C},
-  {0x1FA80, 0x1FA86},
-  {0x1FA90, 0x1FAAC},
-  {0x1FAB0, 0x1FABA},
-  {0x1FAC0, 0x1FAC5},
-  {0x1FAD0, 0x1FAD9},
-  {0x1FAE0, 0x1FAE7},
-  {0x1FAF0, 0x1FAF6},
+  {0x1FA70, 0x1FA7C},
+  {0x1FA80, 0x1FA89},
+  {0x1FA8F, 0x1FAC6},
+  {0x1FACE, 0x1FADC},
+  {0x1FADF, 0x1FAE9},
+  {0x1FAF0, 0x1FAF8},
 };
 
 static const struct Interval _pango2_Emoji_Presentation_table[] =
@@ -252,7 +249,7 @@ static const struct Interval _pango2_Emoji_Presentation_table[] =
   {0x1F6CC, 0x1F6CC},
   {0x1F6D0, 0x1F6D2},
   {0x1F6D5, 0x1F6D7},
-  {0x1F6DD, 0x1F6DF},
+  {0x1F6DC, 0x1F6DF},
   {0x1F6EB, 0x1F6EC},
   {0x1F6F4, 0x1F6FC},
   {0x1F7E0, 0x1F7EB},
@@ -260,15 +257,12 @@ static const struct Interval _pango2_Emoji_Presentation_table[] =
   {0x1F90C, 0x1F93A},
   {0x1F93C, 0x1F945},
   {0x1F947, 0x1F9FF},
-  {0x1FA70, 0x1FA74},
-  {0x1FA78, 0x1FA7C},
-  {0x1FA80, 0x1FA86},
-  {0x1FA90, 0x1FAAC},
-  {0x1FAB0, 0x1FABA},
-  {0x1FAC0, 0x1FAC5},
-  {0x1FAD0, 0x1FAD9},
-  {0x1FAE0, 0x1FAE7},
-  {0x1FAF0, 0x1FAF6},
+  {0x1FA70, 0x1FA7C},
+  {0x1FA80, 0x1FA89},
+  {0x1FA8F, 0x1FAC6},
+  {0x1FACE, 0x1FADC},
+  {0x1FADF, 0x1FAE9},
+  {0x1FAF0, 0x1FAF8},
 };
 
 static const struct Interval _pango2_Emoji_Modifier_table[] =
@@ -317,7 +311,7 @@ static const struct Interval _pango2_Emoji_Modifier_Base_table[] =
   {0x1F9CD, 0x1F9CF},
   {0x1F9D1, 0x1F9DD},
   {0x1FAC3, 0x1FAC5},
-  {0x1FAF0, 0x1FAF6},
+  {0x1FAF0, 0x1FAF8},
 };
 
 static const struct Interval _pango2_Extended_Pictographic_table[] =
