@@ -214,12 +214,12 @@ endif
 # Dependencies
 pango_deps = []
 
-glib_req_version = '>= 2.62'
+glib_req_version = '>= 2.80'
 fribidi_req_version = '>= 1.0.6'
 libthai_req_version = '>= 0.1.9'
 harfbuzz_req_version = '>= 8.4.0'
 fontconfig_req_version = '>= 2.15.0'
-cairo_req_version = '>= 1.12.10'
+cairo_req_version = '>= 1.18.0'
 
 # libm
 mathlib_dep = cc.find_library('m', required: false)
