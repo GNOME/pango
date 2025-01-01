@@ -24,6 +24,8 @@
 #include <pango2/pangocairo.h>
 #include <pango2/pango-item-private.h>
 
+#include "test-common.h"
+
 /* Test that itemizing a string with 0 characters works
  */
 static void
@@ -653,7 +655,7 @@ test_gravity_metrics (void)
   Pango2Rectangle ink[4];
   Pango2Rectangle log[4];
 
-  map = pango2_font_map_get_default ();
+  map = get_font_map_with_cantarell ();
   context = pango2_context_new_with_font_map (map);
 
   desc = pango2_font_description_from_string ("Cantarell 64");
@@ -677,55 +679,6 @@ test_gravity_metrics (void)
 
   g_assert_cmpint (log[PANGO2_GRAVITY_SOUTH].width, ==, - log[PANGO2_GRAVITY_NORTH].width);
   g_assert_cmpint (log[PANGO2_GRAVITY_EAST].width, ==, - log[PANGO2_GRAVITY_WEST].width);
-
-  pango2_font_description_free (desc);
-  g_object_unref (context);
-}
-
-static void
-test_gravity_metrics2 (void)
-{
-  Pango2FontMap *map;
-  Pango2Context *context;
-  Pango2FontDescription *desc;
-  Pango2Font *font;
-  Pango2Glyph glyph;
-  Pango2Gravity gravity;
-  Pango2Rectangle ink[4];
-  Pango2Rectangle log[4];
-  char *path;
-
-  map = pango2_font_map_new ();
-  path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
-  pango2_font_map_add_file (map, path);
-  g_free (path);
-
-  context = pango2_context_new_with_font_map (PANGO2_FONT_MAP (map));
-
-  desc = pango2_font_description_from_string ("Cantarell 64");
-
-  glyph = 1; /* A */
-
-  for (gravity = PANGO2_GRAVITY_SOUTH; gravity <= PANGO2_GRAVITY_WEST; gravity++)
-    {
-      pango2_font_description_set_gravity (desc, gravity);
-      font = pango2_font_map_load_font (PANGO2_FONT_MAP (map), context, desc);
-      pango2_font_get_glyph_extents (font, glyph, &ink[gravity], &log[gravity]);
-      g_object_unref (font);
-    }
-
-  g_assert_cmpint (ink[PANGO2_GRAVITY_EAST].width, ==, ink[PANGO2_GRAVITY_SOUTH].height);
-  g_assert_cmpint (ink[PANGO2_GRAVITY_EAST].height, ==, ink[PANGO2_GRAVITY_SOUTH].width);
-  g_assert_cmpint (ink[PANGO2_GRAVITY_NORTH].width, ==, ink[PANGO2_GRAVITY_SOUTH].width);
-  g_assert_cmpint (ink[PANGO2_GRAVITY_NORTH].height, ==, ink[PANGO2_GRAVITY_SOUTH].height);
-  g_assert_cmpint (ink[PANGO2_GRAVITY_WEST].width, ==, ink[PANGO2_GRAVITY_SOUTH].height);
-  g_assert_cmpint (ink[PANGO2_GRAVITY_WEST].height, ==, ink[PANGO2_GRAVITY_SOUTH].width);
-
-  /* Seems that harfbuzz has some off-by-one differences in advance width
-   * when fonts differ by a scale of -1.
-   */
-  g_assert_cmpint (log[PANGO2_GRAVITY_SOUTH].width + log[PANGO2_GRAVITY_NORTH].width, <=, 1);
-  g_assert_cmpint (log[PANGO2_GRAVITY_EAST].width, ==, log[PANGO2_GRAVITY_WEST].width);
 
   pango2_font_description_free (desc);
   g_object_unref (context);
@@ -847,7 +800,6 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/empty-line-height", test_empty_line_height);
   g_test_add_func ("/layout/gravity-metrics", test_gravity_metrics);
   g_test_add_func ("/layout/wrap-char", test_wrap_char);
-  g_test_add_func ("/layout/gravity-metrics2", test_gravity_metrics2);
   g_test_add_func ("/matrix/transform-rectangle", test_transform_rectangle);
   g_test_add_func ("/itemize/small-caps-crash", test_small_caps_crash);
 
