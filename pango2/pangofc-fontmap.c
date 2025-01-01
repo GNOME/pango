@@ -331,8 +331,9 @@ pango2_fc_font_map_populate (Pango2FontMap *map)
   before = PANGO2_TRACE_CURRENT_TIME;
 
   os = FcObjectSetBuild (FC_FAMILY, FC_SPACING, FC_STYLE, FC_WEIGHT,
-                         FC_WIDTH, FC_SLANT, FC_VARIABLE, FC_FONTFORMAT,
-                         FC_FILE, FC_INDEX, FC_LANG, NULL);
+                         FC_WIDTH, FC_SLANT, FC_VARIABLE, FC_FILE,
+                         FC_INDEX, FC_LANG, FC_FONT_WRAPPER,
+                         NULL);
 
   pat = FcPatternCreate ();
   fontset = FcFontList (self->config, pat, os);
