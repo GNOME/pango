@@ -18,9 +18,9 @@ The integration of Pango with [Cairo](https://cairographics.org)
 provides a complete solution with high quality text handling and
 graphics rendering.
 
-As well as the low level layout rendering routines, Pango includes
+As well as the low-level layout rendering routines, Pango includes
 PangoLayout, a high level driver for laying out entire blocks of text,
-and routines to assist in editing internationalized text.
+and PangoLineBreaker for incremental line breaking and shaping of text.
 
 For more information about Pango, see:
 
