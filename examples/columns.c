@@ -43,8 +43,6 @@ main (int argc, char *argv[])
 
   breaker = pango2_line_breaker_new (context);
 
-  g_print ("Using %s\n", G_OBJECT_TYPE_NAME (breaker));
-
   attrs = pango2_attr_list_new ();
 
   pango2_line_breaker_add_text (breaker, text, -1, attrs);
