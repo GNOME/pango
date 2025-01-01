@@ -259,9 +259,9 @@ test_version_info (void)
 {
   char *str;
 
-  g_assert_null (pango2_version_check (1, 0, 0));
+  g_assert_null (pango2_version_check (0, 91, 0));
   g_assert_null (pango2_version_check (PANGO2_VERSION_MAJOR, PANGO2_VERSION_MINOR, PANGO2_VERSION_MICRO));
-  g_assert_nonnull (pango2_version_check (2, 0, 0));
+  g_assert_nonnull (pango2_version_check (1, 0, 0));
 
   str = g_strdup_printf ("%d.%d.%d", PANGO2_VERSION_MAJOR, PANGO2_VERSION_MINOR, PANGO2_VERSION_MICRO);
   g_assert_cmpstr (str, ==, pango2_version_string ());
