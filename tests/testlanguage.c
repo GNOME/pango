@@ -39,7 +39,7 @@ test_language_env (void)
     {
       Pango2Language **preferred;
 
-      g_setenv ("PANGO2_LANGUAGE", "de:ja", TRUE);
+      g_setenv ("PANGO_LANGUAGE", "de:ja", TRUE);
       g_setenv ("LANGUAGE", "fr", TRUE);
 
       preferred = pango2_language_get_preferred ();

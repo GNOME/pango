@@ -740,7 +740,7 @@ parse_default_languages (void)
   gboolean done = FALSE;
   GPtrArray *langs;
 
-  p = getenv ("PANGO2_LANGUAGE");
+  p = getenv ("PANGO_LANGUAGE");
 
   if (p == NULL)
     p = getenv ("LANGUAGE");
@@ -831,7 +831,7 @@ out:
  *
  * Returns the list of languages that the user prefers.
  *
- * The list is specified by the `PANGO2_LANGUAGE` or `LANGUAGE`
+ * The list is specified by the `PANGO_LANGUAGE` or `LANGUAGE`
  * environment variables, in order of preference. Note that this
  * list does not necessarily include the language returned by
  * [func@Pango2.Language.get_default].
