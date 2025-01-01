@@ -688,7 +688,7 @@ pango2_attr_list_equal (Pango2AttrList *list,
  * @list: a `Pango2AttrList`
  * @func: (scope call) (closure data): callback function;
  *   returns %TRUE if an attribute should be filtered out
- * @data: (closure): Data to be passed to @func
+ * @data: Data to be passed to @func
  *
  * Given a `Pango2AttrList` and callback function, removes
  * any elements of @list for which @func returns %TRUE and

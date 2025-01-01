@@ -112,7 +112,7 @@ pango2_fontset_get_language (Pango2Fontset *fontset)
  * pango2_fontset_foreach:
  * @fontset: a `Pango2Fontset`
  * @func: (closure data) (scope call): Callback function
- * @data: (closure): data to pass to the callback function
+ * @data: data to pass to the callback function
  *
  * Iterates through all the fonts in a fontset, calling @func for
  * each one.
