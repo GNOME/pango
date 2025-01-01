@@ -54,8 +54,8 @@ get_backtrace (void)
 /**
  * Pango2FontFace:
  *
- * A `Pango2FontFace` is used to represent a group of fonts with
- * the same family, slant, weight, and width, but varying sizes.
+ * Represents a group of fonts with the same family, slant, weight,
+ * and width, but varying sizes.
  *
  * `Pango2FontFace` provides APIs to determine coverage information,
  * such as [method@Pango2.FontFace.has_char] and
@@ -352,9 +352,7 @@ pango2_font_face_get_faceid (Pango2FontFace *face)
  * variant, weight and stretch of the face, but its size field
  * will be unset.
  *
- * Return value: a newly-created `Pango2FontDescription` structure
- *   holding the description of the face. Use [method@Pango2.FontDescription.free]
- *   to free the result.
+ * Return value: a newly-created `Pango2FontDescription` for the face
  */
 Pango2FontDescription *
 pango2_font_face_describe (Pango2FontFace *face)
@@ -378,7 +376,7 @@ pango2_font_face_describe (Pango2FontFace *face)
  * creates this face from another face, by shearing, emboldening,
  * lightening or modifying it in some other way.
  *
- * Return value: whether @face is synthesized
+ * Return value: true if @face is synthesized
  */
 gboolean
 pango2_font_face_is_synthesized (Pango2FontFace *face)
@@ -401,8 +399,7 @@ pango2_font_face_is_synthesized (Pango2FontFace *face)
  * with the same name (e.g. a variable and a non-variable
  * face for the same style).
  *
- * Return value: the name for the face. This string is
- *   owned by the face object and must not be modified or freed.
+ * Return value: the name for the face
  */
 const char *
 pango2_font_face_get_name (Pango2FontFace *face)
@@ -449,7 +446,7 @@ pango2_font_face_get_family (Pango2FontFace *face)
  * results of [method@Pango2.FontMetrics.get_approximate_char_width] may
  * be affected by double-width characters.
  *
- * Returns: `TRUE` if @face is monospace
+ * Returns: true if @face is monospace
  */
 gboolean
 pango2_font_face_is_monospace (Pango2FontFace *face)
@@ -471,7 +468,7 @@ pango2_font_face_is_monospace (Pango2FontFace *face)
  * Such axes are also known as _variations_; see
  * [method@Pango2.FontDescription.set_variations] for more information.
  *
- * Returns: `TRUE` if @face is variable
+ * Returns: true if @face is variable
  */
 gboolean
 pango2_font_face_is_variable (Pango2FontFace *face)
@@ -489,7 +486,7 @@ pango2_font_face_is_variable (Pango2FontFace *face)
  * Returns whether the face has all the glyphs necessary to
  * support this language.
  *
- * Returns: `TRUE` if @face supports @language
+ * Returns: true if @face supports @language
  */
 gboolean
 pango2_font_face_supports_language (Pango2FontFace *face,
@@ -531,7 +528,7 @@ pango2_font_face_get_languages (Pango2FontFace *face)
  *
  * Returns whether the face provides a glyph for this character.
  *
- * Returns: `TRUE` if @font can render @wc
+ * Returns: true if @font can render @wc
  */
 gboolean
 pango2_font_face_has_char (Pango2FontFace *face,

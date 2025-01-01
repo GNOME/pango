@@ -109,8 +109,8 @@ font_features
   accepted by CSS. E.g: `font_features='dlig=1, -kern, afrc on'`.
 
 palette
-: The name of a palette to use, one of 'default', 'light', 'dark', 'palette0',
-  'palette1', ..., or a custom name.
+: The name of a palette to use, one of the predefined names 'default', 'light' or 'dark',
+  a name referring to the palette by index ('palette0', 'palette1', …), or a custom name.
 
 foreground
 fgcolor

@@ -31,8 +31,7 @@ G_BEGIN_DECLS
  * @PANGO2_DIRECTION_WEAK_RTL: A weak right-to-left direction
  * @PANGO2_DIRECTION_NEUTRAL: No direction specified
  *
- * `Pango2Direction` represents a direction in the Unicode bidirectional
- * algorithm.
+ * Represents a direction in the Unicode bidirectional algorithm.
  *
  * Not every value in this enumeration makes sense for every usage of
  * `Pango2Direction`; for example, the direction of characters cannot be

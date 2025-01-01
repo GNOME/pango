@@ -44,16 +44,17 @@ void                    pango2_find_paragraph_boundary (const char *text,
  * @minor: the minor component of the version number
  * @micro: the micro component of the version number
  *
- * This macro encodes the given Pango version into an integer.  The numbers
- * returned by %PANGO2_VERSION and pango2_version() are encoded using this macro.
- * Two encoded version numbers can be compared as integers.
+ * Encodes the given Pango version into an integer.
+ *
+ * The numbers returned by `PANGO2_VERSION` and pango2_version()
+ * are encoded using this macro. Two encoded version numbers can
+ * be compared as integers.
  */
 #define PANGO2_VERSION_ENCODE(major, minor, micro) (     \
           ((major) * 10000)                             \
         + ((minor) *   100)                             \
         + ((micro) *     1))
 
-/* Encoded version of Pango at compile-time */
 /**
  * PANGO2_VERSION:
  *
@@ -87,15 +88,14 @@ void                    pango2_find_paragraph_boundary (const char *text,
         PANGO2_VERSION_MICRO)
 
 
-/* Check that compile-time Pango is as new as required */
 /**
  * PANGO2_VERSION_CHECK:
  * @major: the major component of the version number
  * @minor: the minor component of the version number
  * @micro: the micro component of the version number
  *
- * Checks that the version of Pango available at compile-time is not older than
- * the provided version number.
+ * Checks that the version of Pango available at compile-time
+ * is not older than the provided version number.
  */
 #define PANGO2_VERSION_CHECK(major,minor,micro)    \
         (PANGO2_VERSION >= PANGO2_VERSION_ENCODE(major,minor,micro))

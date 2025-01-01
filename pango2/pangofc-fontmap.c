@@ -40,8 +40,10 @@
 /**
  * Pango2FcFontMap:
  *
- * `Pango2FcFontMap` is a subclass of `Pango2FontMap` that uses
- * fontconfig to populate the fontmap with the available fonts.
+ * Uses fontconfig to populate a fontmap with the available fonts.
+ *
+ * `Pango2FcFontMap` is a subclass of [class@Pango2.FontMap] that
+ * implements font enumeration using fontconfig.
  */
 
 /**

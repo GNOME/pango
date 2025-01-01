@@ -34,8 +34,7 @@ typedef struct _Pango2Color Pango2Color;
  * @blue: value of the blue component
  * @alpha: value of the alpha component
  *
- * The `Pango2Color` structure is used to
- * represent a color in an uncalibrated RGB color-space.
+ * Represents a color in an uncalibrated RGB color-space.
  */
 struct _Pango2Color
 {

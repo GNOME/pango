@@ -33,8 +33,7 @@
 /**
  * Pango2HbFace:
  *
- * `Pango2HbFace` is a `Pango2FontFace` implementation that wraps
- * a `hb_face_t` object and implements all of the `Pango2FontFace`
+ * Wraps a `hb_face_t` object and implements the `Pango2FontFace`
  * functionality using HarfBuzz.
  *
  * In addition to making a `hb_face_t` available for rendering
@@ -712,12 +711,12 @@ pango2_hb_face_get_palette_index (Pango2HbFace *self,
 }
 
 /* }}} */
-  /* {{{ Public API */
+/* {{{ Public API */
 
 /**
  * pango2_hb_face_new_from_hb_face:
  * @face: an immutable `hb_face_t`
- * @instance_id: named instance id, or -1 for the default instance
+ * @instance_id: named instance ID, or -1 for the default instance
  *   or -2 for no instance
  * @name: (nullable): name for the face
  * @description: (nullable): `Pango2FontDescription` for the font
@@ -729,7 +728,7 @@ pango2_hb_face_get_palette_index (Pango2HbFace *self,
  * to learn about the available named instances.
  *
  * If @instance_id is -2 and @face has variation axes, then
- * [method@Pango2.FontFace.is_variable] will return `TRUE` for
+ * [method@Pango2.FontFace.is_variable] will return true for
  * the returned `Pango2HbFace`.
  *
  * If @name is provided, it is used as the name for the face.
@@ -775,7 +774,7 @@ pango2_hb_face_new_from_hb_face (hb_face_t                  *face,
  * pango2_hb_face_new_from_file:
  * @file: font filename
  * @index: face index
- * @instance_id: named instance id, or -1 for the default instance
+ * @instance_id: named instance ID, or -1 for the default instance
  *   or -2 for no instance
  * @name: (nullable): name for the face
  * @description: (nullable): `Pango2FontDescription` for the font
@@ -790,7 +789,7 @@ pango2_hb_face_new_from_hb_face (hb_face_t                  *face,
  * to learn about the available named instances.
  *
  * If @instance_id is -2 and @face has variation axes, then
- * [method@Pango2.FontFace.is_variable] will return `TRUE` for
+ * [method@Pango2.FontFace.is_variable] will return true for
  * the returned `Pango2HbFace`.
  *
  * If @name is provided, it is used as the name for the face.
@@ -843,8 +842,7 @@ pango2_hb_face_new_from_file (const char                  *file,
  * Note that the objects returned by this function are cached
  * and immutable, and may be shared between `Pango2HbFace` objects.
  *
- * Returns: (transfer none): the `hb_face_t` object
- *   backing the face
+ * Returns: (transfer none): the `hb_face_t` object backing the face
  */
 hb_face_t *
 pango2_hb_face_get_hb_face (Pango2HbFace *self)
@@ -878,7 +876,7 @@ pango2_hb_face_get_file (Pango2HbFace *self)
  *
  * Gets the face index of the face.
  *
- * Returns: the face indexx
+ * Returns: the face index
  */
 unsigned int
 pango2_hb_face_get_face_index (Pango2HbFace *self)
@@ -892,9 +890,9 @@ pango2_hb_face_get_face_index (Pango2HbFace *self)
  * pango2_hb_face_get_instance_id:
  * @self: a `Pango2HbFace`
  *
- * Gets the instance id of the face.
+ * Gets the instance ID of the face.
  *
- * Returns: the instance id
+ * Returns: the instance ID
  */
 int
 pango2_hb_face_get_instance_id (Pango2HbFace *self)
@@ -932,7 +930,7 @@ pango2_hb_face_get_variations (Pango2HbFace *self,
  *
  * Gets whether face is using synthetic emboldening.
  *
- * Returns: `TRUE` if the face is using synthetic embolding
+ * Returns: true if the face is using synthetic embolding
  */
 gboolean
 pango2_hb_face_get_embolden (Pango2HbFace *self)
@@ -946,7 +944,8 @@ pango2_hb_face_get_embolden (Pango2HbFace *self)
  * pango2_hb_face_get_transform:
  * @self: a `Pango2HbFace`
  *
- * Gets the transform from 'font space' to 'user space' that this face uses.
+ * Gets the transform from 'font space' to 'user space'
+ * that this face uses.
  *
  * This is the 'font matrix' which is used for
  * sythetic italics and width variations.
@@ -991,10 +990,10 @@ name_is_valid (const char *name)
  * @self: a `PangoHbFace`
  * @index: index of the palette
  *
- * Gets the name for the palette with the given index in @self.
+ * Gets the name for the palette with the given index in the face.
  *
- * Note that this function only returns names that have been
- * set up by a prior call of [method@Pang2.HbFace.set_palette_name].
+ * Note that this function only returns names that have been set up
+ * by a prior call of [method@Pango2.HbFaceBuilder.set_palette_name].
  * It does not return the predefined "paletteN" names.
  *
  * Returns: (nullable): the palette name
@@ -1024,7 +1023,7 @@ pango2_hb_face_get_palette_name (Pango2HbFace *self,
 /**
  * Pango2HbFaceBuilder:
  *
- * An auxiliary object to build `Pango2HbFace` objects.
+ * Auxiliary object to build `Pango2HbFace` objects.
  */
 
 struct _Pango2HbFaceBuilder {
@@ -1068,7 +1067,7 @@ face_builder_new (void)
  * pango2_hb_face_builder_copy:
  * @src: a `Pango2HbFaceBuilder`
  *
- * Copy a `Pango2HbFaceBuilder`.
+ * Copies a `Pango2HbFaceBuilder`.
  *
  * Returns: (transfer full): a copy of @src
  */
@@ -1100,7 +1099,7 @@ pango2_hb_face_builder_copy (const Pango2HbFaceBuilder *src)
  * pango2_hb_face_builder_free:
  * @builder: a `Pango2HbFaceBuilder`
  *
- * Frees the `PangoHbFaceBuilder`.
+ * Frees a `PangoHbFaceBuilder`.
  */
 void
 pango2_hb_face_builder_free (Pango2HbFaceBuilder *builder)
@@ -1147,7 +1146,7 @@ pango2_hb_face_builder_new_for_hb_face (hb_face_t *hb_face)
  * @face: a `Pango2HbFace`
  *
  * Creates a new `Pango2HbFaceBuilder` that will
- * produce `Pango2HbFace` objects wrapping @face.
+ * produce `Pango2HbFace` objects based on @face.
  *
  * Returns: (transfer full): a new `Pango2HbFaceBuilder`
  */
@@ -1230,7 +1229,7 @@ pango2_hb_face_builder_get_face (Pango2HbFaceBuilder *builder)
 /**
  * pango2_hb_face_builder_set_instance_id:
  * @builder: a `Pango2HbFaceBuilder`
- * @instance_id: named instance id, or -1 for the default instance
+ * @instance_id: named instance ID, or -1 for the default instance
  *   or -2 for no instance
  *
  * Sets the instance ID to use for the face.
@@ -1314,7 +1313,7 @@ pango2_hb_face_builder_set_transform (Pango2HbFaceBuilder *builder,
 /**
  * pango2_hb_face_builder_set_embolden:
  * @builder: a `Pango2HbFaceBuilder`
- * @embolden: `TRUE` to render the font bolder
+ * @embolden: true to render the font bolder
  *
  * Sets whether the face should be artificially emboldened.
  */

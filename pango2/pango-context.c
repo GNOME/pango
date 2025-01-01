@@ -40,8 +40,7 @@
 /**
  * Pango2Context:
  *
- * A `Pango2Context` stores global information used to control the
- * itemization process.
+ * Stores global information used to control the itemization process.
  *
  * The information stored by `Pango2Context` includes the fontmap used
  * to look up fonts, and default values such as the default language,
@@ -500,8 +499,7 @@ pango2_context_get_matrix (Pango2Context *context)
  * @context: a `Pango2Context`
  * @font_map: the `Pango2FontMap` to set.
  *
- * Sets the font map to be searched when fonts are looked-up
- * in this context.
+ * Sets the font map used to look up fonts in this context.
  *
  * This is only for internal use by Pango backends, a `Pango2Context`
  * obtained via one of the recommended methods should already have a
@@ -535,10 +533,9 @@ pango2_context_set_font_map (Pango2Context *context,
  * pango2_context_get_font_map:
  * @context: a `Pango2Context`
  *
- * Gets the `Pango2FontMap` used to look up fonts for this context.
+ * Gets the font map used to look up fonts for this context.
  *
- * Return value: (transfer none): the font map for the `Pango2Context`.
- *   This value is owned by Pango and should not be unreferenced.
+ * Return value: (transfer none): the font map for the `Pango2Context`
  */
 Pango2FontMap *
 pango2_context_get_font_map (Pango2Context *context)
@@ -553,11 +550,11 @@ pango2_context_get_font_map (Pango2Context *context)
  * @context: a `Pango2Context`
  * @desc: a `Pango2FontDescription` describing the font to load
  *
- * Loads the font in one of the fontmaps in the context
+ * Loads the font in one of the font maps in the context
  * that is the closest match for @desc.
  *
  * Returns: (transfer full) (nullable): the newly allocated `Pango2Font`
- *   that was loaded, or %NULL if no font matched.
+ *   that was loaded, or `NULL` if no font matched.
  */
 Pango2Font *
 pango2_context_load_font (Pango2Context               *context,
@@ -575,11 +572,11 @@ pango2_context_load_font (Pango2Context               *context,
  * @desc: a `Pango2FontDescription` describing the fonts to load
  * @language: a `Pango2Language` the fonts will be used for
  *
- * Load a set of fonts in the context that can be used to render
+ * Loads a set of fonts in the context that can be used to render
  * a font matching @desc.
  *
  * Returns: (transfer full) (nullable): the newly allocated
- *   `Pango2Fontset` loaded, or %NULL if no font matched.
+ *   `Pango2Fontset` loaded, or `NULL` if no font matched.
  */
 Pango2Fontset *
 pango2_context_load_fontset (Pango2Context               *context,
@@ -596,7 +593,7 @@ pango2_context_load_fontset (Pango2Context               *context,
  * @context: a `Pango2Context`
  * @desc: the new pango font description
  *
- * Set the default font description for the context
+ * Sets the default font description for the context.
  */
 void
 pango2_context_set_font_description (Pango2Context               *context,
@@ -621,10 +618,9 @@ pango2_context_set_font_description (Pango2Context               *context,
  * pango2_context_get_font_description:
  * @context: a `Pango2Context`
  *
- * Retrieve the default font description for the context.
+ * Retrieves the default font description for the context.
  *
- * Return value: (transfer none): a pointer to the context's default font
- *   description. This value must not be modified or freed.
+ * Return value: (transfer none): the context's default font description
  */
 Pango2FontDescription *
 pango2_context_get_font_description (Pango2Context *context)
@@ -637,7 +633,7 @@ pango2_context_get_font_description (Pango2Context *context)
 /**
  * pango2_context_set_language:
  * @context: a `Pango2Context`
- * @language: the new language tag.
+ * @language: the new language tag
  *
  * Sets the global language tag for the context.
  *
@@ -668,7 +664,7 @@ pango2_context_set_language (Pango2Context  *context,
  *
  * Retrieves the global language tag for the context.
  *
- * Return value: the global language tag.
+ * Return value: the global language tag
  */
 Pango2Language *
 pango2_context_get_language (Pango2Context *context)
@@ -686,10 +682,10 @@ pango2_context_get_language (Pango2Context *context)
  * Sets the base direction for the context.
  *
  * The base direction is used in applying the Unicode bidirectional
- * algorithm; if the @direction is %PANGO2_DIRECTION_LTR or
- * %PANGO2_DIRECTION_RTL, then the value will be used as the paragraph
+ * algorithm; if the @direction is `PANGO2_DIRECTION_LTR` or
+ * `PANGO2_DIRECTION_RTL`, then the value will be used as the paragraph
  * direction in the Unicode bidirectional algorithm. A value of
- * %PANGO2_DIRECTION_WEAK_LTR or %PANGO2_DIRECTION_WEAK_RTL is used only
+ * `PANGO2_DIRECTION_WEAK_LTR` or `PANGO2_DIRECTION_WEAK_RTL` is used only
  * for paragraphs that do not contain any strong characters themselves.
  */
 void
@@ -715,7 +711,7 @@ pango2_context_set_base_dir (Pango2Context   *context,
  *
  * See [method@Pango2.Context.set_base_dir].
  *
- * Return value: the base direction for the context.
+ * Return value: the base direction for the context
  */
 Pango2Direction
 pango2_context_get_base_dir (Pango2Context *context)
@@ -759,7 +755,7 @@ pango2_context_set_base_gravity (Pango2Context *context,
  *
  * See [method@Pango2.Context.set_base_gravity].
  *
- * Return value: the base gravity for the context.
+ * Return value: the base gravity for the context
  */
 Pango2Gravity
 pango2_context_get_base_gravity (Pango2Context *context)
@@ -780,7 +776,7 @@ pango2_context_get_base_gravity (Pango2Context *context)
  * which [func@Pango2.Gravity.get_for_matrix] is used to return the
  * gravity from the current context matrix.
  *
- * Return value: the resolved gravity for the context.
+ * Return value: the resolved gravity for the context
  */
 Pango2Gravity
 pango2_context_get_gravity (Pango2Context *context)
@@ -799,8 +795,8 @@ pango2_context_get_gravity (Pango2Context *context)
  *
  * The gravity hint is used in laying vertical text out, and
  * is only relevant if gravity of the context as returned by
- * [method@Pango2.Context.get_gravity] is set to %PANGO2_GRAVITY_EAST
- * or %PANGO2_GRAVITY_WEST.
+ * [method@Pango2.Context.get_gravity] is set to `PANGO2_GRAVITY_EAST`
+ * or `PANGO2_GRAVITY_WEST`.
  */
 void
 pango2_context_set_gravity_hint (Pango2Context     *context,
@@ -825,7 +821,7 @@ pango2_context_set_gravity_hint (Pango2Context     *context,
  *
  * See [method@Pango2.Context.set_gravity_hint] for details.
  *
- * Return value: the gravity hint for the context.
+ * Return value: the gravity hint for the context
  */
 Pango2GravityHint
 pango2_context_get_gravity_hint (Pango2Context *context)
@@ -914,15 +910,15 @@ update_metrics_from_items (Pango2FontMetrics *metrics,
 /**
  * pango2_context_get_metrics:
  * @context: a `Pango2Context`
- * @desc: (nullable): a `Pango2FontDescription` structure. %NULL means that the
- *   font description from the context will be used.
+ * @desc: (nullable): a `Pango2FontDescription` structure. `NULL` means that the
+ *   font description from the context will be used
  * @language: (nullable): language tag used to determine which script to get
- *   the metrics for. %NULL means that the language tag from the context
+ *   the metrics for. `NULL` means that the language tag from the context
  *   will be used. If no language tag is set on the context, metrics
  *   for the default language (as determined by [func@Pango2.Language.get_default]
  *   will be returned.
  *
- * Get overall metric information for a particular font description.
+ * Gets overall metric information for a particular font description.
  *
  * Since the metrics may be substantially different for different scripts,
  * a language tag can be provided to indicate that the metrics should be
@@ -934,8 +930,7 @@ update_metrics_from_items (Pango2FontMetrics *metrics,
  * the returned fonts would be a composite of the metrics for the fonts loaded
  * for the individual families.
  *
- * Return value: a `Pango2FontMetrics` object. The caller must call
- *   [method@Pango2.FontMetrics.free] when finished using the object.
+ * Return value: (transfer full): a `Pango2FontMetrics` object
  */
 Pango2FontMetrics *
 pango2_context_get_metrics (Pango2Context               *context,
@@ -1047,7 +1042,7 @@ check_fontmap_changed (Pango2Context *context)
  * and is only useful when implementing objects that need update when their
  * `Pango2Context` changes, like `Pango2Layout`.
  *
- * Return value: The current serial number of @context.
+ * Return value: The current serial number of @context
  */
 guint
 pango2_context_get_serial (Pango2Context *context)

@@ -786,7 +786,7 @@ pango2_markup_parser_new_internal (char       accel_marker,
  * If @accel_marker is nonzero, the given character will mark the
  * character following it as an accelerator. For example, @accel_marker
  * might be an ampersand or underscore. All characters marked
- * as an accelerator will receive a %PANGO2_UNDERLINE_LOW attribute,
+ * as an accelerator will receive a `PANGO2_UNDERLINE_LOW` attribute,
  * and the first character so marked will be returned in @accel_char.
  * Two @accel_marker characters following each other produce a single
  * literal @accel_marker character.
@@ -796,7 +796,7 @@ pango2_markup_parser_new_internal (char       accel_marker,
  * If any error happens, none of the output arguments are touched except
  * for @error.
  *
- * Return value: %FALSE if @error is set, otherwise %TRUE
+ * Return value: false if @error is set, otherwise true
  **/
 gboolean
 pango2_parse_markup (const char      *markup_text,
@@ -860,7 +860,7 @@ pango2_parse_markup (const char      *markup_text,
  * If @accel_marker is nonzero, the given character will mark the
  * character following it as an accelerator. For example, @accel_marker
  * might be an ampersand or underscore. All characters marked
- * as an accelerator will receive a %PANGO2_UNDERLINE_LOW attribute,
+ * as an accelerator will receive a `PANGO2_UNDERLINE_LOW` attribute,
  * and the first character so marked will be returned in @accel_char,
  * when calling [func@markup_parser_finish]. Two @accel_marker characters
  * following each other produce a single literal @accel_marker character.
@@ -874,8 +874,7 @@ pango2_parse_markup (const char      *markup_text,
  * from streams. To simply parse a string containing Pango markup,
  * the [func@Pango2.parse_markup] API is recommended instead.
  *
- * Return value: (transfer none): a `GMarkupParseContext` that should be
- * destroyed with [method@GLib.MarkupParseContext.free].
+ * Return value: (transfer none): a newly allocated `GMarkupParseContext`
  **/
 GMarkupParseContext *
 pango2_markup_parser_new (gunichar accel_marker)
@@ -898,7 +897,7 @@ pango2_markup_parser_new (gunichar accel_marker)
  * markup. This function will not free @context, use [method@GLib.MarkupParseContext.free]
  * to do so.
  *
- * Return value: %FALSE if @error is set, otherwise %TRUE
+ * Return value: false if @error is set, otherwise true
  */
 gboolean
 pango2_markup_parser_finish (GMarkupParseContext  *context,

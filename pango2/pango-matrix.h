@@ -35,8 +35,7 @@ typedef struct _Pango2Matrix    Pango2Matrix;
  * @x0: x translation
  * @y0: y translation
  *
- * A `Pango2Matrix` specifies a transformation between user-space
- * and device coordinates.
+ * Specifies a transformation between user-space and device coordinates.
  *
  * The transformation is given by
  *

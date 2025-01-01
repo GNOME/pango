@@ -8,8 +8,7 @@
 /**
  * Pango2LineIter:
  *
- * A `Pango2LineIter` can be used to iterate over the visual
- * extents of a `Pango2Layout` or `Pango2Lines`.
+ * Iterates over the visual extents of a `Pango2Layout` or `Pango2Lines`.
  *
  * To obtain a `Pango2LineIter`, use [method@Pango2.Layout.get_iter]
  * or [method@Pango2.Lines.get_iter].
@@ -374,7 +373,7 @@ pango2_line_iter_copy (Pango2LineIter *iter)
  * pango2_line_iter_free:
  * @iter: (nullable): a `Pango2LineIter`
  *
- * Frees an iterator that's no longer in use.
+ * Frees an iterator.
  */
 void
 pango2_line_iter_free (Pango2LineIter *iter)
@@ -422,7 +421,7 @@ pango2_line_iter_get_line (Pango2LineIter *iter)
  *
  * Determines whether @iter is on the last line.
  *
- * Return value: %TRUE if @iter is on the last line
+ * Return value: true if @iter is on the last line
  */
 gboolean
 pango2_line_iter_at_last_line (Pango2LineIter *iter)
@@ -439,7 +438,7 @@ pango2_line_iter_at_last_line (Pango2LineIter *iter)
  * Gets the current run.
  *
  * When iterating by run, at the end of each line, there's a position
- * with a %NULL run, so this function can return %NULL. The %NULL run
+ * with a `NULL` run, so this function can return `NULL`. The `NULL` run
  * at the end of each line ensures that all lines have at least one run,
  * even lines consisting of only a newline.
  *
@@ -465,7 +464,7 @@ pango2_line_iter_get_run (Pango2LineIter *iter)
  * Note that iterating forward by char moves in visual order,
  * not logical order, so indexes may not be sequential. Also,
  * the index may be equal to the length of the text in the
- * layout, if on the %NULL run (see [method@Pango2.LineIter.get_run]).
+ * layout, if on the `NULL` run (see [method@Pango2.LineIter.get_run]).
  *
  * Return value: current byte index
  */
@@ -483,7 +482,7 @@ pango2_line_iter_get_index (Pango2LineIter *iter)
  *
  * Moves @iter forward to the start of the next line.
  *
- * If @iter is already on the last line, returns %FALSE.
+ * If @iter is already on the last line, returns false.
  *
  * Return value: whether motion was possible
  */
@@ -516,7 +515,7 @@ pango2_line_iter_next_line (Pango2LineIter *iter)
  *
  * Moves @iter forward to the next run in visual order.
  *
- * If @iter was already at the end, returns %FALSE.
+ * If @iter was already at the end, returns false.
  *
  * Return value: whether motion was possible
  */
@@ -554,7 +553,7 @@ pango2_line_iter_next_run (Pango2LineIter *iter)
  *
  * Moves @iter forward to the next cluster in visual order.
  *
- * If @iter was already at the end, returns %FALSE.
+ * If @iter was already at the end, returns false.
  *
  * Return value: whether motion was possible
  */
@@ -572,7 +571,7 @@ pango2_line_iter_next_cluster (Pango2LineIter *iter)
  *
  * Moves @iter forward to the next character in visual order.
  *
- * If @iter was already at the end, returns %FALSE.
+ * If @iter was already at the end, returns false.
  *
  * Return value: whether motion was possible
  */

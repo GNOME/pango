@@ -146,11 +146,9 @@ pango2_attr_font_description_new (Pango2AttrType               type,
  * pango2_attr_family_new:
  * @family: the family or comma-separated list of families
  *
- * Create a new font family attribute.
+ * Creates a new font family attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_family_new (const char *family)
@@ -162,11 +160,9 @@ pango2_attr_family_new (const char *family)
  * pango2_attr_language_new:
  * @language: language tag
  *
- * Create a new language tag attribute.
+ * Creates a new language tag attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_language_new (Pango2Language *language)
@@ -178,11 +174,9 @@ pango2_attr_language_new (Pango2Language *language)
  * pango2_attr_foreground_new:
  * @color: the color
  *
- * Create a new foreground color attribute.
+ * Creates a new foreground color attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_foreground_new (Pango2Color *color)
@@ -194,11 +188,9 @@ pango2_attr_foreground_new (Pango2Color *color)
  * pango2_attr_background_new:
  * @color: the color
  *
- * Create a new background color attribute.
+ * Creates a new background color attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_background_new (Pango2Color *color)
@@ -208,13 +200,11 @@ pango2_attr_background_new (Pango2Color *color)
 
 /**
  * pango2_attr_size_new:
- * @size: the font size, in %PANGO2_SCALE-ths of a point
+ * @size: the font size, in `PANGO2_SCALE`-ths of a point
  *
- * Create a new font-size attribute in fractional points.
+ * Creates a new font-size attribute in fractional points.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_size_new (int value)
@@ -225,13 +215,11 @@ pango2_attr_size_new (int value)
 
 /**
  * pango2_attr_size_new_absolute:
- * @size: the font size, in %PANGO2_SCALE-ths of a device unit
+ * @size: the font size, in `PANGO2_SCALE`-ths of a device unit
  *
  * Create a new font-size attribute in device units.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_size_new_absolute (int size)
@@ -243,11 +231,9 @@ pango2_attr_size_new_absolute (int size)
  * pango2_attr_style_new:
  * @style: the slant style
  *
- * Create a new font slant style attribute.
+ * Creates a new font slant style attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_style_new (Pango2Style style)
@@ -259,11 +245,9 @@ pango2_attr_style_new (Pango2Style style)
  * pango2_attr_weight_new:
  * @weight: the weight
  *
- * Create a new font weight attribute.
+ * Creates a new font weight attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_weight_new (Pango2Weight weight)
@@ -275,10 +259,9 @@ pango2_attr_weight_new (Pango2Weight weight)
  * pango2_attr_variant_new:
  * @variant: the variant
  *
- * Create a new font variant attribute (normal or small caps).
+ * Creates a new font variant attribute (normal or small caps).
  *
- * Return value: (transfer full): the newly allocated `Pango2Attribute`,
- *   which should be freed with [method@Pango2.Attribute.destroy].
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_variant_new (Pango2Variant variant)
@@ -290,11 +273,9 @@ pango2_attr_variant_new (Pango2Variant variant)
  * pango2_attr_stretch_new:
  * @stretch: the stretch
  *
- * Create a new font stretch attribute.
+ * Creates a new font stretch attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_stretch_new (Pango2Stretch stretch)
@@ -306,14 +287,12 @@ pango2_attr_stretch_new (Pango2Stretch stretch)
  * pango2_attr_font_desc_new:
  * @desc: the font description
  *
- * Create a new font description attribute.
+ * Creates a new font description attribute.
  *
  * This attribute allows setting family, style, weight, variant,
  * stretch, and size simultaneously.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_font_desc_new (const Pango2FontDescription *desc)
@@ -325,11 +304,9 @@ pango2_attr_font_desc_new (const Pango2FontDescription *desc)
  * pango2_attr_underline_new:
  * @style: the line style
  *
- * Create a new underline attribute.
+ * Creates a new underline attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_underline_new (Pango2LineStyle style)
@@ -341,14 +318,12 @@ pango2_attr_underline_new (Pango2LineStyle style)
  * pango2_attr_underline_color_new:
  * @color: the color
  *
- * Create a new underline color attribute.
+ * Creates a new underline color attribute.
  *
  * This attribute modifies the color of underlines.
  * If not set, underlines will use the foreground color.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_underline_color_new (Pango2Color *color)
@@ -360,11 +335,9 @@ pango2_attr_underline_color_new (Pango2Color *color)
  * pango2_attr_underline_position_new:
  * @position: the underline position
  *
- * Create a new underline position attribute.
+ * Creates a new underline position attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_underline_position_new (Pango2UnderlinePosition position)
@@ -375,11 +348,9 @@ pango2_attr_underline_position_new (Pango2UnderlinePosition position)
  * pango2_attr_strikethrough_new:
  * @style: the line style
  *
- * Create a new strike-through attribute.
+ * Creates a new strike-through attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_strikethrough_new (Pango2LineStyle style)
@@ -391,14 +362,12 @@ pango2_attr_strikethrough_new (Pango2LineStyle style)
  * pango2_attr_strikethrough_color_new:
  * @color: the color
  *
- * Create a new strikethrough color attribute.
+ * Creates a new strikethrough color attribute.
  *
  * This attribute modifies the color of strikethrough lines.
  * If not set, strikethrough lines will use the foreground color.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_strikethrough_color_new (Pango2Color *color)
@@ -411,11 +380,9 @@ pango2_attr_strikethrough_color_new (Pango2Color *color)
  * @rise: the amount that the text should be displaced vertically,
  *   in Pango units. Positive values displace the text upwards.
  *
- * Create a new baseline displacement attribute.
+ * Creates a new baseline displacement attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_rise_new (int rise)
@@ -429,7 +396,7 @@ pango2_attr_rise_new (int rise)
  *   in Pango units, relative to the baseline of the previous run.
  *   Positive values displace the text upwards.
  *
- * Create a new baseline displacement attribute.
+ * Creates a new baseline displacement attribute.
  *
  * The effect of this attribute is to shift the baseline of a run,
  * relative to the run of preceding run.
@@ -439,9 +406,7 @@ pango2_attr_rise_new (int rise)
  *   <img alt="Baseline Shift" src="baseline-shift-light.png">
  * </picture>
 
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_baseline_shift_new (int rise)
@@ -454,14 +419,12 @@ pango2_attr_baseline_shift_new (int rise)
  * @scale: a `Pango2FontScale` value, which indicates font size change relative
  *   to the size of the previous run.
  *
- * Create a new font scale attribute.
+ * Creates a new font scale attribute.
  *
  * The effect of this attribute is to change the font size of a run,
  * relative to the size of preceding run.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_font_scale_new (Pango2FontScale scale)
@@ -473,14 +436,12 @@ pango2_attr_font_scale_new (Pango2FontScale scale)
  * pango2_attr_scale_new:
  * @scale_factor: factor to scale the font
  *
- * Create a new font size scale attribute.
+ * Creates a new font size scale attribute.
  *
  * The base font for the affected text will have
  * its size multiplied by @scale_factor.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute*
 pango2_attr_scale_new (double scale_factor)
@@ -490,19 +451,17 @@ pango2_attr_scale_new (double scale_factor)
 
 /**
  * pango2_attr_fallback_new:
- * @enable_fallback: %TRUE if we should fall back on other fonts
+ * @enable_fallback: true if we should fall back on other fonts
  *   for characters the active font is missing
  *
- * Create a new font fallback attribute.
+ * Creates a new font fallback attribute.
  *
  * If fallback is disabled, characters will only be
  * used from the closest matching font on the system.
  * No fallback will be done to other fonts on the system
  * that might contain the characters in the text.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_fallback_new (gboolean enable_fallback)
@@ -515,11 +474,9 @@ pango2_attr_fallback_new (gboolean enable_fallback)
  * @letter_spacing: amount of extra space to add between
  *   graphemes of the text, in Pango units
  *
- * Create a new letter-spacing attribute.
+ * Creates a new letter-spacing attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_letter_spacing_new (int letter_spacing)
@@ -529,13 +486,11 @@ pango2_attr_letter_spacing_new (int letter_spacing)
 
 /**
  * pango2_attr_gravity_new:
- * @gravity: the gravity value; should not be %PANGO2_GRAVITY_AUTO
+ * @gravity: the gravity value; should not be `PANGO2_GRAVITY_AUTO`
  *
- * Create a new gravity attribute.
+ * Creates a new gravity attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_gravity_new (Pango2Gravity gravity)
@@ -549,11 +504,9 @@ pango2_attr_gravity_new (Pango2Gravity gravity)
  * pango2_attr_gravity_hint_new:
  * @hint: the gravity hint value
  *
- * Create a new gravity hint attribute.
+ * Creates a new gravity hint attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_gravity_hint_new (Pango2GravityHint hint)
@@ -566,14 +519,12 @@ pango2_attr_gravity_hint_new (Pango2GravityHint hint)
  * @features: a string with OpenType font features, with the syntax of the [CSS
  *   font-feature-settings property](https://www.w3.org/TR/css-fonts-4/#font-rend-desc)
  *
- * Create a new font features tag attribute.
+ * Creates a new font features tag attribute.
  *
  * You can use this attribute to select OpenType font features like small-caps,
  * alternative glyphs, ligatures, etc. for fonts that support them.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_font_features_new (const char *features)
@@ -587,14 +538,12 @@ pango2_attr_font_features_new (const char *features)
  * pango2_attr_palette_new:
  * @palette : name of palette to use
  *
- * Create a new palette attribute.
+ * Creates a new palette attribute.
  *
  * You can use this attribute to select font color palettes
  * by name, like "light", "dark" or "palette3".
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_palette_new (const char *palette)
@@ -606,16 +555,14 @@ pango2_attr_palette_new (const char *palette)
 
 /**
  * pango2_attr_allow_breaks_new:
- * @allow_breaks: %TRUE if we line breaks are allowed
+ * @allow_breaks: true if we line breaks are allowed
  *
- * Create a new allow-breaks attribute.
+ * Creates a new allow-breaks attribute.
  *
  * If breaks are disabled, the range will be kept in a
  * single run, as far as possible.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_allow_breaks_new (gboolean allow_breaks)
@@ -625,17 +572,15 @@ pango2_attr_allow_breaks_new (gboolean allow_breaks)
 
 /**
  * pango2_attr_insert_hyphens_new:
- * @insert_hyphens: %TRUE if hyphens should be inserted
+ * @insert_hyphens: true if hyphens should be inserted
  *
- * Create a new insert-hyphens attribute.
+ * Creates a new insert-hyphens attribute.
  *
  * Pango will insert hyphens when breaking lines in
  * the middle of a word. This attribute can be used
  * to suppress the hyphen.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_insert_hyphens_new (gboolean insert_hyphens)
@@ -647,12 +592,10 @@ pango2_attr_insert_hyphens_new (gboolean insert_hyphens)
  * pango2_attr_show_new:
  * @flags: `Pango2ShowFlags` to apply
  *
- * Create a new attribute that influences how invisible
+ * Creates a new attribute that influences how invisible
  * characters are rendered.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  **/
 Pango2Attribute *
 pango2_attr_show_new (Pango2ShowFlags flags)
@@ -663,15 +606,13 @@ pango2_attr_show_new (Pango2ShowFlags flags)
 /**
  * pango2_attr_word_new:
  *
- * Create a new attribute that marks its range
+ * Creates a new attribute that marks its range
  * as a single word.
  *
  * Note that this may require adjustments to word and
  * sentence classification around the range.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_word_new (void)
@@ -682,15 +623,13 @@ pango2_attr_word_new (void)
 /**
  * pango2_attr_sentence_new:
  *
- * Create a new attribute that marks its range
+ * Creates a new attribute that marks its range
  * as a single sentence.
  *
  * Note that this may require adjustments to word and
  * sentence classification around the range.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_sentence_new (void)
@@ -701,14 +640,12 @@ pango2_attr_sentence_new (void)
 /**
  * pango2_attr_paragraph_new:
  *
- * Create a new attribute that marks its range as a single paragraph.
+ * Creates a new attribute that marks its range as a single paragraph.
  *
  * Newlines and similar characters in the range of the attribute
  * will not be treated as paragraph separators.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_paragraph_new (void)
@@ -720,11 +657,9 @@ pango2_attr_paragraph_new (void)
  * pango2_attr_overline_new:
  * @style: the line style
  *
- * Create a new overline-style attribute.
+ * Creates a new overline-style attribute.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_overline_new (Pango2LineStyle style)
@@ -736,14 +671,12 @@ pango2_attr_overline_new (Pango2LineStyle style)
  * pango2_attr_overline_color_new:
  * @color: the color
  *
- * Create a new overline color attribute.
+ * Creates a new overline color attribute.
  *
  * This attribute modifies the color of overlines.
  * If not set, overlines will use the foreground color.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_overline_color_new (Pango2Color *color)
@@ -755,12 +688,14 @@ pango2_attr_overline_color_new (Pango2Color *color)
  * pango2_attr_line_height_new:
  * @factor: the scaling factor to apply to the logical height
  *
- * Create a new attribute that modifies the height
+ * Creates a new attribute that modifies the height
  * of logical line extents by a factor.
  *
  * This affects the values returned by
  * [method@Pango2.Line.get_extents] and
  * [method@Pango2.LineIter.get_line_extents].
+ *
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_line_height_new (double factor)
@@ -770,14 +705,16 @@ pango2_attr_line_height_new (double factor)
 
 /**
  * pango2_attr_line_height_new_absolute:
- * @height: the line height, in %PANGO2_SCALE-ths of a point
+ * @height: the line height, in `PANGO2_SCALE`-ths of a point
  *
- * Create a new attribute that overrides the height
+ * Creates a new attribute that overrides the height
  * of logical line extents to be @height.
  *
  * This affects the values returned by
  * [method@Pango2.Line.get_extents],
  * [method@Pango2.LineIter.get_line_extents].
+ *
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_line_height_new_absolute (int height)
@@ -787,15 +724,17 @@ pango2_attr_line_height_new_absolute (int height)
 
 /**
  * pango2_attr_line_spacing_new:
- * @spacing: the line spacing, in %PANGO2_SCALE-ths of a point
+ * @spacing: the line spacing, in `PANGO2_SCALE`-ths of a point
  *
- * Create a new attribute that adds space to the
+ * Creates a new attribute that adds space to the
  * leading from font metrics, if not overridden
  * by line spacing attributes.
  *
  * This affects the values returned by
  * [method@Pango2.Line.get_extents],
  * [method@Pango2.LineIter.get_line_extents].
+ *
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_line_spacing_new (int spacing)
@@ -807,12 +746,10 @@ pango2_attr_line_spacing_new (int spacing)
  * pango2_attr_text_transform_new:
  * @transform: `Pango2TextTransform` to apply
  *
- * Create a new attribute that influences how characters
+ * Creates a new attribute that influences how characters
  * are transformed during shaping.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_text_transform_new (Pango2TextTransform transform)
@@ -825,10 +762,8 @@ pango2_attr_text_transform_new (Pango2TextTransform transform)
  * @ink_rect: ink rectangle to use for each character
  * @logical_rect: logical rectangle to use for each character
  * @data: user data
- * @copy: (nullable): function to copy @data when the attribute
- *   is copied
- * @destroy: (nullable): function to free @data when the attribute
- *   is freed
+ * @copy: (nullable): function to copy @data when the attribute is copied
+ * @destroy: (nullable): function to free @data when the attribute is freed
  *
  * Creates a new shape attribute.
  *
@@ -837,9 +772,7 @@ pango2_attr_text_transform_new (Pango2TextTransform transform)
  * be used, for instance, for embedding a picture or a widget
  * inside a `Pango2Layout`.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_shape_new (Pango2Rectangle        *ink_rect,
@@ -873,9 +806,7 @@ pango2_attr_shape_new (Pango2Rectangle        *ink_rect,
  * Emoji presentation attributes override the preference for
  * whether Emoji should be presented a text or as color Emoji.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attr_emoji_presentation_new (Pango2EmojiPresentation presentation)

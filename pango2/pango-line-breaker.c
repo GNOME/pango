@@ -25,7 +25,7 @@
 /**
  * Pango2LineBreaker:
  *
- * A `Pango2LineBreaker` breaks text into lines.
+ * Breaks text into lines.
  *
  * To use a `Pango2LineBreaker`, you must call [method@Pango2.LineBreaker.add_text]
  * to provide text that you want to break into lines, plus possibly attributes
@@ -2340,14 +2340,14 @@ pango2_line_breaker_get_context (Pango2LineBreaker *self)
  * `Pango2LineBreaker` will place content at the next tab position
  * whenever it meets a Tab character (U+0009).
  *
- * By default, tabs are every 8 spaces. If @tabs is %NULL, the
- * default tabs are reinstated. @tabs is copied by @self, you
- * must free your copy of @tabs yourself.
+ * By default, tabs are every 8 spaces. If @tabs is `NULL`, the
+ * default tabs are reinstated. @tabs is copied, you must free your
+ * copy of @tabs yourself.
  *
  * Note that tabs and justification conflict with each other:
  * Justification will move content away from its tab-aligned
  * positions. The same is true for alignments other than
- * %PANGO2_ALIGNMENT_LEFT.
+ * `PANGO2_ALIGNMENT_LEFT`.
  */
 void
 pango2_line_breaker_set_tabs (Pango2LineBreaker *self,
@@ -2377,7 +2377,7 @@ pango2_line_breaker_set_tabs (Pango2LineBreaker *self,
  * Gets the current `Pango2TabArray` used by the `Pango2LineBreaker`.
  *
  * If no `Pango2TabArray` has been set, then the default tabs are
- * in use and %NULL is returned. Default tabs are every 8 spaces.
+ * in use and `NULL` is returned. Default tabs are every 8 spaces.
  *
  * Return value: (transfer none) (nullable): the tabs for @self
  */
@@ -2466,7 +2466,7 @@ pango2_line_breaker_add_text (Pango2LineBreaker *self,
  * If the `Pango2LineBreaker` has no more input, then
  * `PANGO2_DIRECTION_NEUTRAL` is returned.
  *
- * Returns: the resolved direction of the next line.
+ * Returns: the resolved direction of the next line
  */
 Pango2Direction
 pango2_line_breaker_get_direction (Pango2LineBreaker *self)
@@ -2482,7 +2482,7 @@ pango2_line_breaker_get_direction (Pango2LineBreaker *self)
  *
  * Returns whether the `Pango2LineBreaker` has any text left to process.
  *
- * Returns: TRUE if there are more lines.
+ * Returns: true if there are more lines
  */
 gboolean
 pango2_line_breaker_has_line (Pango2LineBreaker *self)
@@ -2506,14 +2506,14 @@ pango2_line_breaker_has_line (Pango2LineBreaker *self)
  *
  * The `Pango2LineBreaker` will use as much of its unprocessed text
  * as will fit into @width. The @x position is used to determine
- * where tabs are located are.
+ * where tabs are located.
  *
  * If @ellipsize is not `PANGO2_ELLIPSIZE_NONE`, then all unprocessed
  * text will be made to fit by ellipsizing.
  *
- * Note that the line is not positioned - the leftmost point of its baseline
- * is at 0, 0. See [class@Pango2.Lines] for a way to hold a list of positioned
- * `Pango2Line` objects.
+ * Note that the line is not positioned - the leftmost point of its
+ * baseline is at 0, 0. See [class@Pango2.Lines] for a way to hold
+ * a list of positioned `Pango2Line` objects.
  *
  *     line = pango2_line_breaker_next_line (breaker,
  *                                           x, width,
@@ -2606,7 +2606,7 @@ pango2_line_breaker_next_line (Pango2LineBreaker   *self,
  * undone in the reverse order in which they
  * were produced.
  *
- * Returns: `TRUE` on success, `FALSE` if Pango2
+ * Returns: true on success, false if Pango2
  *   determines that the line can't be undone
  */
 gboolean

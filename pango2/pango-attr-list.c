@@ -108,12 +108,10 @@ pango2_attr_list_has_attributes (const Pango2AttrList *list)
 /**
  * pango2_attr_list_new:
  *
- * Create a new empty attribute list with a reference
+ * Creates a new empty attribute list with a reference
  * count of one.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2AttrList`, which should be freed with
- *   [method@Pango2.AttrList.unref]
+ * Return value: (transfer full): the newly allocated `Pango2AttrList`
  */
 Pango2AttrList *
 pango2_attr_list_new (void)
@@ -129,7 +127,7 @@ pango2_attr_list_new (void)
  * pango2_attr_list_ref:
  * @list: (nullable): a `Pango2AttrList`
  *
- * Increase the reference count of the given attribute
+ * Increases the reference count of the given attribute
  * list by one.
  *
  * Return value: The attribute list passed in
@@ -149,10 +147,10 @@ pango2_attr_list_ref (Pango2AttrList *list)
  * pango2_attr_list_unref:
  * @list: (nullable): a `Pango2AttrList`
  *
- * Decrease the reference count of the given attribute
+ * Decreases the reference count of the given attribute
  * list by one.
  *
- * If the result is zero, free the attribute list
+ * If the result is zero, frees the attribute list
  * and the attributes it contains.
  */
 void
@@ -174,11 +172,9 @@ pango2_attr_list_unref (Pango2AttrList *list)
  * pango2_attr_list_copy:
  * @list: (nullable): a `Pango2AttrList`
  *
- * Copy @list and return an identical new list.
+ * Copies @list and return an identical new list.
  *
- * Return value: (nullable): the newly allocated
- *   `Pango2AttrList`, with a reference count of one,
- *   which should be freed with [method@Pango2.AttrList.unref]
+ * Return value: (nullable): the newly allocated `Pango2AttrList`
  */
 Pango2AttrList *
 pango2_attr_list_copy (Pango2AttrList *list)
@@ -202,7 +198,7 @@ pango2_attr_list_copy (Pango2AttrList *list)
  * @list: a `Pango2AttrList`
  * @attr: (transfer full): the attribute to insert
  *
- * Insert the given attribute into the `Pango2AttrList`.
+ * Inserts the given attribute into the `Pango2AttrList`.
  *
  * It will be inserted after all other attributes with a
  * matching @start_index.
@@ -222,7 +218,7 @@ pango2_attr_list_insert (Pango2AttrList  *list,
  * @list: a `Pango2AttrList`
  * @attr: (transfer full): the attribute to insert
  *
- * Insert the given attribute into the `Pango2AttrList`.
+ * Inserts the given attribute into the `Pango2AttrList`.
  *
  * It will be inserted before all other attributes with a
  * matching @start_index.
@@ -242,7 +238,7 @@ pango2_attr_list_insert_before (Pango2AttrList  *list,
  * @list: a `Pango2AttrList`
  * @attr: (transfer full): the attribute to insert
  *
- * Insert the given attribute into the `Pango2AttrList`.
+ * Inserts the given attribute into the `Pango2AttrList`.
  *
  * It will replace any attributes of the same type
  * on that segment and be merged with any adjoining
@@ -407,7 +403,7 @@ pango2_attr_list_change (Pango2AttrList  *list,
  * @remove: the number of removed bytes
  * @add: the number of added bytes
  *
- * Update indices of attributes in @list for a change in the
+ * Updates indices of attributes in @list for a change in the
  * text they refer to.
  *
  * The change that this function applies is removing @remove
@@ -490,9 +486,8 @@ pango2_attr_list_update (Pango2AttrList *list,
  *   must be specified since the attributes in @other may only
  *   be present at some subsection of this range)
  *
- * This function opens up a hole in @list, fills it
- * in with attributes from the left, and then merges
- * @other on top of the hole.
+ * Opens up a hole in @list, fills it in with attributes from the left,
+ * and then merges @other on top of the hole.
  *
  * This operation is equivalent to stretching every attribute
  * that applies at position @pos in @list by an amount @len,
@@ -625,8 +620,7 @@ pango2_attr_list_get_attributes (Pango2AttrList *list)
  * Beware that this will return wrong values if any list
  * contains duplicates.
  *
- * Return value: %TRUE if the lists are equal, %FALSE if
- *   they aren't
+ * Return value: true if the lists are equal, false if they aren't
  */
 gboolean
 pango2_attr_list_equal (Pango2AttrList *list,
@@ -690,12 +684,11 @@ pango2_attr_list_equal (Pango2AttrList *list,
  *   returns %TRUE if an attribute should be filtered out
  * @data: Data to be passed to @func
  *
- * Given a `Pango2AttrList` and callback function, removes
- * any elements of @list for which @func returns %TRUE and
- * inserts them into a new list.
+ * Removes any elements of @list for which @func returns
+ * true and inserts them into a new list.
  *
  * Return value: (transfer full) (nullable): the new
- *   `Pango2AttrList` or %NULL if no attributes of the
+ *   `Pango2AttrList` or `NULL` if no attributes of the
  *   given types were found
  */
 Pango2AttrList *

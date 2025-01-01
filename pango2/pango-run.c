@@ -12,7 +12,7 @@
 /**
  * Pango2Run:
  *
- * A `Pango2Run` represents a single run within a `Pango2Line`.
+ * Represents a single run within a `Pango2Line`.
  *
  * A run is a range of text with uniform script, font and attributes that
  * is shaped as a unit.

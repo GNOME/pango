@@ -40,6 +40,8 @@
 /**
  * Pango2CoreTextFontMap:
  *
+ * Uses CoreText to populate a fontmap with the available fonts.
+ *
  * `Pango2CoreTextFontMap` is a subclass of `Pango2FontMap` that uses
  * CoreText to populate the fontmap with the available fonts.
  */

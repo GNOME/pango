@@ -43,8 +43,7 @@ typedef struct _Pango2RendererClass   Pango2RendererClass;
  * @PANGO2_RENDER_PART_STRIKETHROUGH: strikethrough lines
  * @PANGO2_RENDER_PART_OVERLINE: overlines
  *
- * `Pango2RenderPart` defines different items to render for such
- * purposes as setting colors.
+ * Defines different items to render for such purposes as setting colors.
  */
 /* When extending, note N_RENDER_PARTS #define in pango-renderer.c */
 typedef enum
@@ -59,8 +58,8 @@ typedef enum
 /**
  * Pango2Renderer:
  *
- * `Pango2Renderer` is a base class for objects that can render text
- * provided as `Pango2GlyphString` or `Pango2Layout`.
+ * Base class for objects that can render shaped text provided as
+ * `Pango2GlyphString` or `Pango2Layout`.
  *
  * By subclassing `Pango2Renderer` and overriding operations such as
  * @draw_glyphs and @draw_rectangle, renderers for particular font

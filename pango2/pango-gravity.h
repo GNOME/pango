@@ -32,15 +32,14 @@ G_BEGIN_DECLS
  * @PANGO2_GRAVITY_WEST: Glyphs are rotated 90 degrees clockwise. <img align="right" valign="center" src="m-west.png">
  * @PANGO2_GRAVITY_AUTO: Gravity is resolved from the context matrix
  *
- * `Pango2Gravity` represents the orientation of glyphs in a segment
- * of text.
+ * Represents the orientation of glyphs in a segment of text.
  *
  * This is useful when rendering vertical text layouts. In those situations,
  * the layout is rotated using a non-identity [struct@Pango2.Matrix], and then
  * glyph orientation is controlled using `Pango2Gravity`.
  *
  * Not every value in this enumeration makes sense for every usage of
- * `Pango2Gravity`; for example, %PANGO2_GRAVITY_AUTO only can be passed to
+ * `Pango2Gravity`; for example, `PANGO2_GRAVITY_AUTO` only can be passed to
  * [method@Pango2.Context.set_base_gravity] and can only be returned by
  * [method@Pango2.Context.get_base_gravity].
  *
@@ -65,8 +64,7 @@ typedef enum {
  *   respects the line progression. This means, Latin and Arabic will take
  *   opposite gravities and both flow top-to-bottom for example.
  *
- * `Pango2GravityHint` defines how horizontal scripts should behave in a
- * vertical context.
+ * Defines how horizontal scripts should behave in a vertical context.
  *
  * That is, English excerpts in a vertical paragraph for example.
  *
@@ -82,10 +80,10 @@ typedef enum {
  * PANGO2_GRAVITY_IS_VERTICAL:
  * @gravity: the `Pango2Gravity` to check
  *
- * Whether a `Pango2Gravity` represents vertical writing directions.
+ * Returns whether a `Pango2Gravity` represents vertical writing directions.
  *
- * Returns: %TRUE if @gravity is %PANGO2_GRAVITY_EAST or %PANGO2_GRAVITY_WEST,
- *   %FALSE otherwise.
+ * Returns: true if @gravity is `PANGO2_GRAVITY_EAST` or `PANGO2_GRAVITY_WEST`,
+ *   false otherwise.
  */
 #define PANGO2_GRAVITY_IS_VERTICAL(gravity) \
         ((gravity) == PANGO2_GRAVITY_EAST || (gravity) == PANGO2_GRAVITY_WEST)
@@ -94,11 +92,11 @@ typedef enum {
  * PANGO2_GRAVITY_IS_IMPROPER:
  * @gravity: the `Pango2Gravity` to check
  *
- * Whether a `Pango2Gravity` represents a gravity that results in reversal
- * of text direction.
+ * Returns whether a `Pango2Gravity` represents a gravity that results
+ * in reversal of text direction.
  *
- * Returns: %TRUE if @gravity is %PANGO2_GRAVITY_WEST or %PANGO2_GRAVITY_NORTH,
- *   %FALSE otherwise.
+ * Returns: true if @gravity is `PANGO2_GRAVITY_WEST` or `PANGO2_GRAVITY_NORTH`,
+ *   flase otherwise.
  */
 #define PANGO2_GRAVITY_IS_IMPROPER(gravity) \
         ((gravity) == PANGO2_GRAVITY_WEST || (gravity) == PANGO2_GRAVITY_NORTH)

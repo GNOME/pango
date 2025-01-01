@@ -33,8 +33,7 @@ typedef struct _Pango2AttrIterator Pango2AttrIterator;
 /**
  * Pango2AttrList:
  *
- * A `Pango2AttrList` represents a list of attributes that apply to a section
- * of text.
+ * Represents a list of attributes that apply to a section of text.
  *
  * The attributes in a `Pango2AttrList` are, in general, allowed to overlap in
  * an arbitrary fashion. However, if the attributes are manipulated only through
@@ -80,8 +79,8 @@ void                    pango2_attr_list_update          (Pango2AttrList        
  *
  * Callback to filter a list of attributes.
  *
- * Return value: `TRUE` if the attribute should be selected for
- *   filtering, `FALSE` otherwise.
+ * Return value: true if the attribute should be selected for
+ *   filtering, false otherwise.
  */
 typedef gboolean (*Pango2AttrFilterFunc) (Pango2Attribute *attribute,
                                          gpointer        user_data);

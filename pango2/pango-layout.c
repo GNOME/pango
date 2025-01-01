@@ -10,7 +10,7 @@
 /**
  * Pango2Layout:
  *
- * A `Pango2Layout` structure represents an entire paragraph of text.
+ * Represents an entire paragraph of text.
  *
  * While complete access to the layout capabilities of Pango is provided
  * using the detailed interfaces for itemization, segmentation and shaping,
@@ -866,14 +866,14 @@ retry:
 }
 
 /* }}} */
-/* {{{ Public API */
+/* {{{ Public API */ 
 
 /**
  * pango2_layout_new:
  * @context: a `Pango2Context`
  *
- * Creates a new `Pango2Layout` with attribute initialized to
- * default values for a particular `Pango2Context`
+ * Creates a new `Pango2Layout` initialized to default values
+ * for a particular `Pango2Context`
  *
  * Return value: a newly allocated `Pango2Layout`
  */
@@ -889,7 +889,7 @@ pango2_layout_new (Pango2Context *context)
  * pango2_layout_copy:
  * @layout: a `Pango2Layout`
  *
- * Creates a deep copy-by-value of the layout.
+ * Creates a deep copy of the layout.
  *
  * The attribute list, tab array, and text from the original layout
  * are all copied by value.
@@ -980,9 +980,9 @@ pango2_layout_context_changed (Pango2Layout *layout)
  * pango2_layout_get_context:
  * @layout: a `Pango2Layout`
  *
- * Retrieves the `Pango2Context` used for this layout.
+ * Retrieves the context used for this layout.
  *
- * Return value: (transfer none): the `Pango2Context` for the layout
+ * Return value: (transfer none): the context for the layout
  */
 Pango2Context *
 pango2_layout_get_context (Pango2Layout *layout)
@@ -1042,7 +1042,7 @@ pango2_layout_get_text (Pango2Layout *layout)
  * @layout: a `Pango2Layout`
  * @attrs: (nullable) (transfer none): a `Pango2AttrList`
  *
- * Sets the attributes for a layout object.
+ * Sets the attributes for the layout.
  *
  * References @attrs, so the caller can unref its reference.
  */
@@ -1115,7 +1115,7 @@ pango2_layout_set_font_description (Pango2Layout                *layout,
  * Gets the font description for the layout, if any.
  *
  * Return value: (transfer none) (nullable): a pointer to the
- *   layout's font description, or %NULL if the font description
+ *   layout's font description, or `NULL` if the font description
  *   from the layout's context is inherited.
  */
 const Pango2FontDescription *
@@ -1255,9 +1255,10 @@ pango2_layout_set_width (Pango2Layout *layout,
  * pango2_layout_get_width:
  * @layout: a `Pango2Layout`
  *
- * Gets the width to which the lines of the layout should wrap.
+ * Gets the width to which the lines of the layout should be
+ * wrapped or ellipsized.
  *
- * Return value: the width in Pango units, or -1 if no width set.
+ * Return value: the width in Pango units, or -1 if no width set
  */
 int
 pango2_layout_get_width (Pango2Layout *layout)
@@ -1272,10 +1273,10 @@ pango2_layout_get_width (Pango2Layout *layout)
  * @layout: a `Pango2Layout`.
  * @height: the desired height
  *
- * Sets the height to which the `Pango2Layout` should be ellipsized at.
+ * Sets the height to which the `Pango2Layout` should be ellipsized.
  *
- * There are two different behaviors, based on whether @height is positive
- * or negative.
+ * There are two different behaviors, based on whether @height is
+ * positive or negative.
  *
  * See [property@Pango2.Layout:height] for details.
  */
@@ -1298,7 +1299,7 @@ pango2_layout_set_height (Pango2Layout *layout,
  * pango2_layout_get_height:
  * @layout: a `Pango2Layout`
  *
- * Gets the height to which the lines of the layout should ellipsize.
+ * Gets the height to which the lines of the layout should be ellipsized.
  *
  * See [property@Pango2.Layout:height] for details.
  *
@@ -1349,7 +1350,7 @@ pango2_layout_set_tabs (Pango2Layout   *layout,
  * Gets the current `Pango2TabArray` used by this layout.
  *
  * If no `Pango2TabArray` has been set, then the default tabs are
- * in use and %NULL is returned. Default tabs are every 8 spaces.
+ * in use and `NULL` is returned. Default tabs are every 8 spaces.
  *
  * Return value: (transfer none) (nullable): the tabs for this layout
  */
@@ -1368,14 +1369,14 @@ pango2_layout_get_tabs (Pango2Layout *layout)
  *
  * Sets the single paragraph mode of the layout.
  *
- * If @single_paragraph is `TRUE`, do not treat newlines and similar
+ * If @single_paragraph is true, do not treat newlines and similar
  * characters as paragraph separators; instead, keep all text in a
  * single paragraph, and display a glyph for paragraph separator
  * characters.
  *
  * Used when you want to allow editing of newlines on a single text line.
  *
- * The default value is %FALSE.
+ * The default value is false.
  */
 void
 pango2_layout_set_single_paragraph (Pango2Layout *layout,
@@ -1400,8 +1401,8 @@ pango2_layout_set_single_paragraph (Pango2Layout *layout,
  *
  * See [method@Pango2.Layout.set_single_paragraph].
  *
- * Return value: `TRUE` if the layout does not break paragraphs
- *   at paragraph separator characters, %FALSE otherwise
+ * Return value: true if the layout does not break paragraphs
+ *   at paragraph separator characters, false otherwise
  */
 gboolean
 pango2_layout_get_single_paragraph (Pango2Layout *layout)
@@ -1422,7 +1423,7 @@ pango2_layout_get_single_paragraph (Pango2Layout *layout)
  * with [method@Pango2.Layout.set_width]. To turn off wrapping,
  * set the width to -1.
  *
- * The default value is %PANGO2_WRAP_WORD.
+ * The default value is `PANGO2_WRAP_WORD`.
  */
 void
 pango2_layout_set_wrap (Pango2Layout   *layout,
@@ -1445,7 +1446,7 @@ pango2_layout_set_wrap (Pango2Layout   *layout,
  *
  * Gets the wrap mode for the layout.
  *
- * Return value: active wrap mode.
+ * Return value: current wrap mode
  */
 Pango2WrapMode
 pango2_layout_get_wrap (Pango2Layout *layout)
@@ -1583,7 +1584,7 @@ pango2_layout_set_ellipsize (Pango2Layout        *layout,
  *
  * See [method@Pango2.Layout.set_ellipsize].
  *
- * Return value: the current ellipsization mode for @layout
+ * Return value: the ellipsization mode
  */
 Pango2EllipsizeMode
 pango2_layout_get_ellipsize (Pango2Layout *layout)
@@ -1596,13 +1597,13 @@ pango2_layout_get_ellipsize (Pango2Layout *layout)
 /**
  * pango2_layout_set_auto_dir:
  * @layout: a `Pango2Layout`
- * @auto_dir: if %TRUE, compute the bidirectional base direction
+ * @auto_dir: if true, compute the bidirectional base direction
  *   from the layout's contents
  *
  * Sets whether to calculate the base direction
  * for the layout according to its contents.
  *
- * When this flag is on (the default), then paragraphs in
+ * When this flag is true (the default), then paragraphs in
  * @layout that begin with strong right-to-left characters
  * (Arabic and Hebrew principally), will have right-to-left
  * layout, paragraphs with letters from other scripts will
@@ -1610,7 +1611,7 @@ pango2_layout_get_ellipsize (Pango2Layout *layout)
  * characters get their direction from the surrounding
  * paragraphs.
  *
- * When `FALSE`, the choice between left-to-right and right-to-left
+ * When false, the choice between left-to-right and right-to-left
  * layout is done according to the base direction of the layout's
  * `Pango2Context`. (See [method@Pango2.Context.set_base_dir]).
  *
@@ -1642,8 +1643,8 @@ pango2_layout_set_auto_dir (Pango2Layout *layout,
  *
  * See [method@Pango2.Layout.set_auto_dir].
  *
- * Return value: `TRUE` if the bidirectional base direction
- *   is computed from the layout's contents, `FALSE` otherwise
+ * Return value: true if the bidirectional base direction
+ *   is computed from the layout's contents, false otherwise
  */
 gboolean
 pango2_layout_get_auto_dir (Pango2Layout *layout)

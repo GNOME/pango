@@ -87,13 +87,11 @@ pango2_attr_iterator_advance (Pango2AttrIterator *iterator,
  * pango2_attr_list_get_iterator:
  * @list: a `Pango2AttrList`
  *
- * Create a iterator initialized to the beginning of the list.
+ * Creates an iterator initialized to the beginning of the list.
  *
  * @list must not be modified until this iterator is freed.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2AttrIterator`, which should be freed with
- *   [method@Pango2.AttrIterator.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2AttrIterator`
  */
 Pango2AttrIterator *
 pango2_attr_list_get_iterator (Pango2AttrList *list)
@@ -112,7 +110,7 @@ pango2_attr_list_get_iterator (Pango2AttrList *list)
  * pango2_attr_iterator_destroy:
  * @iterator: a `Pango2AttrIterator`
  *
- * Destroy a `Pango2AttrIterator` and free all associated memory.
+ * Destroys the iterator and frees all associated memory.
  */
 void
 pango2_attr_iterator_destroy (Pango2AttrIterator *iterator)
@@ -127,11 +125,9 @@ pango2_attr_iterator_destroy (Pango2AttrIterator *iterator)
  * pango2_attr_iterator_copy:
  * @iterator: a `Pango2AttrIterator`
  *
- * Copy a `Pango2AttrIterator`.
+ * Copys a `Pango2AttrIterator`.
  *
- * Return value: (transfer full): the newly allocated
- *   `Pango2AttrIterator`, which should be freed with
- *   [method@Pango2.AttrIterator.destroy]
+ * Return value: (transfer full): the newly allocated `Pango2AttrIterator`
  */
 Pango2AttrIterator *
 pango2_attr_iterator_copy (Pango2AttrIterator *iterator)
@@ -158,12 +154,12 @@ pango2_attr_iterator_copy (Pango2AttrIterator *iterator)
  * @start: (out): location to store the start of the range
  * @end: (out): location to store the end of the range
  *
- * Get the range of the current segment.
+ * Gets the range of the current segment.
  *
  * Note that the stored return values are signed, not unsigned
  * like the values in `Pango2Attribute`. To deal with this API
  * oversight, stored return values that wouldn't fit into
- * a signed integer are clamped to %G_MAXINT.
+ * a signed integer are clamped to `G_MAXINT`.
  */
 void
 pango2_attr_iterator_range (Pango2AttrIterator *iterator,
@@ -182,10 +178,10 @@ pango2_attr_iterator_range (Pango2AttrIterator *iterator,
  * pango2_attr_iterator_next:
  * @iterator: a `Pango2AttrIterator`
  *
- * Advance the iterator until the next change of style.
+ * Advances the iterator until the next change of style.
  *
- * Return value: %FALSE if the iterator is at the end
- *   of the list, otherwise %TRUE
+ * Return value: false if the iterator is at the end
+ *   of the list, otherwise true
  */
 gboolean
 pango2_attr_iterator_next (Pango2AttrIterator *iterator)
@@ -254,7 +250,7 @@ pango2_attr_iterator_next (Pango2AttrIterator *iterator)
  * @iterator: a `Pango2AttrIterator`
  * @type: the type of attribute to find
  *
- * Find the current attribute of a particular type
+ * Finds the current attribute of a particular type
  * at the iterator location.
  *
  * When multiple attributes of the same type overlap,
@@ -262,7 +258,7 @@ pango2_attr_iterator_next (Pango2AttrIterator *iterator)
  * current location is used.
  *
  * Return value: (nullable) (transfer none): the current
- *   attribute of the given type, or %NULL if no attribute
+ *   attribute of the given type, or `NULL` if no attribute
  *   of that type applies to the current location.
  */
 Pango2Attribute *
@@ -306,7 +302,7 @@ pango2_attr_iterator_get (Pango2AttrIterator *iterator,
  *   order to free this value, you must call
  *   [method@Pango2.Attribute.destroy] on each member.
  *
- * Get the font and other attributes at the current iterator position.
+ * Gets the font and other attributes at the current iterator position.
  */
 void
 pango2_attr_iterator_get_font (Pango2AttrIterator     *iterator,

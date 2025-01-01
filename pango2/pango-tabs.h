@@ -36,8 +36,7 @@ typedef struct _Pango2TabArray Pango2TabArray;
  *   character appears to the left of the tab stop position (until the available
  *   space is filled), the rest to the right.
  *
- * `Pango2TabAlign` specifies where the text appears relative to the tab stop
- * position.
+ * Specifies where the text appears relative to the tab stop position.
  */
 typedef enum
 {
@@ -53,7 +52,7 @@ typedef enum
  * @PANGO2_TAB_POSITIONS_PIXELS: Positions are in pixels
  * @PANGO2_TAB_POSITIONS_SPACES: Positions are in spaces
  *
- * `Pango2TabPositions` specifies the unit for tab positions.
+ * Specifies the unit for tab positions.
  */
 typedef enum {
   PANGO2_TAB_POSITIONS_DEFAULT,

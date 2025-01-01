@@ -42,6 +42,14 @@
 #define PANGO2_VERSION_0_90       (G_ENCODE_VERSION (0, 90))
 
 /**
+ * PANGO2_VERSION_0_91
+ *
+ * A macro that evaluates to the 0.91 version of Pango2, in a format
+ * that can be used by the C pre-processor.
+ */
+#define PANGO2_VERSION_0_91       (G_ENCODE_VERSION (0, 91))
+
+/**
  * PANGO2_VERSION_1_0
  *
  * A macro that evaluates to the 1.0 version of Pango2, in a format

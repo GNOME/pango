@@ -136,8 +136,7 @@ pango2_language_free (Pango2Language *language G_GNUC_UNUSED)
 /**
  * Pango2Language:
  *
- * The `Pango2Language` structure is used to
- * represent a language.
+ * Represents a language.
  *
  * `Pango2Language` pointers can be efficiently
  * copied and compared with each other.
@@ -307,11 +306,11 @@ pango2_language_get_default (void)
 
 /**
  * pango2_language_from_string:
- * @language: (nullable): a string representing a language tag
+ * @language: (nullable): a string representing a language
  *
- * Convert a language tag to a `Pango2Language`.
+ * Converts a string representation to a `Pango2Language`.
  *
- * The language tag must be in a RFC-3066 format. `Pango2Language` pointers
+ * The string must be in a RFC-3066 format. `Pango2Language` pointers
  * can be efficiently copied (copy the pointer) and compared with other
  * language tags (compare the pointer.)
  *
@@ -371,7 +370,7 @@ out:
 
 /**
  * pango2_language_to_string:
- * @language: a language tag.
+ * @language: a language tag
  *
  * Gets the RFC-3066 format string representing the given language tag.
  *
@@ -386,10 +385,10 @@ const char *
 /**
  * pango2_language_matches:
  * @language: (nullable): a language tag (see [func@Pango2.Language.from_string]),
- *   %NULL is allowed and matches nothing but '*'
+ *   `NULL` is allowed and matches nothing but '*'
  * @range_list: a list of language ranges, separated by ';', ':',
  *   ',', or space characters.
- *   Each element must either be '*', or a RFC 3066 language range
+ *   Each element must either be '*', or a RFC-3066 language range
  *   canonicalized as by [func@Pango2.Language.from_string]
  *
  * Checks if a language tag matches one of the elements in a list of
@@ -399,7 +398,7 @@ const char *
  * range is '*', the range is exactly the tag, or the range is a prefix
  * of the tag, and the character after it in the tag is '-'.
  *
- * Return value: %TRUE if a match was found
+ * Return value: true if a match was found
  */
 gboolean
 pango2_language_matches (Pango2Language *language,
@@ -562,7 +561,7 @@ static const LangInfo lang_texts[] = {
  * pango2_language_get_sample_string:
  * @language: (nullable): a `Pango2Language`
  *
- * Get a string that is representative of the characters needed to
+ * Gets a string that is representative of the characters needed to
  * render a particular language.
  *
  * The sample text may be a pangram, but is not necessarily. It is chosen
@@ -570,7 +569,7 @@ static const LangInfo lang_texts[] = {
  * font feature requirements unique to the language. It is suitable for use
  * as sample text in a font selection dialog.
  *
- * If @language is %NULL, the default language as found by
+ * If @language is `NULL`, the default language as found by
  * [func@Pango2.Language.get_default] is used.
  *
  * If Pango does not have a sample string for @language, the classic
@@ -619,28 +618,29 @@ pango2_language_get_sample_string (Pango2Language *language)
  * Determines the scripts used to to write @language.
  *
  * If nothing is known about the language tag @language,
- * or if @language is %NULL, then %NULL is returned.
+ * or if @language is `NULL`, then `NULL` is returned.
+ *
  * The list of scripts returned starts with the script that the
  * language uses most and continues to the one it uses least.
  *
  * The value @num_script points at will be set to the number
- * of scripts in the returned array (or zero if %NULL is returned).
+ * of scripts in the returned array (or zero if `NULL` is returned).
  *
  * Most languages use only one script for writing, but there are
  * some that use two (Latin and Cyrillic for example), and a few
  * use three (Japanese for example). Applications should not make
  * any assumptions on the maximum number of scripts returned
  * though, except that it is positive if the return value is not
- * %NULL, and it is a small number.
+ * `NULL`, and it is a small number.
  *
  * The [method@Pango2.Language.includes_script] function uses this
  * function internally.
  *
  * Return value: (transfer none) (array length=num_scripts) (nullable):
  *   An array of `GUnicodeScript` values, with the number of entries in
- *   the array stored in @num_scripts, or %NULL if Pango does not have
+ *   the array stored in @num_scripts, or `NULL` if Pango does not have
  *   any information about this particular language tag (also the case
- *   if @language is %NULL).
+ *   if @language is `NULL`).
  */
 const GUnicodeScript *
 pango2_language_get_scripts (Pango2Language *language,
@@ -680,11 +680,10 @@ pango2_language_get_scripts (Pango2Language *language,
  * @language: (nullable): a `Pango2Language`
  * @script: a `GUnicodeScript`
  *
- * Determines if @script is one of the scripts used to
- * write @language.
+ * Determines if @script is one of the scripts used to write @language.
  *
  * The returned value is conservative; if nothing is known about
- * the language tag @language, %TRUE will be returned, since, as
+ * the language tag @language, true will be returned, since, as
  * far as Pango knows, @script might be used to write @language.
  *
  * This routine is used in Pango2's itemization process when
@@ -694,9 +693,9 @@ pango2_language_get_scripts (Pango2Language *language,
  *
  * This function uses [method@Pango2.Language.get_scripts] internally.
  *
- * Return value: %TRUE if @script is one of the scripts used
+ * Return value: true if @script is one of the scripts used
  *   to write @language or if nothing is known about @language
- *   (including the case that @language is %NULL), %FALSE otherwise.
+ *   (including the case that @language is `NULL`), false otherwise.
  */
 gboolean
 pango2_language_includes_script (Pango2Language *language,
@@ -841,8 +840,8 @@ out:
  * you should first try the default language, followed by the
  * languages returned by this function.
  *
- * Returns: (transfer none) (nullable): a %NULL-terminated array
- *   of `Pango2Language`*
+ * Returns: (transfer none) (nullable): a `NULL`-terminated array
+ *   of `Pango2Language*`
  */
 Pango2Language **
 pango2_language_get_preferred (void)
@@ -861,30 +860,27 @@ pango2_language_get_preferred (void)
  *
  * The language will usually be the most widely spoken or used language
  * written in that script: for instance, the sample language for
- * %G_UNICODE_SCRIPT_CYRILLIC is ru (Russian), the sample language for
- * %G_UNICODE_SCRIPT_ARABIC is ar.
+ * `G_UNICODE_SCRIPT_CYRILLIC` is ru (Russian), the sample language for
+ * `G_UNICODE_SCRIPT_ARABIC` is ar.
  *
- * For some scripts, no sample language will be returned because
- * there is no language that is sufficiently representative. The
- * best example of this is %G_UNICODE_SCRIPT_HAN, where various different
- * variants of written Chinese, Japanese, and Korean all use
- * significantly different sets of Han characters and forms
- * of shared characters. No sample language can be provided
- * for many historical scripts as well.
+ * For some scripts, no sample language will be returned because there
+ * is no language that is sufficiently representative. The best example
+ * of this is `G_UNICODE_SCRIPT_HAN`, where various different variants
+ * of written Chinese, Japanese, and Korean all use significantly
+ * different sets of Han characters and forms of shared characters.
+ * No sample language can be provided for many historical scripts as well.
  *
- * As of 1.18, this function checks the environment variables
- * `PANGO2_LANGUAGE` and `LANGUAGE` (checked in that order) first.
- * If one of them is set, it is parsed as a list of language tags
- * separated by colons or other separators. This function
- * will return the first language in the parsed list that Pango2
- * believes may use @script for writing. This last predicate
- * is tested using [method@Pango2.Language.includes_script]. This can
- * be used to control Pango2's font selection for non-primary
- * languages. For example, a `PANGO2_LANGUAGE` enviroment variable
- * set to "en:fa" makes Pango choose fonts suitable for Persian (fa)
- * instead of Arabic (ar) when a segment of Arabic text is found
- * in an otherwise non-Arabic text. The same trick can be used to
- * choose a default language for %G_UNICODE_SCRIPT_HAN when setting
+ * This function checks the environment variables `PANGO_LANGUAGE` and
+ * `LANGUAGE` (checked in that order) first. If one of them is set, it is
+ * parsed as a list of language tags separated by colons or other separators.
+ * This function will return the first language in the parsed list that Pango2
+ * believes may use @script for writing. This last predicate is tested using
+ * [method@Pango2.Language.includes_script]. This can be used to control
+ * Pango2's font selection for non-primary languages. For example, a
+ * `PANGO_LANGUAGE` enviroment variable set to "en:fa" makes Pango choose
+ * fonts suitable for Persian (fa) instead of Arabic (ar) when a segment of
+ * Arabic text is found in an otherwise non-Arabic text. The same trick can
+ * be used to choose a default language for `G_UNICODE_SCRIPT_HAN` when setting
  * context language is not feasible.
  *
  * Return value: (nullable): a `Pango2Language` that is representative

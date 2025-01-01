@@ -31,8 +31,7 @@
 /**
  * Pango2GenericFamily:
  *
- * An implementation of `Pango2FontFamily`
- * that provides faces from other families.
+ * A font family that provides faces from other families.
  *
  * `Pango2GenericFamily can be used to e.g. assemble a
  * generic 'sans-serif' family from a number of other
@@ -256,7 +255,7 @@ pango2_generic_family_find_face (Pango2GenericFamily   *self,
 }
 
 /* }}} */
-/* {{{ Public API */
+/*  {{{ Public API */
 
 /**
  * pango2_generic_family_new:

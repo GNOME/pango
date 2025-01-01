@@ -48,11 +48,11 @@ pango2_font_metrics_new (void)
 
 /**
  * pango2_font_metrics_copy:
- * @metrics: (nullable): a `Pango2FontMetrics` structure, may be %NULL
+ * @metrics: (nullable): a `Pango2FontMetrics` structure
  *
- * Create a copy of @metrics.
+ * Creates a copy of @metrics.
  *
- * Return value: (nullable): @metrics
+ * Return value: (nullable): the copy
  */
 Pango2FontMetrics *
 pango2_font_metrics_copy (Pango2FontMetrics *metrics)
@@ -62,9 +62,9 @@ pango2_font_metrics_copy (Pango2FontMetrics *metrics)
 
 /**
  * pango2_font_metrics_free:
- * @metrics: (nullable): a `Pango2FontMetrics` structure, may be %NULL
+ * @metrics: (nullable): a `Pango2FontMetrics` structure
  *
- * Free the @metrics.
+ * Frees the @metrics.
  */
 void
 pango2_font_metrics_free (Pango2FontMetrics *metrics)
@@ -83,7 +83,7 @@ pango2_font_metrics_free (Pango2FontMetrics *metrics)
  * of the actual drawn ink. It is necessary to lay out the text to
  * figure where the ink will be.)
  *
- * Return value: the ascent, in Pango units.
+ * Return value: the ascent, in Pango units
  */
 int
 pango2_font_metrics_get_ascent (Pango2FontMetrics *metrics)
@@ -104,7 +104,7 @@ pango2_font_metrics_get_ascent (Pango2FontMetrics *metrics)
  * bottom of the actual drawn ink. It is necessary to lay out the text
  * to figure where the ink will be.)
  *
- * Return value: the descent, in Pango units.
+ * Return value: the descent, in Pango units
  */
 int
 pango2_font_metrics_get_descent (Pango2FontMetrics *metrics)
@@ -145,7 +145,7 @@ pango2_font_metrics_get_height (Pango2FontMetrics *metrics)
  * determining the initial size for a window. Actual characters in
  * text will be wider and narrower than this.
  *
- * Return value: the character width, in Pango units.
+ * Return value: the character width, in Pango units
  */
 int
 pango2_font_metrics_get_approximate_char_width (Pango2FontMetrics *metrics)
@@ -165,9 +165,9 @@ pango2_font_metrics_get_approximate_char_width (Pango2FontMetrics *metrics)
  * determining the initial size for a window. Actual digits in
  * text can be wider or narrower than this, though this value
  * is generally somewhat more accurate than the result of
- * pango2_font_metrics_get_approximate_char_width() for digits.
+ * [method@Pango2.FontMetrics.get_approximate_char_width] for digits.
  *
- * Return value: the digit width, in Pango units.
+ * Return value: the digit width, in Pango units
  */
 int
 pango2_font_metrics_get_approximate_digit_width (Pango2FontMetrics *metrics)
@@ -187,7 +187,7 @@ pango2_font_metrics_get_approximate_digit_width (Pango2FontMetrics *metrics)
  * of the underline. Since most fonts have underline positions beneath
  * the baseline, this value is typically negative.
  *
- * Return value: the suggested underline position, in Pango units.
+ * Return value: the suggested underline position, in Pango units
  */
 int
 pango2_font_metrics_get_underline_position (Pango2FontMetrics *metrics)
@@ -203,7 +203,7 @@ pango2_font_metrics_get_underline_position (Pango2FontMetrics *metrics)
  *
  * Gets the suggested thickness to draw for the underline.
  *
- * Return value: the suggested underline thickness, in Pango units.
+ * Return value: the suggested underline thickness, in Pango units
  */
 int
 pango2_font_metrics_get_underline_thickness (Pango2FontMetrics *metrics)
@@ -222,7 +222,7 @@ pango2_font_metrics_get_underline_thickness (Pango2FontMetrics *metrics)
  * The value returned is the distance *above* the
  * baseline of the top of the strikethrough.
  *
- * Return value: the suggested strikethrough position, in Pango units.
+ * Return value: the suggested strikethrough position, in Pango units
  */
 int
 pango2_font_metrics_get_strikethrough_position (Pango2FontMetrics *metrics)
@@ -238,7 +238,7 @@ pango2_font_metrics_get_strikethrough_position (Pango2FontMetrics *metrics)
  *
  * Gets the suggested thickness to draw for the strikethrough.
  *
- * Return value: the suggested strikethrough thickness, in Pango units.
+ * Return value: the suggested strikethrough thickness, in Pango units
  */
 int
 pango2_font_metrics_get_strikethrough_thickness (Pango2FontMetrics *metrics)

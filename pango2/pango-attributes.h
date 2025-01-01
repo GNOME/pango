@@ -75,11 +75,10 @@ G_BEGIN_DECLS
  * @PANGO2_ATTR_SHAPE: override glyph shapes (requires renderer support)
  * @PANGO2_ATTR_EMOJI_PRESENTATION: override Emoji presentation
  *
- * `Pango2AttrType` contains predefined attribute types.
+ * Predefined attribute types.
  *
  * Along with the predefined values, it is possible to allocate additional
- * values for custom attributes using [func@AttrType.register]. The predefined
- * values are given below.
+ * values for custom attributes using [func@AttrType.register].
  */
 typedef enum
 {
@@ -160,7 +159,7 @@ Pango2Attribute *        pango2_attr_font_desc_new                (const Pango2F
  * @PANGO2_LINE_STYLE_DOTTED: A dotted line
  * @PANGO2_LINE_STYLE_WAVY: A wavy line
  *
- * `Pango2LineStyle specifies how lines should be drawn.
+ * Specifies how lines should be drawn.
  */
 typedef enum {
   PANGO2_LINE_STYLE_NONE,
@@ -182,7 +181,7 @@ Pango2Attribute *        pango2_attr_underline_color_new          (Pango2Color  
  * @PANGO2_UNDERLINE_POSITION_NORMAL: As specified by font metrics
  * @PANGO2_UNDERLINE_POSITION_UNDER: Below the ink extents of the run
  *
- * `Pango2UnderlinePosition` specifies where underlines should be drawn.
+ * Specifies where underlines should be drawn.
  */
 typedef enum {
   PANGO2_UNDERLINE_POSITION_NORMAL,
@@ -207,7 +206,7 @@ Pango2Attribute *        pango2_attr_rise_new                     (int          
  * @PANGO2_BASELINE_SHIFT_SUBSCRIPT: Shift the baseline to the subscript position,
  *   relative to the previous run
  *
- * `Pango2BaselineShift` influences how baselines are changed between runs.
+ * Influences how baselines are changed between runs.
  */
 typedef enum {
   PANGO2_BASELINE_SHIFT_NONE,
@@ -225,7 +224,7 @@ Pango2Attribute *        pango2_attr_baseline_shift_new           (int          
  * @PANGO2_FONT_SCALE_SUBSCRIPT: Change the font to a size suitable for subscripts
  * @PANGO2_FONT_SCALE_SMALL_CAPS: Change the font to a size suitable for Small Caps
  *
- * `Pango2FontScale` influences the font size of a run.
+ * Influences the font size of a run.
  */
 typedef enum {
   PANGO2_FONT_SCALE_NONE,
@@ -274,7 +273,7 @@ Pango2Attribute *        pango2_attr_overline_color_new           (Pango2Color  
  * @PANGO2_SHOW_IGNORABLES: Render default-ignorable Unicode
  *   characters visibly
  *
- * `Pango2ShowFlags` affect how Pango2 treats characters that are normally
+ * Affects how Pango2 treats characters that are normally
  * not visible in the output.
  */
 typedef enum {
@@ -301,8 +300,7 @@ Pango2Attribute *        pango2_attr_line_spacing_new             (int          
  * @PANGO2_TEXT_TRANSFORM_CAPITALIZE: Display the first character of a word
  *   in titlecase
  *
- * `Pango2TextTransform` determines if Pango2 changes the case of characters
- * during shaping.
+ * Determines how to change the case of characters during shaping.
   */
 typedef enum {
   PANGO2_TEXT_TRANSFORM_NONE,

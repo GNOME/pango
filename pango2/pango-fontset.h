@@ -41,7 +41,7 @@ PANGO2_DECLARE_INTERNAL_TYPE (Pango2Fontset, pango2_fontset, PANGO2, FONTSET, GO
  *
  * See [method@Pango2.Fontset.foreach].
  *
- * Returns: if %TRUE, stop iteration and return immediately.
+ * Returns: if true, stop iteration and return immediately
  */
 typedef gboolean (*Pango2FontsetForeachFunc) (Pango2Fontset *fontset,
                                               Pango2Font    *font,

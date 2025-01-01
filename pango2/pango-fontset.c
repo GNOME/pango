@@ -24,7 +24,7 @@
 /**
  * Pango2Fontset:
  *
- * A `Pango2Fontset` represents a set of `Pango2Font` to use when rendering text.
+ * Represents a set of fonts to use when rendering text.
  *
  * A `Pango2Fontset` is the result of resolving a `Pango2FontDescription`
  * against a particular `Pango2Context`. It has operations for finding the
@@ -117,7 +117,7 @@ pango2_fontset_get_language (Pango2Fontset *fontset)
  * Iterates through all the fonts in a fontset, calling @func for
  * each one.
  *
- * If @func returns %TRUE, that stops the iteration.
+ * If @func returns true, that stops the iteration.
  */
 void
 pango2_fontset_foreach (Pango2Fontset            *fontset,

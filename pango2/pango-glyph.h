@@ -30,12 +30,10 @@ typedef struct _Pango2GlyphVisAttr Pango2GlyphVisAttr;
 typedef struct _Pango2GlyphInfo Pango2GlyphInfo;
 typedef struct _Pango2GlyphString Pango2GlyphString;
 
-/* 1024ths of a device unit */
 /**
  * Pango2GlyphUnit:
  *
- * The `Pango2GlyphUnit` type is used to store dimensions within
- * Pango2.
+ * The type used for glyph dimensions within Pango2.
  *
  * Dimensions are stored in 1/PANGO2_SCALE of a device unit.
  * (A device unit might be a pixel for screen display, or
@@ -48,16 +46,13 @@ typedef struct _Pango2GlyphString Pango2GlyphString;
  */
 typedef gint32 Pango2GlyphUnit;
 
-/* Positioning information about a glyph
- */
 /**
  * Pango2GlyphGeometry:
  * @width: the logical width to use for the the character.
  * @x_offset: horizontal offset from nominal character position.
  * @y_offset: vertical offset from nominal character position.
  *
- * The `Pango2GlyphGeometry` structure contains width and positioning
- * information for a single glyph.
+ * Contains width and positioning information for a single glyph.
  *
  * Note that @width is not guaranteed to be the same as the glyph
  * extents. Kerning and other positioning applied during shaping will
@@ -79,15 +74,12 @@ struct _Pango2GlyphGeometry
   Pango2GlyphUnit y_offset;
 };
 
-/* Visual attributes of a glyph
- */
 /**
  * Pango2GlyphVisAttr:
  * @is_cluster_start: set for the first logical glyph in each cluster.
  * @is_color: set if the the font will render this glyph with color. Since 1.50
  *
- * A `Pango2GlyphVisAttr` structure communicates information between
- * the shaping and rendering phases.
+ * Communicates information between the shaping and rendering phases.
  *
  * Currently, it contains cluster start and color information.
  * More attributes may be added in the future.
@@ -103,16 +95,13 @@ struct _Pango2GlyphVisAttr
   guint is_color         : 1;
 };
 
-/* A single glyph
- */
 /**
  * Pango2GlyphInfo:
  * @glyph: the glyph itself.
  * @geometry: the positional information about the glyph.
  * @attr: the visual attributes of the glyph.
  *
- * A `Pango2GlyphInfo` structure represents a single glyph with
- * positioning information and visual attributes.
+ * Represents a single glyph with positioning information and visual attributes.
  */
 struct _Pango2GlyphInfo
 {
@@ -128,8 +117,7 @@ struct _Pango2GlyphInfo
  * @log_clusters: logical cluster info, indexed by the byte index
  *   within the text corresponding to the glyph string
  *
- * A `Pango2GlyphString` is used to store strings of glyphs with geometry
- * and visual attribute information.
+ * Stores strings of glyphs with geometry and visual attribute information.
  *
  * The storage for the glyph information is owned by the structure
  * which simplifies memory management.
@@ -213,15 +201,13 @@ void                    pango2_glyph_string_index_to_x_full      (Pango2GlyphStr
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(Pango2GlyphString, pango2_glyph_string_free)
 
 
-/* Shaping */
-
 /**
  * Pango2ShapeFlags:
  * @PANGO2_SHAPE_NONE: Default value
  * @PANGO2_SHAPE_ROUND_POSITIONS: Round glyph positions and widths to whole device units
  *   This option should be set if the target renderer can't do subpixel positioning of glyphs
  *
- * `Pango2ShapeFlags` influence the shaping process.
+ * Flags that influence the shaping process.
  *
  * These flags can be passed to [func@Pango2.shape].
  */
@@ -253,8 +239,8 @@ void                    pango2_shape_item        (Pango2Item           *item,
  *
  * A `Pango2Glyph` value that indicates a zero-width empty glpyh.
  *
- * This is useful for example in shaper modules, to use as the glyph for
- * various zero-width Unicode characters (those passing [func@is_zero_width]).
+ * This can be used as the glyph for various zero-width Unicode characters
+ * (those passing [func@is_zero_width]).
  */
 #define PANGO2_GLYPH_EMPTY           ((Pango2Glyph)0x0FFFFFFF)
 
@@ -266,7 +252,7 @@ void                    pango2_shape_item        (Pango2Item           *item,
  * `Pango2Layout` produces one such glyph per invalid input UTF-8 byte and such
  * a glyph is rendered as a crossed box.
  *
- * Note that this value is defined such that it has the %PANGO2_GLYPH_UNKNOWN_FLAG
+ * Note that this value is defined such that it has the `PANGO2_GLYPH_UNKNOWN_FLAG`
  * set.
  */
 #define PANGO2_GLYPH_INVALID_INPUT   ((Pango2Glyph)0xFFFFFFFF)
@@ -274,7 +260,7 @@ void                    pango2_shape_item        (Pango2Item           *item,
 /**
  * PANGO2_GLYPH_UNKNOWN_FLAG:
  *
- * Flag used in `Pango2Glyph` to turn a `gunichar` value of a valid Unicode
+ * Flag used in `Pango2Glyph` to turn the `gunichar` value of a valid Unicode
  * character into an unknown-character glyph for that `gunichar`.
  *
  * Such unknown-character glyphs may be rendered as a 'hex box'.
@@ -284,6 +270,8 @@ void                    pango2_shape_item        (Pango2Item           *item,
 /**
  * PANGO2_GET_UNKNOWN_GLYPH:
  * @wc: a Unicode character
+ *
+ * Creates a `Pango2Glyph` value representing @wc as unknown-character glyph.
  *
  * The way this unknown glyphs are rendered is backend specific. For example,
  * a box with the hexadecimal Unicode code-point of the character written in it

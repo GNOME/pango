@@ -235,7 +235,7 @@ pango2_hb_family_add_face (Pango2HbFamily *self,
  * @self: a `Pango2HbFamily`
  * @face: a `Pango2FontFace`
  *
- * Remove a `Pango2FontFace` from a `Pango2HbFamily`.
+ * Removes a `Pango2FontFace` from a `Pango2HbFamily`.
  */
 void
 pango2_hb_family_remove_face (Pango2HbFamily *self,

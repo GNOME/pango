@@ -80,8 +80,7 @@ static const Pango2FontDescription pfd_defaults = {
  *
  * Creates a new font description structure with all fields unset.
  *
- * Return value: the newly allocated `Pango2FontDescription`, which
- *   should be freed using [method@Pango2.FontDescription.free]
+ * Return value: the newly allocated `Pango2FontDescription`
  */
 Pango2FontDescription *
 pango2_font_description_new (void)
@@ -100,11 +99,10 @@ pango2_font_description_new (void)
  *
  * Sets the family name field of a font description.
  *
- * The family
- * name represents a family of related font styles, and will
- * resolve to a particular `Pango2FontFamily`. In some uses of
- * `Pango2FontDescription`, it is also possible to use a comma
- * separated list of family names for this field.
+ * The family name represents a family of related font styles,
+ * and will resolve to a particular `Pango2FontFamily`. In some
+ * uses of `Pango2FontDescription`, it is also possible to use
+ * a comma separated list of family names for this field.
  */
 void
 pango2_font_description_set_family (Pango2FontDescription *desc,
@@ -165,8 +163,7 @@ pango2_font_description_set_family_static (Pango2FontDescription *desc,
  * See [method@Pango2.FontDescription.set_family].
  *
  * Return value: (nullable): the family name field for the font
- *   description, or %NULL if not previously set. This has the same
- *   life-time as the font description itself and should not be freed.
+ *   description, or `NULL` if not previously set
  */
 const char *
 pango2_font_description_get_family (const Pango2FontDescription *desc)
@@ -185,7 +182,7 @@ pango2_font_description_get_family (const Pango2FontDescription *desc)
  *
  * The [enum@Pango2.Style] enumeration describes whether the font is
  * slanted and the manner in which it is slanted; it can be either
- * %PANGO2_STYLE_NORMAL, %PANGO2_STYLE_ITALIC, or %PANGO2_STYLE_OBLIQUE.
+ * `PANGO2_STYLE_NORMAL`, `PANGO2_STYLE_ITALIC`, or `PANGO2_STYLE_OBLIQUE`.
  *
  * Most fonts will either have a italic style or an oblique style,
  * but not both, and font matching in Pango will match italic
@@ -229,8 +226,8 @@ pango2_font_description_get_style (const Pango2FontDescription *desc)
  *
  * Sets the variant field of a font description.
  *
- * The [enum@Pango2.Variant] can either be %PANGO2_VARIANT_NORMAL
- * or %PANGO2_VARIANT_SMALL_CAPS.
+ * The [enum@Pango2.Variant] can either be `PANGO2_VARIANT_NORMAL`
+ * or `PANGO2_VARIANT_SMALL_CAPS`.
  */
 void
 pango2_font_description_set_variant (Pango2FontDescription *desc,
@@ -269,10 +266,10 @@ pango2_font_description_get_variant (const Pango2FontDescription *desc)
  *
  * Sets the weight field of a font description.
  *
- * The weight field
- * specifies how bold or light the font should be. In addition
- * to the values of the [enum@Pango2.Weight] enumeration, other
- * intermediate numeric values are possible.
+ * The weight field specifies how bold or light the
+ * font should be. In addition to the values of the
+ * [enum@Pango2.Weight] enumeration, other intermediate
+ * numeric values are possible.
  */
 void
 pango2_font_description_set_weight (Pango2FontDescription *desc,
@@ -312,7 +309,9 @@ pango2_font_description_get_weight (const Pango2FontDescription *desc)
  * Sets the stretch field of a font description.
  *
  * The [enum@Pango2.Stretch] field specifies how narrow or
- * wide the font should be.
+ * wide the font should be. In addition to the values of the
+ * [enum@Pango2.Stretch] enumeration, other intermediate
+ * numeric values are possible.
  */
 void
 pango2_font_description_set_stretch (Pango2FontDescription *desc,
@@ -347,7 +346,7 @@ pango2_font_description_get_stretch (const Pango2FontDescription *desc)
 /**
  * pango2_font_description_set_size:
  * @desc: a `Pango2FontDescription`
- * @size: the size of the font in points, scaled by %PANGO2_SCALE.
+ * @size: the size of the font in points, scaled by `PANGO2_SCALE`.
  *   (That is, a @size value of 10 * PANGO2_SCALE is a 10 point font.
  *   The conversion factor between points and device units depends on
  *   system configuration and the output device. For screen display, a
@@ -451,10 +450,9 @@ pango2_font_description_get_size_is_absolute (const Pango2FontDescription *desc)
  *
  * Sets the gravity field of a font description.
  *
- * The gravity field
- * specifies how the glyphs should be rotated. If @gravity is
- * %PANGO2_GRAVITY_AUTO, this actually unsets the gravity mask on
- * the font description.
+ * The gravity field specifies how the glyphs should be rotated.
+ * If @gravity is `PANGO2_GRAVITY_AUTO`, this actually unsets the
+ * gravity mask on the font description.
  *
  * This function is seldom useful to the user. Gravity should normally
  * be set on a `Pango2Context`.
@@ -577,7 +575,7 @@ pango2_font_description_set_variations (Pango2FontDescription *desc,
  * See [method@Pango2.FontDescription.set_variations].
  *
  * Return value: (nullable): the variations field for the font
- *   description, or %NULL if not previously set. This has the same
+ *   description, or `NULL` if not previously set. This has the same
  *   life-time as the font description itself and should not be freed.
  */
 const char *
@@ -633,20 +631,19 @@ pango2_font_description_unset_fields (Pango2FontDescription *desc,
 /**
  * pango2_font_description_merge:
  * @desc: a `Pango2FontDescription`
- * @desc_to_merge: (nullable): the `Pango2FontDescription` to merge from,
- *   or %NULL
- * @replace_existing: if %TRUE, replace fields in @desc with the
+ * @desc_to_merge: (nullable): the `Pango2FontDescription` to merge from
+ * @replace_existing: if true, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
  *   are already exist.
  *
  * Merges the fields that are set in @desc_to_merge into the fields in
  * @desc.
  *
- * If @replace_existing is %FALSE, only fields in @desc that
+ * If @replace_existing is false, only fields in @desc that
  * are not already set are affected. If %TRUE, then fields that are
  * already set will be replaced as well.
  *
- * If @desc_to_merge is %NULL, this function performs nothing.
+ * If @desc_to_merge is `NULL`, this function performs nothing.
  */
 void
 pango2_font_description_merge (Pango2FontDescription       *desc,
@@ -691,7 +688,7 @@ pango2_font_description_merge (Pango2FontDescription       *desc,
  * pango2_font_description_merge_static:
  * @desc: a `Pango2FontDescription`
  * @desc_to_merge: the `Pango2FontDescription` to merge from
- * @replace_existing: if %TRUE, replace fields in @desc with the
+ * @replace_existing: if true, replace fields in @desc with the
  *   corresponding values from @desc_to_merge, even if they
  *   are already exist.
  *
@@ -774,12 +771,11 @@ pango2_font_description_compute_distance (const Pango2FontDescription *a,
 
 /**
  * pango2_font_description_copy:
- * @desc: (nullable): a `Pango2FontDescription`, may be %NULL
+ * @desc: (nullable): a `Pango2FontDescription`
  *
- * Make a copy of a `Pango2FontDescription`.
+ * Makes a copy of a `Pango2FontDescription`.
  *
- * Return value: (nullable): the newly allocated `Pango2FontDescription`,
- *   which should be freed with [method@Pango2.FontDescription.free]
+ * Return value: (nullable): the newly allocated `Pango2FontDescription`
  */
 Pango2FontDescription *
 pango2_font_description_copy (const Pango2FontDescription *desc)
@@ -810,9 +806,9 @@ pango2_font_description_copy (const Pango2FontDescription *desc)
 
 /**
  * pango2_font_description_copy_static:
- * @desc: (nullable): a `Pango2FontDescription`, may be %NULL
+ * @desc: (nullable): a `Pango2FontDescription`
  *
- * Make a copy of a `Pango2FontDescription`, but don't duplicate
+ * Makes a copy of a `Pango2FontDescription`, but don't duplicate
  * allocated fields.
  *
  * This is like [method@Pango2.FontDescription.copy], but only a shallow
@@ -820,8 +816,7 @@ pango2_font_description_copy (const Pango2FontDescription *desc)
  * can only be used until @desc is modified or freed. This is meant
  * to be used when the copy is only needed temporarily.
  *
- * Return value: (nullable): the newly allocated `Pango2FontDescription`,
- *   which should be freed with [method@Pango2.FontDescription.free]
+ * Return value: (nullable): the newly allocated `Pango2FontDescription`
  */
 Pango2FontDescription *
 pango2_font_description_copy_static (const Pango2FontDescription *desc)
@@ -856,10 +851,10 @@ pango2_font_description_copy_static (const Pango2FontDescription *desc)
  * Two font descriptions are considered equal if the fonts they describe
  * are provably identical. This means that their masks do not have to match,
  * as long as other fields are all the same. (Two font descriptions may
- * result in identical fonts being loaded, but still compare %FALSE.)
+ * result in identical fonts being loaded, but still compare unequal.)
  *
- * Return value: %TRUE if the two font descriptions are identical,
- *   %FALSE otherwise.
+ * Return value: true if the two font descriptions are identical,
+ *   false otherwise.
  */
 gboolean
 pango2_font_description_equal (const Pango2FontDescription *desc1,
@@ -909,7 +904,7 @@ case_insensitive_hash (const char *key)
  * This is suitable to be used, for example, as an argument
  * to [GLib.HashTable.new]. The hash value is independent of @desc->mask.
  *
- * Return value: the hash value.
+ * Return value: the hash value
  */
 guint
 pango2_font_description_hash (const Pango2FontDescription *desc)
@@ -938,7 +933,7 @@ pango2_font_description_hash (const Pango2FontDescription *desc)
 
 /**
  * pango2_font_description_free:
- * @desc: (nullable): a `Pango2FontDescription`, may be %NULL
+ * @desc: (nullable): a `Pango2FontDescription`
  *
  * Frees a font description.
  */
@@ -1285,7 +1280,7 @@ parse_variations (const char  *word,
  *
  *     "Cantarell Italic Light 15 @‍wght=200"
  *
- * Return value: a new `Pango2FontDescription`.
+ * Return value: a new `Pango2FontDescription`
  */
 Pango2FontDescription *
 pango2_font_description_from_string (const char *str)

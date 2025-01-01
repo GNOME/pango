@@ -55,9 +55,9 @@ pango2_matrix_copy (const Pango2Matrix *matrix)
 
 /**
  * pango2_matrix_free:
- * @matrix: (nullable): a `Pango2Matrix`, may be %NULL
+ * @matrix: (nullable): a `Pango2Matrix`
  *
- * Free a `Pango2Matrix`.
+ * Frees a `Pango2Matrix`.
  */
 void
 pango2_matrix_free (Pango2Matrix *matrix)
@@ -74,9 +74,9 @@ pango2_matrix_free (Pango2Matrix *matrix)
  * @tx: amount to translate in the X direction
  * @ty: amount to translate in the Y direction
  *
- * Changes the transformation represented by @matrix to be the
- * transformation given by first translating by (@tx, @ty)
- * then applying the original transformation.
+ * Changes the transformation represented by @matrix to
+ * first translate by (@tx, @ty), then applying the original
+ * transformation.
  */
 void
 pango2_matrix_translate (Pango2Matrix *matrix,
@@ -95,10 +95,8 @@ pango2_matrix_translate (Pango2Matrix *matrix,
  * @scale_x: amount to scale by in X direction
  * @scale_y: amount to scale by in Y direction
  *
- * Changes the transformation represented by @matrix to be the
- * transformation given by first scaling by @sx in the X direction
- * and @sy in the Y direction then applying the original
- * transformation.
+ * Changes the transformation represented by @matrix to first
+ * scale by @sx and @sy, applying the original transformation.
  */
 void
 pango2_matrix_scale (Pango2Matrix *matrix,
@@ -118,9 +116,9 @@ pango2_matrix_scale (Pango2Matrix *matrix,
  * @matrix: a `Pango2Matrix`
  * @degrees: degrees to rotate counter-clockwise
  *
- * Changes the transformation represented by @matrix to be the
- * transformation given by first rotating by @degrees degrees
- * counter-clockwise then applying the original transformation.
+ * Changes the transformation represented by @matrix to first
+ * rotate by @degrees degrees counter-clockwise, then applying
+ * the original transformation.
  */
 void
 pango2_matrix_rotate (Pango2Matrix *matrix,
@@ -150,9 +148,8 @@ pango2_matrix_rotate (Pango2Matrix *matrix,
  * @matrix: a `Pango2Matrix`
  * @new_matrix: a `Pango2Matrix`
  *
- * Changes the transformation represented by @matrix to be the
- * transformation given by first applying transformation
- * given by @new_matrix then applying the original transformation.
+ * Changes the transformation represented by @matrix to first
+ * first applying @new_matrix, then applying the original transformation.
  */
 void
 pango2_matrix_concat (Pango2Matrix       *matrix,
@@ -183,7 +180,7 @@ pango2_matrix_concat (Pango2Matrix       *matrix,
  * coordinate is needed as well, use [method@Pango2.Matrix.get_font_scale_factors].
  *
  * Return value: the scale factor of @matrix on the height of the font,
- *   or 1.0 if @matrix is %NULL.
+ *   or 1.0 if @matrix is `NULL`
  */
 double
 pango2_matrix_get_font_scale_factor (const Pango2Matrix *matrix)
@@ -386,12 +383,11 @@ pango2_matrix_transform_point (const Pango2Matrix *matrix,
  *
  * If you have the rectangle in Pango units and want to convert to
  * transformed pixel bounding box, it is more accurate to transform it first
- * (using this function) and pass the result to pango2_extents_to_pixels(),
- * first argument, for an inclusive rounded rectangle.
- * However, there are valid reasons that you may want to convert
- * to pixels first and then transform, for example when the transformed
- * coordinates may overflow in Pango units (large matrix translation for
- * example).
+ * (using this function) and pass the result to [func@Pango2.extents_to_pixels],
+ * first argument, for an inclusive rounded rectangle. However, there are
+ * valid reasons that you may want to convert to pixels first and then transform,
+ * for example when the transformed coordinates may overflow in Pango units
+ * (large matrix translation for example).
  */
 void
 pango2_matrix_transform_rectangle (const Pango2Matrix *matrix,
@@ -452,7 +448,7 @@ pango2_matrix_transform_rectangle (const Pango2Matrix *matrix,
  * @matrix: (nullable): a `Pango2Matrix`
  * @rect: (inout) (optional): in/out bounding box in device units
  *
- * First transforms the @rect using @matrix, then calculates the bounding box
+ * First transforms @rect using @matrix, then calculates the bounding box
  * of the transformed rectangle.
  *
  * This function is useful for example when you want to draw a rotated
@@ -460,7 +456,7 @@ pango2_matrix_transform_rectangle (const Pango2Matrix *matrix,
  * should be and how much you should shift the layout when rendering.
  *
  * For better accuracy, you should use [method@Pango2.Matrix.transform_rectangle]
- * on original rectangle in Pango units and convert to pixels afterward
+ * on the original rectangle in Pango units and convert to pixels afterward
  * using [func@extents_to_pixels]'s first argument.
  */
 void
@@ -518,6 +514,15 @@ pango2_matrix_transform_pixel_rectangle (const Pango2Matrix *matrix,
   rect->height = ceil (max_y - rect->y);
 }
 
+/**
+ * pango2_matrix_equal:
+ * @m1: a `Pango2Matrix`
+ * @m2: another `Pango2Matrix`
+ *
+ * Returns whether two matrices are equal.
+ *
+ * Returns: true if @m1 and @m2 are equal
+ */
 gboolean
 pango2_matrix_equal (const Pango2Matrix *m1,
                      const Pango2Matrix *m2)

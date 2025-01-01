@@ -137,7 +137,7 @@ pango2_glyph_item_split (Pango2GlyphItem *orig,
  * pango2_glyph_item_copy:
  * @orig: (nullable): a `Pango2GlyphItem`
  *
- * Make a deep copy of an existing `Pango2GlyphItem` structure.
+ * Makes a deep copy of an existing `Pango2GlyphItem`.
  *
  * Return value: (nullable): the newly allocated `Pango2GlyphItem`
  */
@@ -164,7 +164,7 @@ pango2_glyph_item_copy (Pango2GlyphItem *orig)
  * pango2_glyph_item_free:
  * @glyph_item: (nullable): a `Pango2GlyphItem`
  *
- * Frees a `Pango2GlyphItem` and resources to which it points.
+ * Frees a `Pango2GlyphItem`.
  */
 void
 pango2_glyph_item_free (Pango2GlyphItem *glyph_item)
@@ -189,7 +189,7 @@ G_DEFINE_BOXED_TYPE (Pango2GlyphItem, pango2_glyph_item,
  * pango2_glyph_item_iter_copy:
  * @orig: (nullable): a `Pango2GlyphItem`Iter
  *
- * Make a shallow copy of an existing `Pango2GlyphItemIter` structure.
+ * Makes a shallow copy of an existing `Pango2GlyphItemIter`.
  *
  * Return value: (nullable): the newly allocated `Pango2GlyphItemIter`
  */
@@ -235,8 +235,8 @@ G_DEFINE_BOXED_TYPE (Pango2GlyphItemIter, pango2_glyph_item_iter,
  *
  * See `Pango2GlyphItemIter` for details of cluster orders.
  *
- * Return value: %TRUE if the iterator was advanced,
- *   %FALSE if we were already on the  last cluster.
+ * Return value: true if the iterator was advanced,
+ *   false if we were already on the last cluster
  */
 gboolean
 pango2_glyph_item_iter_next_cluster (Pango2GlyphItemIter *iter)
@@ -321,10 +321,11 @@ pango2_glyph_item_iter_next_cluster (Pango2GlyphItemIter *iter)
  * @iter: a `Pango2GlyphItemIter`
  *
  * Moves the iterator to the preceding cluster in the glyph item.
+ *
  * See `Pango2GlyphItemIter` for details of cluster orders.
  *
- * Return value: %TRUE if the iterator was moved,
- *   %FALSE if we were already on the first cluster.
+ * Return value: true if the iterator was moved,
+ *   false if we were already on the first cluster
  */
 gboolean
 pango2_glyph_item_iter_prev_cluster (Pango2GlyphItemIter *iter)
@@ -413,12 +414,12 @@ pango2_glyph_item_iter_prev_cluster (Pango2GlyphItemIter *iter)
  * @glyph_item: the glyph item to iterate over
  * @text: text corresponding to the glyph item
  *
- * Initializes a `Pango2GlyphItemIter` structure to point to the
+ * Initializes a `Pango2GlyphItemIter` to point to the
  * first cluster in a glyph item.
  *
  * See `Pango2GlyphItemIter` for details of cluster orders.
  *
- * Return value: %FALSE if there are no clusters in the glyph item
+ * Return value: false if there are no clusters in the glyph item
  */
 gboolean
 pango2_glyph_item_iter_init_start (Pango2GlyphItemIter *iter,
@@ -450,12 +451,12 @@ pango2_glyph_item_iter_init_start (Pango2GlyphItemIter *iter,
  * @glyph_item: the glyph item to iterate over
  * @text: text corresponding to the glyph item
  *
- * Initializes a `Pango2GlyphItemIter` structure to point to the
+ * Initializes a `Pango2GlyphItemIter` to point to the
  * last cluster in a glyph item.
  *
  * See `Pango2GlyphItemIter` for details of cluster orders.
  *
- * Return value: %FALSE if there are no clusters in the glyph item
+ * Return value: false if there are no clusters in the glyph item
  */
 gboolean
 pango2_glyph_item_iter_init_end (Pango2GlyphItemIter *iter,
@@ -545,7 +546,7 @@ split_before_cluster_start (ApplyAttrsState *state)
  * @text: text that @list applies to
  * @list: a `Pango2AttrList`
  *
- * Splits a shaped item (`Pango2GlyphItem`) into multiple items based
+ * Splits a `Pango2GlyphItem` into multiple items based
  * on an attribute list.
  *
  * The idea is that if you have attributes that don't affect shaping,
@@ -564,9 +565,7 @@ split_before_cluster_start (ApplyAttrsState *state)
  * as one of the elements in the list.
  *
  * Return value: (transfer full) (element-type Pango2.GlyphItem): a
- *   list of glyph items resulting from splitting @glyph_item. Free
- *   the elements using [method@Pango2.GlyphItem.free], the list using
- *   [func@GLib.SList.free]
+ *   list of glyph items resulting from splitting @glyph_item
  */
 GSList *
 pango2_glyph_item_apply_attrs (Pango2GlyphItem *glyph_item,
@@ -787,8 +786,7 @@ pango2_glyph_item_letter_space (Pango2GlyphItem *glyph_item,
  *   characters in glyph_item (equal to glyph_item->item->num_chars)
  *   to be filled in with the resulting character widths.
  *
- * Given a `Pango2GlyphItem` and the corresponding text, determine the
- * width corresponding to each character.
+ * Determines the width corresponding to each character in the item.
  *
  * When multiple characters compose a single cluster, the width of the
  * entire cluster is divided equally among the characters.

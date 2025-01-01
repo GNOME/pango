@@ -29,8 +29,7 @@ G_BEGIN_DECLS
 /**
  * Pango2ScriptIter:
  *
- * A `Pango2ScriptIter` is used to iterate through a string
- * and identify ranges in different scripts.
+ * Iterates through a string and identifies ranges in different scripts.
  **/
 typedef struct _Pango2ScriptIter Pango2ScriptIter;
 

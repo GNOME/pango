@@ -26,8 +26,7 @@ G_BEGIN_DECLS
 /**
  * Pango2GlyphItemIter:
  *
- * A `Pango2GlyphItemIter` is an iterator over the clusters in a
- * `Pango2GlyphItem`.
+ * Iterates over the clusters in a `Pango2GlyphItem`.
  *
  * The *forward direction* of the iterator is the logical direction of text.
  * That is, with increasing @start_index and @start_char values. If @glyph_item

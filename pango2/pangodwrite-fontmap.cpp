@@ -40,6 +40,8 @@
 /**
  * Pango2DirectWriteFontMap:
  *
+ * Uses DirectWrite to populate a fontmap with the available fonts.
+ *
  * `Pango2DirectWriteFontMap` is a subclass of `Pango2FontMap` that
  * uses DirectWrite to populate the fontmap with the available fonts.
  */

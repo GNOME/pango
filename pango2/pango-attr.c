@@ -29,8 +29,7 @@
 /**
  * Pango2Attribute:
  *
- * A `Pango2Attribute` structure associates a named attribute with
- * a certain range of a text.
+ * Associates a named attribute with a certain range of text.
  *
  * Attributes can have basic types, such as int, float, boolean
  * `Pango2Color`, `Pango2FontDescription or `Pango2Language`. It is
@@ -155,7 +154,7 @@ is_valid_attr_type (guint type)
  * @serialize: (scope forever) (nullable): function to serialize the data
  *   of an attribute of this type
  *
- * Register a new attribute type.
+ * Registers a new attribute type.
  *
  * The attribute type name can be accessed later
  * by using [func@Pango2.AttrType.get_name].
@@ -222,7 +221,7 @@ pango2_attr_type_register (const char                  *name,
  * not be modified or freed.
  *
  * Return value: (nullable): the type ID name (which
- *   may be %NULL), or %NULL if @type is a built-in Pango2
+ *   may be `NULL`), or `NULL` if @type is a built-in Pango2
  *   attribute type or invalid.
  */
 const char *
@@ -254,11 +253,10 @@ pango2_attr_type_get_name (guint type)
  * pango2_attribute_copy:
  * @attr: a `Pango2Attribute`
  *
- * Make a copy of an attribute.
+ * Makes a copy of an attribute.
  *
  * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy].
+ *   `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attribute_copy (const Pango2Attribute *attr)
@@ -330,7 +328,7 @@ pango2_attribute_copy (const Pango2Attribute *attr)
  * pango2_attribute_destroy:
  * @attr: a `Pango2Attribute`.
  *
- * Destroy a `Pango2Attribute` and free all associated memory.
+ * Destroys a `Pango2Attribute` and free all associated memory.
  */
 void
 pango2_attribute_destroy (Pango2Attribute *attr)
@@ -402,13 +400,13 @@ G_DEFINE_BOXED_TYPE (Pango2Attribute, pango2_attribute,
  * @attr1: a `Pango2Attribute`
  * @attr2: another `Pango2Attribute`
  *
- * Compare two attributes for equality.
+ * Compares two attributes for equality.
  *
  * This compares only the actual value of the two
  * attributes and not the ranges that the attributes
  * apply to.
  *
- * Return value: %TRUE if the two attributes have the same value
+ * Return value: true if the two attributes have the same value
  */
 gboolean
 pango2_attribute_equal (const Pango2Attribute *attr1,
@@ -488,8 +486,7 @@ pango2_attribute_equal (const Pango2Attribute *attr1,
  * all-inclusive range of `[0,G_MAXUINT]`. The value is copied.
  *
  * Return value: (transfer full): the newly allocated
- *   `Pango2Attribute`, which should be freed with
- *   [method@Pango2.Attribute.destroy]
+ *   `Pango2Attribute`
  */
 Pango2Attribute *
 pango2_attribute_new (guint         type,

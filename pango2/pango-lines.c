@@ -9,8 +9,7 @@
 /**
  * Pango2Lines:
  *
- * A `Pango2Lines` object represents the result of formatting an
- * entire paragraph (or more) of text.
+ * Represents the result of formatting an entire paragraph (or more) of text.
  *
  * A `Pango2Lines` object contains a list of `Pango2Line` objects,
  * together with information about where to position each line
@@ -280,8 +279,7 @@ pango2_lines_get_serial (Pango2Lines *lines)
  *
  * Adds a line to the `Pango2Lines`.
  *
- * The coordinates are the position
- * at which @line is placed.
+ * The coordinates are the position at which @line is placed.
  *
  * Note that this function takes ownership of the line.
  */
@@ -332,6 +330,9 @@ pango2_lines_get_iter (Pango2Lines *lines)
  *
  * Gets the number of lines in @lines.
  *
+ * Note that this number will change if [method@Pango2.Lines.add_line]
+ * is called.
+ *
  * Returns: the number of lines'
  */
 int
@@ -348,6 +349,9 @@ pango2_lines_get_line_count (Pango2Lines *lines)
  *
  * The length of the returned array can be obtained with
  * [method@Pango2.Lines.get_line_count].
+ *
+ * Note that the returned array is not guaranteed to remain
+ * valid if [method@Pango2.Lines.add_line] is called.
  *
  * Returns: (transfer none): the array of lines
  */
@@ -434,7 +438,7 @@ pango2_lines_get_unknown_glyphs_count (Pango2Lines *lines)
  *
  * Returns whether any of the lines is wrapped.
  *
- * Returns: `TRUE` if @lines is wrapped
+ * Returns: true if @lines is wrapped
  */
 gboolean
 pango2_lines_is_wrapped (Pango2Lines *lines)
@@ -455,7 +459,7 @@ pango2_lines_is_wrapped (Pango2Lines *lines)
  *
  * Returns whether any of the lines is ellipsized.
  *
- * Returns: `TRUE` if @lines is ellipsized
+ * Returns: true if @lines is ellipsized
  */
 gboolean
 pango2_lines_is_ellipsized (Pango2Lines *lines)
@@ -476,7 +480,7 @@ pango2_lines_is_ellipsized (Pango2Lines *lines)
  *
  * Returns whether any of the lines is hyphenated.
  *
- * Returns: `TRUE` if @lines is hyphenated
+ * Returns: true if @lines is hyphenated
  */
 gboolean
 pango2_lines_is_hyphenated (Pango2Lines *lines)
@@ -803,7 +807,7 @@ pango2_lines_get_x_ranges (Pango2Lines *lines,
   *n_ranges = range_count;
 }
 
-/* }}} */
+/* }}} */ 
   /* { {{ Editing API */
 
 /**
@@ -815,15 +819,15 @@ pango2_lines_get_x_ranges (Pango2Lines *lines,
  * @x_offset: (out) (optional): return location for X offset of line
  * @y_offset: (out) (optional): return location for Y offset of line
  *
- * Given an index (and possibly line), determine the line number,
+ * Given an index (and possibly line), determines the line number
  * and offset for the line.
  *
  * @idx may refer to any byte position inside @lines, as well as
  * the position before the first or after the last character (i.e.
- * line->start_index + line->length, for the last line).
+ * `line->start_index + line->length`, for the last line).
  *
  * If @lines contains lines with different backing data (i.e.
- * more than one line with line->start_index of zero), then
+ * more than one line with `line->start_index` of zero), then
  * *@line must be specified to disambiguate. If all lines
  * are backed by the same data, it is save to pass `NULL`
  * as *@line and use this function to find the line at @idx.
@@ -948,7 +952,7 @@ pango2_lines_pos_to_line (Pango2Lines *lines,
  * the trailing edge of the grapheme. If the directionality of the
  * grapheme is right-to-left, then `pos->width` will be negative.
  *
- * Note that @idx is allowed to be @line->start_index + @line->length
+ * Note that @idx is allowed to be `line->start_index + line->length`
  * for the position off the end of the last line.
  */
 void
@@ -1021,10 +1025,10 @@ pango2_lines_pos_to_index (Pango2Lines *lines,
  * @strong_pos: (out) (optional): location to store the strong cursor position
  * @weak_pos: (out) (optional): location to store the weak cursor position
  *
- * Given an index within lines, determines the positions that of the
- * strong and weak cursors if the insertion point is at that index.
+ * Given an index within lines, determines the positions of the
+ * strong and weak cursors for an insertion point at that index.
  *
- * Note that @idx is allowed to be @line->start_index + @line->length
+ * Note that @idx is allowed to be `line->start_index + line->length`
  * for the position off the end of the last line.
  *
  * The position of each cursor is stored as a zero-width rectangle
@@ -1096,9 +1100,9 @@ pango2_lines_get_cursor_pos (Pango2Lines     *lines,
  * @weak_pos: (out) (optional): location to store the weak cursor position
  *
  * Given an index within a layout, determines the positions of the
- * strong and weak cursors if the insertion point is at that index.
+ * strong and weak cursors for an insertion point at that index.
  *
- * Note that @idx is allowed to be @line->start_index + @line->length
+ * Note that @idx is allowed to be `line->start_index + line->length`
  * for the position off the end of the last line.
  *
  * This is a variant of [method@Pango2.Lines.get_cursor_pos] that applies
@@ -1156,7 +1160,7 @@ pango2_lines_get_caret_pos (Pango2Lines     *lines,
  * @new_line: (nullable): `Pango2Line` wrt to which @new_idx is interpreted
  * @new_idx: (out): location to store the new cursor byte index
  *   A value of -1 indicates that the cursor has been moved off the
- *   beginning of the layout. A value of %G_MAXINT indicates that
+ *   beginning of the layout. A value of `G_MAXINT` indicates that
  *   the cursor has been moved off the end of the layout.
  * @new_trailing: (out): number of characters to move forward from
  *   the location returned for @new_idx to get the position where

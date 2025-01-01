@@ -46,7 +46,7 @@ typedef struct _Pango2Language Pango2Language;
 /**
  * Pango2Glyph:
  *
- * A `Pango2Glyph` represents a single glyph in the output form of a string.
+ * Represents a single glyph in the output form of a string.
  */
 typedef guint32 Pango2Glyph;
 
@@ -61,8 +61,8 @@ typedef struct _Pango2LineIter Pango2LineIter;
  * The scale between dimensions used for Pango distances and device units.
  *
  * The definition of device units is dependent on the output device; it will
- * typically be pixels for a screen, and points for a printer. %PANGO2_SCALE is
- * currently 1024, but this may be changed in the future.
+ * typically be pixels for a screen, and points for a printer. `PANGO2_SCALE`
+ * is currently 1024, but this may be changed in the future.
  *
  * When setting font sizes, device units are always considered to be
  * points (as in "12 point font"), rather than pixels.
@@ -155,7 +155,7 @@ double pango2_units_to_double (int i) G_GNUC_CONST;
  * @width: width of the rectangle.
  * @height: height of the rectangle.
  *
- * The `Pango2Rectangle` structure represents a rectangle.
+ * Represents an axis-aligned rectangle.
  *
  * `Pango2Rectangle` is frequently used to represent the logical or ink
  * extents of a single glyph or section of text. (See, for instance,
@@ -242,8 +242,7 @@ void pango2_extents_to_pixels (Pango2Rectangle *inclusive,
  *   on the text direction of the paragraph
  * @PANGO2_ALIGN_JUSTIFY: Justify the content to fill the available space
  *
- * `Pango2Alignment` describes how to align the lines of a `Pango2Layout`
- * within the available space.
+ * Describes how to align the lines of a `Pango2Layout` within the available space.
  */
 typedef enum
 {
@@ -261,8 +260,7 @@ typedef enum
  * @PANGO2_WRAP_WORD_CHAR: wrap lines at word boundaries, but fall back to
  *   character boundaries if there is not enough space for a full word.
  *
- * `Pango2WrapMode` describes how to wrap the lines of a `Pango2Layout`
- * to the desired width.
+ * Describes how to wrap the lines of a `Pango2Layout` to the desired width.
  *
  * For @PANGO2_WRAP_WORD, Pango uses break opportunities that are determined
  * by the Unicode line breaking algorithm. For @PANGO2_WRAP_CHAR, Pango allows
@@ -282,8 +280,7 @@ typedef enum {
  * @PANGO2_ELLIPSIZE_MIDDLE: Omit characters in the middle of the text
  * @PANGO2_ELLIPSIZE_END: Omit characters at the end of the text
  *
- * `Pango2EllipsizeMode` describes what sort of ellipsization
- * should be applied to text.
+ * Describes what sort of ellipsization should be applied to text.
  *
  * In the ellipsization process characters are removed from the
  * text in order to make it fit to a given width and replaced
@@ -302,8 +299,7 @@ typedef enum {
  * @PANGO2_LEADING_TRIM_START: Trim leading at the top
  * @PANGO2_LEADING_TRIM_END: Trim leading at the bottom
  *
- * The `Pango2LeadingTrim` flags control how the line height affects
- * the extents of runs and lines.
+ * Controls how the line height affects the extents of runs and lines.
  */
 typedef enum
 {
@@ -349,8 +345,7 @@ typedef enum
  * @PANGO2_EMOJI_PRESENTATION_TEXT: Prefer text presentation
  * @PANGO2_EMOJI_PRESENTATION_EMOJI: Prefer Emoji presentation
  *
- * `Pango2EmojiPresentation` describes a preference for Emoji
- * presentation style.
+ * Describes a preference for Emoji presentation style.
  *
  * See [method@Pango2.Context.set_emoji_presentation] or
  * [func@Pango2.attr_emoji_presentation_new] for ways to communicate

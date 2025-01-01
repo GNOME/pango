@@ -28,7 +28,7 @@ G_BEGIN_DECLS
 /**
  * Pango2AttrIterator:
  *
- * A `Pango2AttrIterator` is used to iterate through a `Pango2AttrList`.
+ * Iterates through a `Pango2AttrList`.
  *
  * A new iterator is created with [method@Pango2.AttrList.get_iterator].
  * Once the iterator is created, it can be advanced through the style

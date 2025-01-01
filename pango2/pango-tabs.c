@@ -37,7 +37,7 @@ struct _Pango2Tab
 /**
  * Pango2TabArray:
  *
- * A `Pango2TabArray` contains an array of tab stops.
+ * Contains an array of tab stops.
  *
  * `Pango2TabArray` can be used to set tab stops in a `Pango2Layout`.
  * Each tab stop has an alignment, a position, and optionally

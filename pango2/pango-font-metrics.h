@@ -28,8 +28,7 @@ G_BEGIN_DECLS
 /**
  * Pango2FontMetrics:
  *
- * A `Pango2FontMetrics` structure holds the overall metric information
- * for a font.
+ * Holds the overall metric information for a font.
  *
  * The information in a `Pango2FontMetrics` structure may be restricted
  * to a script. The fields of this structure are private to implementations

@@ -29,8 +29,7 @@
 /**
  * Pango2FontFamily:
  *
- * A `Pango2FontFamily` is used to represent a family of related
- * font faces.
+ * Represents a family of related font faces.
  *
  * The font faces in a family share a common design, but differ in
  * slant, weight, width or other aspects.
@@ -233,8 +232,7 @@ pango2_font_family_get_font_map (Pango2FontFamily *family)
  * be used in a `Pango2FontDescription` to specify that a face from
  * this family is desired.
  *
- * Return value: the name of the family. This string is owned
- *   by the family object and must not be modified or freed.
+ * Return value: the name of the family
  */
 const char *
 pango2_font_family_get_name (Pango2FontFamily *family)

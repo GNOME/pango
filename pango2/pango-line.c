@@ -19,14 +19,13 @@
 /**
  * Pango2Line:
  *
- * A `Pango2Line` is an immutable object which represents a line resulting
- * from laying out text via `Pango2Layout` or `Pango2LineBreaker`.
+ * Represents a line of shaped text.
  *
  * A line consists of a number of runs (i.e. ranges of text with uniform
  * script, font and attributes that are shaped as a unit). Runs are
  * represented as [struct@Pango2.Run] objects.
  *
- * A `Pango2Line` always has its origin at the leftmost point  of its
+ * A `Pango2Line` always has its origin at the leftmost point of its
  * baseline. To position lines in an entire paragraph of text (i.e. in layout
  * coordinates), the `Pango2Lines` object stores X and Y coordinates to
  * offset each line to.
@@ -775,7 +774,7 @@ pango2_line_get_log_attrs (Pango2Line *line,
  *
  * Gets whether the line is wrapped.
  *
- * Returns: `TRUE` if @line has been wrapped
+ * Returns: true if @line has been wrapped
  */
 gboolean
 pango2_line_is_wrapped (Pango2Line *line)
@@ -791,7 +790,7 @@ pango2_line_is_wrapped (Pango2Line *line)
  *
  * Gets whether the line is ellipsized.
  *
- * Returns: `TRUE` if @line has been ellipsized
+ * Returns: true if @line has been ellipsized
  */
 gboolean
 pango2_line_is_ellipsized (Pango2Line *line)
@@ -807,7 +806,7 @@ pango2_line_is_ellipsized (Pango2Line *line)
  *
  * Gets whether the line is hyphenated.
  *
- * Returns: `TRUE` if @line has been hyphenated
+ * Returns: true if @line has been hyphenated
  */
 gboolean
 pango2_line_is_hyphenated (Pango2Line *line)
@@ -825,7 +824,7 @@ pango2_line_is_hyphenated (Pango2Line *line)
  *
  * See [method@Pango2.Line.justify].
  *
- * Returns: `TRUE` if @line has been justified
+ * Returns: true if @line has been justified
  */
 gboolean
 pango2_line_is_justified (Pango2Line *line)
@@ -841,7 +840,7 @@ pango2_line_is_justified (Pango2Line *line)
  *
  * Gets whether the line is the first of a paragraph.
  *
- * Returns: `TRUE` if @line starts a paragraph
+ * Returns: true if @line starts a paragraph
  */
 gboolean
 pango2_line_is_paragraph_start (Pango2Line *line)
@@ -857,7 +856,7 @@ pango2_line_is_paragraph_start (Pango2Line *line)
  *
  * Gets whether the line is the last of a paragraph.
  *
- * Returns: `TRUE` if @line ends a paragraph
+ * Returns: true if @line ends a paragraph
  */
 gboolean
 pango2_line_is_paragraph_end (Pango2Line *line)
@@ -1051,7 +1050,7 @@ pango2_line_get_trimmed_extents (Pango2Line        *line,
  * trailing edge of the grapheme. If the directionality of the grapheme
  * is right-to-left, then `pos->width` will be negative.
  *
- * Note that @idx is allowed to be @line->start_index + @line->length.
+ * Note that @idx is allowed to be `line->start_index + line->length`.
  */
 void
 pango2_line_index_to_pos (Pango2Line      *line,
@@ -1106,7 +1105,7 @@ pango2_line_index_to_pos (Pango2Line      *line,
  *
  * Converts an index within a `Pango2Line` to a X position.
  *
- * Note that @idx is allowed to be @line->start_index + @line->length.
+ * Note that @idx is allowed to be `line->start_index + line->length`.
  */
 void
 pango2_line_index_to_x (Pango2Line *line,
@@ -1171,17 +1170,17 @@ pango2_line_index_to_x (Pango2Line *line,
 /**
  * pango2_line_x_to_index:
  * @line: a `Pango2Line`
- * @x: the X offset (in Pango units) from the left edge of the line
+ * @x_pos: the X offset (in Pango units) from the left edge of the line
  * @idx: (out): location to store calculated byte index for the grapheme
  *   in which the user clicked
  * @trailing: (out): location to store an integer indicating where in the
  *   grapheme the user clicked. It will either be zero, or the number of
  *   characters in the grapheme. 0 represents the leading edge of the grapheme.
  *
- * Converts from x offset to the byte index of the corresponding character
+ * Converts from a X position to the byte index of the corresponding character
  * within the text of the line.
  *
- * If @x is outside the line, @idx and @trailing will point to the very
+ * If @x_pos is outside the line, @idx and @trailing will point to the very
  * first or very last position in the line. This determination is based on the
  * resolved direction of the paragraph; for example, if the resolved direction
  * is right-to-left, then an X position to the right of the line (after it)
@@ -1190,7 +1189,7 @@ pango2_line_index_to_x (Pango2Line *line,
  * in the line and @trailing being set to the number of characters in that
  * grapheme. The reverse is true for a left-to-right line.
  *
- * Return value: %FALSE if @x_pos was outside the line, %TRUE if inside
+ * Return value: false if @x_pos was outside the line, true if inside
  */
 gboolean
 pango2_line_x_to_index (Pango2Line *line,
@@ -1359,7 +1358,7 @@ pango2_line_x_to_index (Pango2Line *line,
 }
 
 /* }}} */
-/* {{{ Cursor positioning */
+/* {{{  Cursor positioning */
 
 /**
  * pango2_line_get_cursor_pos:
@@ -1371,7 +1370,7 @@ pango2_line_x_to_index (Pango2Line *line,
  * Given an index within @line, determines the positions that of the
  * strong and weak cursors if the insertion point is at that index.
  *
- * Note that @idx is allowed to be @line->start_index + @line->length.
+ * Note that @idx is allowed to be `line->start_index + line->length`.
  *
  * The position of each cursor is stored as a zero-width rectangle
  * with the height of the run extents.
@@ -1520,7 +1519,7 @@ done:
  * Given an index within @line, determines the positions of the
  * strong and weak cursors if the insertion point is at that index.
  *
- * Note that @idx is allowed to be @line->start_index + @line->length.
+ * Note that @idx is allowed to be `line->start_index + line->length`.
  *
  * This is a variant of [method@Pango2.Line.get_cursor_pos] that applies
  * font metric information about caret slope and offset to the positions

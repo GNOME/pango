@@ -43,8 +43,7 @@ G_DEFINE_BOXED_TYPE (Pango2Color, pango2_color,
  * otherwise (since colors can just be copied by assignment
  * in C).
  *
- * Return value: (nullable): the newly allocated `Pango2Color`,
- *   which should be freed with [method@Pango2.Color.free]
+ * Return value: (nullable): the newly allocated `Pango2Color`
  */
 Pango2Color*
 pango2_color_copy (const Pango2Color *src)
@@ -83,7 +82,7 @@ pango2_color_free (Pango2Color *color)
  *
  * Compares two colors for quality.
  *
- * Returns: `TRUE` if the colors are equal
+ * Returns: true if the colors are equal
  */
 gboolean
 pango2_color_equal (const Pango2Color *color1,
@@ -107,8 +106,7 @@ pango2_color_equal (const Pango2Color *color1,
  * where `r`, `g`, `b` and `a` are hex digits representing the
  * red, green, blue and alpha components respectively.
  *
- * Return value: a newly-allocated text string that must
- *   be freed with [GLib.free]
+ * Return value: a newly-allocated string
  */
 char *
 pango2_color_to_string (const Pango2Color *color)
@@ -238,7 +236,7 @@ hex (const char   *spec,
  * @color: a `Pango2Color` structure in which to store the result
  * @spec: a string specifying the new color
  *
- * Fill in the fields of a color from a string specification.
+ * Fills in the fields of a color from a string specification.
  *
  * The string can either one of a large set of standard names.
  * (Taken from the CSS Color [specification](https://www.w3.org/TR/css-color-4/#named-colors),
@@ -254,8 +252,7 @@ hex (const char   *spec,
  * component is found in @spec, alpha is set to 0xffff (for a
  * solid color).
  *
- * Return value: %TRUE if parsing of the specifier succeeded,
- *   otherwise %FALSE
+ * Return value: true if parsing of the specifier succeeded, otherwise false
  */
 gboolean
 pango2_color_parse (Pango2Color *color,

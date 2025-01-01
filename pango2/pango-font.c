@@ -37,8 +37,7 @@
 /**
  * Pango2Font:
  *
- * A `Pango2Font` is used to represent a font in a
- * rendering-system-independent manner.
+ * Represents a font in a rendering-system-independent manner.
  */
 
 /* }}} */
@@ -263,7 +262,7 @@ pango2_font_get_scale_factors (Pango2Font *font,
  * Use [method@Pango2.Font.describe_with_absolute_size] if you want
  * the font size in device units.
  *
- * Return value: a newly-allocated `Pango2FontDescription` object.
+ * Return value: a newly-allocated `Pango2FontDescription`
  */
 Pango2FontDescription *
 pango2_font_describe (Pango2Font *font)
@@ -282,7 +281,7 @@ pango2_font_describe (Pango2Font *font)
  *
  * Use [method@Pango2.Font.describe] if you want the font size in points.
  *
- * Return value: a newly-allocated `Pango2FontDescription` object.
+ * Return value: a newly-allocated `Pango2FontDescription`
  */
 Pango2FontDescription *
 pango2_font_describe_with_absolute_size (Pango2Font *font)
@@ -313,7 +312,7 @@ pango2_font_describe_with_absolute_size (Pango2Font *font)
  * from the extents rectangle to more traditional font metrics. The units
  * of the rectangles are in 1/PANGO2_SCALE of a device unit.
  *
- * If @font is %NULL, this function gracefully sets some sane values in the
+ * If @font is `NULL`, this function gracefully sets some sane values in the
  * output variables and returns.
  */
 void
@@ -357,11 +356,10 @@ pango2_font_get_glyph_extents (Pango2Font      *font,
  * a language tag can be provided to indicate that the metrics should be
  * retrieved that correspond to the script(s) used by that language.
  *
- * If @font is %NULL, this function gracefully sets some sane values in the
+ * If @font is `NULL`, this function gracefully sets some sane values in the
  * output variables and returns.
  *
- * Return value: a `Pango2FontMetrics` object. The caller must call
- *   [method@Pango2.FontMetrics.free] when finished using the object.
+ * Return value: (transfer full): a `Pango2FontMetrics` object
  */
 Pango2FontMetrics *
 pango2_font_get_metrics (Pango2Font     *font,
@@ -407,7 +405,7 @@ pango2_font_get_face (Pango2Font *font)
  * pango2_font_get_hb_font:
  * @font: a `Pango2Font`
  *
- * Get a `hb_font_t` object backing this font.
+ * Gets the `hb_font_t` object backing this font.
  *
  * Note that the objects returned by this function are cached
  * and immutable. If you need to make changes to the `hb_font_t`,

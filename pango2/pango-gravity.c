@@ -73,7 +73,7 @@ pango2_gravity_to_rotation (Pango2Gravity gravity)
  * in a `Pango2Matrix`.
  *
  * Return value: the gravity of @matrix, which will never be
- * %PANGO2_GRAVITY_AUTO, or %PANGO2_GRAVITY_SOUTH if @matrix is %NULL
+ *   `PANGO2_GRAVITY_AUTO`, or `PANGO2_GRAVITY_SOUTH` if @matrix is `NULL`
  */
 Pango2Gravity
 pango2_gravity_get_for_matrix (const Pango2Matrix *matrix)
@@ -383,7 +383,7 @@ pango2_gravity_get_for_script (GUnicodeScript      script,
 /**
  * pango2_gravity_get_for_script_and_width:
  * @script: `Pango2Script` to query
- * @wide: %TRUE for wide characters as returned by g_unichar_iswide()
+ * @wide: true for wide characters as returned by g_unichar_iswide()
  * @base_gravity: base gravity of the paragraph
  * @hint: orientation hint
  *
@@ -404,7 +404,7 @@ pango2_gravity_get_for_script (GUnicodeScript      script,
  * preferred gravity of @script.
  *
  * Return value: resolved gravity suitable to use for a run of text
- * with @script and @wide.
+ *   with @script and @wide
  */
 Pango2Gravity
 pango2_gravity_get_for_script_and_width (GUnicodeScript    script,

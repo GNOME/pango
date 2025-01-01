@@ -34,8 +34,7 @@
 /**
  * Pango2HbFont:
  *
- * `Pango2HbFont` is a `Pango2Font` implementation that wraps
- * a `hb_font_t` object and implements all of the `Pango2Font`
+ * Wraps a `hb_font_t` object and implements `Pango2Font`
  * functionality using HarfBuzz.
  *
  * In addition to a `Pango2HbFace` and a size, a number of optional
@@ -923,7 +922,7 @@ pango2_hb_font_class_init (Pango2HbFontClass *class)
 }
 
 /* }}} */
- /* {{{ Public API */
+/* {{{ Public API */
 
 /**
  * pango2_hb_font_new:
@@ -1047,7 +1046,7 @@ pango2_hb_font_new_for_description (Pango2HbFace                *face,
  * @n_features: (nullable) (out caller-allocates): return location for
  *   the length of the returned array
  *
- * Obtain the OpenType features that are provided by the font.
+ * Obtains the OpenType features that are set for the font.
  *
  * These are passed to the rendering system, together with features
  * that have been explicitly set via attributes.

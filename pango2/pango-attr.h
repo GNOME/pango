@@ -39,8 +39,7 @@ typedef struct _Pango2Attribute Pango2Attribute;
  * @PANGO2_ATTR_VALUE_FONT_DESC: A `Pango2FontDescription`
  * @PANGO2_ATTR_VALUE_POINTER: A generic pointer
  *
- * `Pango2AttrValueType` enumerates the types of values
- * that a `Pango2Attribute` can contain.
+ * Types of values that a `Pango2Attribute` can contain.
  *
  * The `Pango2AttrValueType` of a `Pango2Attribute` is part
  * of its type, and can be obtained with `PANGO2_ATTR_VALUE_TYPE()`.
@@ -65,8 +64,7 @@ typedef enum
  * @PANGO2_ATTR_AFFECTS_SHAPING: The attribute affects shaping
  * @PANGO2_ATTR_AFFECTS_RENDERING: The attribute affects rendering
  *
- * A `Pango2AttrAffects` value indicates what part of Pango2's processing
- * pipeline is affected by an attribute.
+ * Indicates what part of Pango2's processing pipeline is affected by an attribute.
  *
  * Marking an attribute with `PANGO2_ATTR_AFFECTS_ITEMIZATION` ensures
  * that the attribute values are constant across items.
@@ -85,8 +83,8 @@ typedef enum
  * @PANGO2_ATTR_MERGE_OVERRIDES: Only the attribute with the narrowest range is used
  * @PANGO2_ATTR_MERGE_ACCUMULATES: All attributes with overlapping range are kept
  *
- * A `Pango2AttrMerge` value indicates how overlapping attribute values
- * should be reconciled to determine the effective attribute value.
+ * Indicates how overlapping attribute values should be reconciled
+ * to determine the effective attribute value.
  *
  * These options influence the @extra_attrs returned by
  * [method@Pango2.AttrIterator.get_font].
@@ -167,7 +165,7 @@ typedef enum
  *
  * Callback to duplicate the value of an attribute.
  *
- * Return value: new copy of @value.
+ * Return value: new copy of @value
  **/
 typedef gpointer (*Pango2AttrDataCopyFunc) (gconstpointer value);
 

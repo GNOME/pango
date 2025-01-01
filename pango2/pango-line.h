@@ -105,7 +105,7 @@ void                    pango2_line_index_to_x             (Pango2Line        *l
 
 PANGO2_AVAILABLE_IN_ALL
 gboolean                pango2_line_x_to_index             (Pango2Line        *line,
-                                                            int                x,
+                                                            int                x_pos,
                                                             int               *idx,
                                                             int               *trailing);
 

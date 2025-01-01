@@ -73,8 +73,7 @@ G_BEGIN_DECLS
  * @break_removes_preceding: when breaking lines before this char, remove the
  *   preceding char.
  *
- * The `Pango2LogAttr` structure stores information about the attributes of a
- * single character.
+ * Stores information about the attributes of a single character.
  */
 struct _Pango2LogAttr
 {

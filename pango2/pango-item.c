@@ -28,15 +28,14 @@
 /**
  * Pango2Analysis:
  *
- * The `Pango2Analysis` structure stores information about
- * the properties of a segment of text.
+ * Stores information about the properties of a segment of text.
  */
 
 /**
  * Pango2Item:
  *
- * The `Pango2Item` structure stores information about
- * a segment of text.
+ * Stores information about a segment of text, together with
+ * offset information.
  *
  * You typically obtain `Pango2Items` by itemizing a piece
  * of text with [func@Pango2.itemize].
@@ -45,10 +44,9 @@
 /**
  * pango2_item_new:
  *
- * Creates a new `Pango2Item` structure initialized to default values.
+ * Creates a new `Pango2Item` initialized to default values.
  *
- * Return value: the newly allocated `Pango2Item`, which should
- *   be freed with [method@Pango2.Item.free].
+ * Return value: the newly allocated `Pango2Item`
  */
 Pango2Item *
 pango2_item_new (void)
@@ -62,7 +60,7 @@ pango2_item_new (void)
  * pango2_item_copy:
  * @item: (nullable): a `Pango2Item`
  *
- * Copy an existing `Pango2Item` structure.
+ * Copies an existing `Pango2Item`.
  *
  * Return value: (nullable): the newly allocated `Pango2Item`
  */
@@ -104,9 +102,9 @@ pango2_item_copy (Pango2Item *item)
 
 /**
  * pango2_item_free:
- * @item: (nullable): a `Pango2Item`, may be %NULL
+ * @item: (nullable): a `Pango2Item`
  *
- * Free a `Pango2Item` and all associated memory.
+ * Frees a `Pango2Item`.
  **/
 void
 pango2_item_free (Pango2Item *item)
@@ -153,8 +151,7 @@ G_DEFINE_BOXED_TYPE (Pango2Item, pango2_item,
  * so `pango2_item_split()` can't count the char length of the split items
  * itself.
  *
- * Return value: new item representing text before @split_index, which
- *   should be freed with [method@Pango2.Item.free].
+ * Return value: (transfer full): new item representing text before @split_index
  */
 Pango2Item *
 pango2_item_split (Pango2Item *orig,
@@ -222,7 +219,7 @@ compare_attr (gconstpointer p1, gconstpointer p2)
  * @item: a `Pango2Item`
  * @iter: a `Pango2AttrIterator`
  *
- * Add attributes to a `Pango2Item`.
+ * Adds attributes to a `Pango2Item`.
  *
  * The idea is that you have attributes that don't affect itemization,
  * such as font features, so you filter them out using
@@ -374,7 +371,7 @@ pango2_analysis_set_size_font (Pango2Analysis *analysis,
  *
  * Gets the font to use for determining line height.
  *
- * If this returns `NULL`, use analysis->font.
+ * If this returns `NULL`, use `analysis->font`.
  *
  * Returns: (nullable) (transfer none): the font
  */
@@ -389,7 +386,7 @@ pango2_analysis_get_size_font (const Pango2Analysis *analysis)
  * @item: a `Pango2Item`
  * @properties: `ItemProperties` struct to populate
  *
- * Extract useful information from the @item's attributes.
+ * Extracts useful information from the @item's attributes.
  *
  * Note that letter-spacing and shape are required to be constant
  * across items. But underline and strikethrough can vary across
@@ -565,8 +562,7 @@ pango2_analysis_get_language (const Pango2Analysis *analysis)
  * pango2_analysis_get_extra_attributes:
  * @analysis: a `Pango2Analysis`
  *
- * Returns attributes to apply to text with this
- * `Pango2Analysis`.
+ * Returns attributes to apply to text with this `Pango2Analysis`.
  *
  * Return value: (transfer none) (element-type Pango2Attribute):
  *   a `GSList` with `Pango2Attribute` values

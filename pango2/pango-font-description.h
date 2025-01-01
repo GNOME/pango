@@ -29,8 +29,7 @@ G_BEGIN_DECLS
 /**
  * Pango2FontDescription:
  *
- * A `Pango2FontDescription` describes a font in an implementation-independent
- * manner.
+ * Describes a font in an implementation-independent manner.
  *
  * `Pango2FontDescription` structures are used both to list what fonts are
  * available on the system and also for specifying the characteristics of
@@ -43,7 +42,7 @@ G_BEGIN_DECLS
  * @PANGO2_STYLE_OBLIQUE: the font is slanted, but in a roman style.
  * @PANGO2_STYLE_ITALIC: the font is slanted in an italic style.
  *
- * An enumeration specifying the various slant styles possible for a font.
+ * Specifies the various slant styles possible for a font.
  **/
 typedef enum {
   PANGO2_STYLE_NORMAL,
@@ -69,7 +68,7 @@ typedef enum {
  * @PANGO2_VARIANT_TITLE_CAPS: A font with capital letters that
  *   are more suitable for all-uppercase titles.
  *
- * An enumeration specifying capitalization variant of the font.
+ * Specifying capitalization variants of a font.
  */
 typedef enum {
   PANGO2_VARIANT_NORMAL,
@@ -96,7 +95,7 @@ typedef enum {
  * @PANGO2_WEIGHT_HEAVY: the heavy weight (= 900)
  * @PANGO2_WEIGHT_ULTRAHEAVY: the ultraheavy weight (= 1000)
  *
- * A `Pango2Weight` specifes the weight (boldness) of a font.
+ * Specifes the weight (boldness) of a font.
  *
  * Weight is specified as a numeric value ranging from 100 to 1000.
  * This enumeration simply provides some common, predefined values.
@@ -128,8 +127,7 @@ typedef enum {
  * @PANGO2_STRETCH_EXTRA_EXPANDED: extra-expanded width (= 1500)
  * @PANGO2_STRETCH_ULTRA_EXPANDED: ultra-expanded width (= 2000)
  *
- * A `Pango2Stretch` specifes the width of the font relative
- * to other designs within a family.
+ * Specifes the width of the font relative to other designs within a family.
  *
  * Stretch is specified as a numeric value ranging from 500 to 2000.
  * This enumeration simply provides some common, predefined values.
@@ -158,8 +156,7 @@ typedef enum {
  * @PANGO2_FONT_MASK_VARIATIONS: OpenType font variations are specified
  * @PANGO2_FONT_MASK_FACEID: the face ID is specified
  *
- * The bits in a `Pango2FontMask` correspond to the set fields in a
- * `Pango2FontDescription`.
+ * Corresponds to the set fields in a `Pango2FontDescription`.
  */
 typedef enum {
   PANGO2_FONT_MASK_FAMILY     = 1 << 0,

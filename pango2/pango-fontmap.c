@@ -59,8 +59,8 @@
 /**
  * Pango2FontMap:
  *
- * `Pango2FontMap` is the base class for font enumeration.
- * It also handles caching and lookup of faces and fonts.
+ * The base class for font enumeration, caching and lookup.
+ *
  * To obtain fonts from a `Pango2FontMap`, use [method@Pango2.FontMap.load_font]
  * or [method@Pango2.FontMap.load_fontset].
  *
@@ -870,7 +870,7 @@ pango2_font_map_changed (Pango2FontMap *self)
  * @context: the `Pango2Context` the font will be used with
  * @desc: a `Pango2FontDescription` describing the font to load
  *
- * Load the font in the fontmap that is the closest match for
+ * Loads the font in the fontmap that is the closest match for
  * a font description.
  *
  * Returns: (transfer full) (nullable): the `Pango2Font` that
@@ -896,7 +896,7 @@ pango2_font_map_load_font (Pango2FontMap               *self,
  * @language: (nullable): a `Pango2Language` the fonts will be used for,
  *    or `NULL` to use the language of @context
  *
- * Load a set of fonts in the fontmap that can be used to render
+ * Loads a set of fonts in the fontmap that can be used to render
  * a font matching a font description.
  *
  * Returns: (transfer full) (nullable): the `Pango2Fontset` containing
@@ -964,7 +964,7 @@ pango2_font_map_reload_font (Pango2FontMap *self,
  * This can be used to automatically detect changes to a `Pango2FontMap`,
  * like in `Pango2Context`.
  *
- * Return value: The current serial number of @fontmap.
+ * Return value: The current serial number of @fontmap
  */
 guint
 pango2_font_map_get_serial (Pango2FontMap *self)

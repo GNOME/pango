@@ -37,8 +37,8 @@ G_BEGIN_DECLS
  * @end_x_offset: horizontal displacement to apply after th
  *   glyph item. Positive values shift right
  *
- * A `Pango2GlyphItem` is a pair of a `Pango2Item` and the glyphs
- * resulting from shaping the items text.
+ * A pair of a `Pango2Item` and the glyphs resulting from shaping
+ * the items text.
  *
  * As an example of the usage of `Pango2GlyphItem`, the results
  * of shaping text with `Pango2Layout` is a list of `Pango2Line`,
