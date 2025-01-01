@@ -105,7 +105,7 @@ retry:
           if (width_changed &&
               pango2_line_breaker_undo_line (breaker, line))
             {
-              g_object_unref (line);
+              pango2_line_free (line);
               goto retry;
             }
         }
