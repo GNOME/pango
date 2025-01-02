@@ -88,6 +88,7 @@ is_valid_attr_type (guint type)
     case PANGO2_ATTR_FOREGROUND:
     case PANGO2_ATTR_BACKGROUND:
     case PANGO2_ATTR_UNDERLINE:
+    case PANGO2_ATTR_UNDERLINE_POSITION:
     case PANGO2_ATTR_STRIKETHROUGH:
     case PANGO2_ATTR_RISE:
     case PANGO2_ATTR_SCALE:
@@ -99,6 +100,7 @@ is_valid_attr_type (guint type)
     case PANGO2_ATTR_GRAVITY:
     case PANGO2_ATTR_GRAVITY_HINT:
     case PANGO2_ATTR_FONT_FEATURES:
+    case PANGO2_ATTR_PALETTE:
     case PANGO2_ATTR_ALLOW_BREAKS:
     case PANGO2_ATTR_SHOW:
     case PANGO2_ATTR_INSERT_HYPHENS:
@@ -109,9 +111,12 @@ is_valid_attr_type (guint type)
     case PANGO2_ATTR_TEXT_TRANSFORM:
     case PANGO2_ATTR_WORD:
     case PANGO2_ATTR_SENTENCE:
+    case PANGO2_ATTR_PARAGRAPH:
     case PANGO2_ATTR_BASELINE_SHIFT:
     case PANGO2_ATTR_FONT_SCALE:
+    case PANGO2_ATTR_LINE_SPACING:
     case PANGO2_ATTR_SHAPE:
+    case PANGO2_ATTR_EMOJI_PRESENTATION:
       return TRUE;
     default:
       if (!attr_type)
@@ -551,7 +556,7 @@ pango2_attribute_type (const Pango2Attribute *attribute)
 }
 
 /* }}} */
- /* {{{ Private API */
+/* {{{ Private API */
 
 char *
 pango2_attr_value_serialize (Pango2Attribute *attr)
