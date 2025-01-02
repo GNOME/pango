@@ -1131,7 +1131,6 @@ default_break (const char    *text,
 
       /* If it's not a grapheme boundary, it's not a line break either */
       if (attrs[i].is_cursor_position ||
-	  prev_break_type == G_UNICODE_BREAK_SPACE ||
 	  break_type == G_UNICODE_BREAK_COMBINING_MARK ||
 	  break_type == G_UNICODE_BREAK_ZERO_WIDTH_JOINER ||
 	  break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE ||
