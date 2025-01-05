@@ -789,6 +789,24 @@ pango_attr_font_desc_new (const PangoFontDescription *desc)
   return (PangoAttribute *)result;
 }
 
+/* Helper for the deserialization code below */
+static PangoAttribute *
+pango_attr_font_desc_from_string_new (const char *string)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_FONT_DESC,
+    pango_attr_font_desc_copy,
+    pango_attr_font_desc_destroy,
+    pango_attr_font_desc_equal
+  };
+
+  PangoAttrFontDesc *result = g_slice_new (PangoAttrFontDesc);
+  pango_attribute_init (&result->attr, &klass);
+  result->desc = pango_font_description_from_string (string);
+
+  return (PangoAttribute *)result;
+}
+
 /**
  * pango_attr_underline_new:
  * @underline: the underline style
@@ -2838,7 +2856,6 @@ pango_attr_list_from_string (const char *text)
       PangoAttribute *attr;
       PangoLanguage *lang;
       gint64 integer;
-      PangoFontDescription *desc;
       PangoColor color;
       double num;
       int len;
@@ -2873,10 +2890,20 @@ pango_attr_list_from_string (const char *text)
       if (*p == '\0')
         goto fail;
 
-#define INT_ATTR(name,type) \
+#define INT_ATTR(name) \
           integer = g_ascii_strtoll (p, &endp, 10); \
           if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ((type)integer);
+          attr = pango_attr_##name##_new ((int)integer);
+
+#define INT_ATTR_ABS(name) \
+          integer = g_ascii_strtoll (p, &endp, 10); \
+          if (!is_valid_end_char (*endp)) goto fail; \
+          attr = pango_attr_##name##_new_absolute ((int)integer);
+
+#define MARK_ATTR(name) \
+          integer = g_ascii_strtoll (p, &endp, 10); \
+          if (!is_valid_end_char (*endp)) goto fail; \
+          attr = pango_attr_##name##_new ();
 
 #define BOOLEAN_ATTR(name,type) \
           if (strncmp (p, "true", strlen ("true")) == 0) \
@@ -2902,6 +2929,11 @@ pango_attr_list_from_string (const char *text)
           integer = get_attr_value (attr_type, p, len); \
           attr = pango_attr_##name##_new ((type) CLAMP (integer, min, max));
 
+#define FLAGS_ATTR(name,type) \
+          integer = g_ascii_strtoll (p, &endp, 10); \
+          if (!is_valid_end_char (*endp)) goto fail; \
+          attr = pango_attr_##name##_new ((type)integer);
+
 #define FLOAT_ATTR(name) \
           num = g_ascii_strtod (p, &endp); \
           if (!is_valid_end_char (*endp)) goto fail; \
@@ -2918,6 +2950,17 @@ pango_attr_list_from_string (const char *text)
             } \
           attr = pango_attr_##name##_new (color.red, color.green, color.blue); \
           g_free (str);
+
+#define STRING_ATTR(name) \
+          if (*p != '"') goto fail; \
+          p++; \
+          endp = strchr (p, '"'); \
+          if (!endp) goto fail; \
+          str = g_strndup (p, endp - p); \
+          attr = pango_attr_##name##_new (str); \
+          g_free (str); \
+          endp++; \
+          if (!is_valid_end_char (*endp)) goto fail;
 
       switch (attr_type)
         {
@@ -2974,21 +3017,11 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_SIZE:
-          INT_ATTR(size, int);
+          INT_ATTR(size);
           break;
 
         case PANGO_ATTR_FONT_DESC:
-          if (*p != '"') goto fail;
-          p++;
-          endp = strchr (p, '"');
-          if (!endp) goto fail;
-          str = g_strndup (p, endp - p);
-          desc = pango_font_description_from_string (str);
-          attr = pango_attr_font_desc_new (desc);
-          pango_font_description_free (desc);
-          g_free (str);
-          endp++;
-          if (!is_valid_end_char (*endp)) goto fail;
+          STRING_ATTR(font_desc_from_string);
           break;
 
         case PANGO_ATTR_FOREGROUND:
@@ -3008,7 +3041,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_RISE:
-          INT_ATTR(rise, int);
+          INT_ATTR(rise);
           break;
 
         case PANGO_ATTR_SHAPE:
@@ -3024,7 +3057,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_LETTER_SPACING:
-          INT_ATTR(letter_spacing, int);
+          INT_ATTR(letter_spacing);
           break;
 
         case PANGO_ATTR_UNDERLINE_COLOR:
@@ -3036,36 +3069,27 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_ABSOLUTE_SIZE:
-          integer = g_ascii_strtoll (p, &endp, 10);
-          if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_size_new_absolute (integer);
+          INT_ATTR_ABS(size);
           break;
 
         case PANGO_ATTR_GRAVITY:
           ENUM_ATTR(gravity, PangoGravity, PANGO_GRAVITY_SOUTH, PANGO_GRAVITY_WEST);
           break;
 
-        case PANGO_ATTR_FONT_FEATURES:
-          p++;
-          endp = strchr (p, '"');
-          if (!endp) goto fail;
-          str = g_strndup (p, endp - p);
-          attr = pango_attr_font_features_new (str);
-          g_free (str);
-          endp++;
-          if (!is_valid_end_char (*endp)) goto fail;
-          break;
-
         case PANGO_ATTR_GRAVITY_HINT:
           ENUM_ATTR(gravity_hint, PangoGravityHint, PANGO_GRAVITY_HINT_NATURAL, PANGO_GRAVITY_HINT_LINE);
           break;
 
+        case PANGO_ATTR_FONT_FEATURES:
+          STRING_ATTR(font_features);
+          break;
+
         case PANGO_ATTR_FOREGROUND_ALPHA:
-          INT_ATTR(foreground_alpha, int);
+          INT_ATTR(foreground_alpha);
           break;
 
         case PANGO_ATTR_BACKGROUND_ALPHA:
-          INT_ATTR(background_alpha, int);
+          INT_ATTR(background_alpha);
           break;
 
         case PANGO_ATTR_ALLOW_BREAKS:
@@ -3073,7 +3097,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_SHOW:
-          INT_ATTR(show, PangoShowFlags);
+          FLAGS_ATTR(show, PangoShowFlags);
           break;
 
         case PANGO_ATTR_INSERT_HYPHENS:
@@ -3093,9 +3117,7 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_ABSOLUTE_LINE_HEIGHT:
-          integer = g_ascii_strtoll (p, &endp, 10);
-          if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_line_height_new_absolute (integer);
+          INT_ATTR_ABS(line_height);
           break;
 
         case PANGO_ATTR_TEXT_TRANSFORM:
@@ -3103,15 +3125,11 @@ pango_attr_list_from_string (const char *text)
           break;
 
         case PANGO_ATTR_WORD:
-          integer = g_ascii_strtoll (p, &endp, 10);
-          if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_word_new ();
+          MARK_ATTR(word);
           break;
 
         case PANGO_ATTR_SENTENCE:
-          integer = g_ascii_strtoll (p, &endp, 10);
-          if (!is_valid_end_char (*endp)) goto fail;
-          attr = pango_attr_sentence_new ();
+          MARK_ATTR(sentence);
           break;
 
         case PANGO_ATTR_BASELINE_SHIFT:
