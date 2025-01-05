@@ -2698,6 +2698,8 @@ attr_print (GString        *str,
  * of MAXUINT), TYPE is the nickname of the attribute value type, e.g.
  * _weight_ or _stretch_, and the value is serialized according to its type:
  *
+ * Optionally, START and END can be omitted to indicate unlimited extent.
+ *
  * - enum values as nick or numeric value
  * - boolean values as _true_ or _false_
  * - integers and floats as numbers
@@ -2841,19 +2843,28 @@ pango_attr_list_from_string (const char *text)
       double num;
       int len;
 
-      start_index = g_ascii_strtoll (p, &endp, 10);
-      if (*endp != ' ')
-        goto fail;
+      if g_ascii_isdigit (p[0])
+        {
+          start_index = g_ascii_strtoll (p, &endp, 10);
+          if (*endp != ' ')
+            goto fail;
 
-      p = endp + strspn (endp, " ");
-      if (!*p)
-        goto fail;
+          p = endp + strspn (endp, " ");
+          if (!*p)
+            goto fail;
 
-      end_index = g_ascii_strtoll (p, &endp, 10);
-      if (*endp != ' ')
-        goto fail;
+          end_index = g_ascii_strtoll (p, &endp, 10);
+          if (*endp != ' ')
+            goto fail;
 
-      p = endp + strspn (endp, " ");
+          p = endp + strspn (endp, " ");
+        }
+      else
+        {
+          /* START and END are omitted */
+          start_index = PANGO_ATTR_INDEX_FROM_TEXT_BEGINNING;
+          end_index = PANGO_ATTR_INDEX_TO_TEXT_END;
+        }
 
       endp = (char *)p + strcspn (p, " ");
       attr_type = get_attr_type_by_nick (p, endp - p);

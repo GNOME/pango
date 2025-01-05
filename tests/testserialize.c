@@ -44,6 +44,8 @@ test_serialize_attr_list (void)
     "0 -1 size 10",
     "0 1 weight 700, 2 4 weight book",
     "0 200 rise 100\n5 15 family Times\n10 11 size 10240\n11 100 fallback 0\n30 60 stretch 2\n",
+    "weight bold",
+    "font-features \"tnum=1,sinf\"",
     "",
   };
   const char *roundtripped[] = {
@@ -60,6 +62,8 @@ test_serialize_attr_list (void)
     "0 4294967295 size 10",
     "0 1 weight bold\n2 4 weight book",
     "0 200 rise 100\n5 15 family \"Times\"\n10 11 size 10240\n11 100 fallback false\n30 60 stretch condensed",
+    "0 4294967295 weight bold",
+    "0 4294967295 font-features \"tnum=1,sinf\"",
     "",
   };
   const char *invalid[] = {
