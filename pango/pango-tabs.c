@@ -399,7 +399,7 @@ pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
  *
  * Individual tabs are serialized to a string of the form
  *
- *     ALIGNMENT:POSITION[:DECIMAL_POINT]
+ *     [ALIGNMENT:]POSITION[:DECIMAL_POINT]
  *
  * Where ALIGNMENT is one of _left_, _right_, _center_ or _decimal_, and
  * POSITION is the position of the tab, optionally followed by the unit _px_.
@@ -407,6 +407,11 @@ pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
  * the DECIMAL_POINT character may be specified as a Unicode codepoint.
  *
  * Note that all tabs in the array must use the same unit.
+ *
+ * A typical example:
+ *
+ *     100px 200px center:300px right:400px
+
  *
  * Returns: (transfer full): a newly allocated string
  *
