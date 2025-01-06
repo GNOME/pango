@@ -1258,7 +1258,7 @@ parse_variations (const char  *word,
  *
  * The string must have the form
  *
- *     "[FAMILY-LIST] [STYLE-OPTIONS] [SIZE] [VARIATIONS]",
+ *     [FAMILY-LIST] [STYLE-OPTIONS] [SIZE] [VARIATIONS]
  *
  * where FAMILY-LIST is a comma-separated list of families optionally
  * terminated by a comma, STYLE_OPTIONS is a whitespace-separated list
@@ -1297,7 +1297,7 @@ parse_variations (const char  *word,
  *
  * A typical example:
  *
- *     "Cantarell Italic Light 15 @‍wght=200"
+ *     Cantarell Italic Light 15 @‍wght=200
  *
  * Returns: (transfer full): a new `PangoFontDescription`.
  */

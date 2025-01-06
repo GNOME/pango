@@ -395,14 +395,26 @@ pango_tab_array_set_positions_in_pixels (PangoTabArray *tab_array,
  *
  * Serializes a `PangoTabArray` to a string.
  *
- * No guarantees are made about the format of the string,
- * it may change between Pango versions.
+ * In the resulting string, serialized tabs are separated by newlines or commas.
  *
- * The intended use of this function is testing and
- * debugging. The format is not meant as a permanent
- * storage format.
+ * Individual tabs are serialized to a string of the form
+ *
+ *     [ALIGNMENT:]POSITION[:DECIMAL_POINT]
+ *
+ * Where ALIGNMENT is one of _left_, _right_, _center_ or _decimal_, and
+ * POSITION is the position of the tab, optionally followed by the unit _px_.
+ * If ALIGNMENT is omitted, it defaults to _left_. If ALIGNMENT is _decimal_,
+ * the DECIMAL_POINT character may be specified as a Unicode codepoint.
+ *
+ * Note that all tabs in the array must use the same unit.
+ *
+ * A typical example:
+ *
+ *     100px 200px center:300px right:400px
+
  *
  * Returns: (transfer full): a newly allocated string
+ *
  * Since: 1.50
  */
 char *
