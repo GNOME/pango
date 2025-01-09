@@ -3119,7 +3119,7 @@ font_description_from_pattern (FcPattern *pattern,
       pango_font_description_set_gravity (desc, gravity);
     }
 
-  if (include_size && FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **)&s) == FcResultMatch)
+  if (FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **)&s) == FcResultMatch)
     {
       if (s && *s)
         {
