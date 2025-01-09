@@ -1,5 +1,14 @@
 Overview of changes in 1.56, xx-xx-xxxx
 =======================================
+- Support setting font features in font descriptions
+- serialization: Document the tab array format
+- serialization: Accept attributes without range
+- win32: Improve the pango_font_map_reload_implementation
+- win32: Take variations into account for caching
+- layout: Fix measuring ellipsis runs with shapes
+- build: Require C11
+- build: Require GLib 2.80
+- build: Require cairo 1.18
 
 Overview of changes in 1.55, 26-11-2024
 =======================================

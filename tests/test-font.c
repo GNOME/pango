@@ -167,20 +167,20 @@ test_features (void)
   g_assert_cmpstr (str, ==, "Cantarell 14");
   g_free (str);
 
-  desc2 = pango_font_description_from_string ("Cantarell 14 !tnum=1,sinf=1");
+  desc2 = pango_font_description_from_string ("Cantarell 14 #tnum=1,cv05=1");
   g_assert_nonnull (desc2);
   g_assert_cmpint (pango_font_description_get_set_fields (desc2) & PANGO_FONT_MASK_FEATURES, !=, 0);
-  g_assert_cmpstr (pango_font_description_get_features (desc2), ==, "tnum=1,sinf=1");
+  g_assert_cmpstr (pango_font_description_get_features (desc2), ==, "tnum=1,cv05=1");
 
   str = pango_font_description_to_string (desc2);
-  g_assert_cmpstr (str, ==, "Cantarell 14 !tnum=1,sinf=1");
+  g_assert_cmpstr (str, ==, "Cantarell 14 #tnum=1,cv05=1");
   g_free (str);
 
   g_assert_false (pango_font_description_equal (desc1, desc2));
 
-  pango_font_description_set_features (desc1, "tnum=1,sinf=1");
+  pango_font_description_set_features (desc1, "tnum=1,cv05=1");
   g_assert_cmpint (pango_font_description_get_set_fields (desc1) & PANGO_FONT_MASK_FEATURES, !=, 0);
-  g_assert_cmpstr (pango_font_description_get_features (desc1), ==, "tnum=1,sinf=1");
+  g_assert_cmpstr (pango_font_description_get_features (desc1), ==, "tnum=1,cv05=1");
 
   g_assert_true (pango_font_description_equal (desc1, desc2));
 
@@ -231,14 +231,14 @@ test_features_and_variations (void)
   g_assert_cmpstr (str, ==, "Cantarell 14");
   g_free (str);
 
-  desc2 = pango_font_description_from_string ("Cantarell 14 @wght=666 !tnum=1");
+  desc2 = pango_font_description_from_string ("Cantarell 14 @wght=666 #tnum=1");
   g_assert_nonnull (desc2);
   g_assert_cmpint (pango_font_description_get_set_fields (desc2) & (PANGO_FONT_MASK_FEATURES | PANGO_FONT_MASK_VARIATIONS), ==, PANGO_FONT_MASK_FEATURES | PANGO_FONT_MASK_VARIATIONS);
   g_assert_cmpstr (pango_font_description_get_features (desc2), ==, "tnum=1");
   g_assert_cmpstr (pango_font_description_get_variations (desc2), ==, "wght=666");
 
   str = pango_font_description_to_string (desc2);
-  g_assert_cmpstr (str, ==, "Cantarell 14 @wght=666 !tnum=1");
+  g_assert_cmpstr (str, ==, "Cantarell 14 @wght=666 #tnum=1");
   g_free (str);
 
   g_assert_false (pango_font_description_equal (desc1, desc2));
@@ -249,7 +249,7 @@ test_features_and_variations (void)
 
   g_assert_true (pango_font_description_equal (desc1, desc2));
 
-  desc3 = pango_font_description_from_string ("Cantarell 14 !tnum=1 @wght=666");
+  desc3 = pango_font_description_from_string ("Cantarell 14 #tnum=1 @wght=666");
   g_assert_nonnull (desc3);
 
   g_assert_true (pango_font_description_equal (desc2, desc3));
