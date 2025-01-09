@@ -250,6 +250,7 @@ static const char *wrap_names[] = {
   "word",
   "char",
   "word-char",
+  "none",
   NULL
 };
 
