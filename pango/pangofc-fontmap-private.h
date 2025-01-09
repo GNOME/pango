@@ -74,6 +74,8 @@ PANGO_AVAILABLE_IN_1_24
 gpointer           pango_fc_font_key_get_context_key (const PangoFcFontKey *key);
 PANGO_AVAILABLE_IN_1_40
 const char        *pango_fc_font_key_get_variations  (const PangoFcFontKey *key);
+PANGO_AVAILABLE_IN_1_56
+const char        *pango_fc_font_key_get_features    (const PangoFcFontKey *key);
 
 
 #define PANGO_FC_FONT_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_FC_FONT_MAP, PangoFcFontMapClass))
