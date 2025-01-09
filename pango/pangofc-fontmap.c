@@ -2092,7 +2092,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
     }
 
   if (prgname)
-    FcPatternAddString (pattern, PANGO_FC_PRGNAME, (FcChar8*) prgname);
+    FcPatternAddString (pattern, FC_PRGNAME, (FcChar8*) prgname);
 
   switch (variant)
     {
