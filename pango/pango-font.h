@@ -195,6 +195,13 @@ typedef enum {
  *
  * Since: 1.42
  */
+/**
+ * PANGO_FONT_MASK_FEATURES:
+ *
+ * OpenType font features are specified.
+ *
+ * Since: 1.56
+ */
 typedef enum {
   PANGO_FONT_MASK_FAMILY  = 1 << 0,
   PANGO_FONT_MASK_STYLE   = 1 << 1,
@@ -204,6 +211,7 @@ typedef enum {
   PANGO_FONT_MASK_SIZE    = 1 << 5,
   PANGO_FONT_MASK_GRAVITY = 1 << 6,
   PANGO_FONT_MASK_VARIATIONS = 1 << 7,
+  PANGO_FONT_MASK_FEATURES = 1 << 8,
 } PangoFontMask;
 
 /* CSS scale factors (1.2 factor between each size) */
@@ -327,6 +335,15 @@ void                 pango_font_description_set_variations    (PangoFontDescript
                                                                const char                 *variations);
 PANGO_AVAILABLE_IN_1_42
 const char          *pango_font_description_get_variations    (const PangoFontDescription *desc) G_GNUC_PURE;
+
+PANGO_AVAILABLE_IN_1_56
+void                 pango_font_description_set_features_static (PangoFontDescription       *desc,
+                                                                 const char                 *features);
+PANGO_AVAILABLE_IN_1_56
+void                 pango_font_description_set_features        (PangoFontDescription       *desc,
+                                                                 const char                 *features);
+PANGO_AVAILABLE_IN_1_42
+const char          *pango_font_description_get_features        (const PangoFontDescription *desc) G_GNUC_PURE;
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontMask pango_font_description_get_set_fields (const PangoFontDescription *desc) G_GNUC_PURE;
