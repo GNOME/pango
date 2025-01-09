@@ -2092,7 +2092,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
     }
 
   if (prgname)
-    FcPatternAddString (pattern, PANGO_FC_PRGNAME, (FcChar8*) prgname);
+    FcPatternAddString (pattern, FC_PRGNAME, (FcChar8*) prgname);
 
   switch (variant)
     {
@@ -3119,7 +3119,7 @@ font_description_from_pattern (FcPattern *pattern,
       pango_font_description_set_gravity (desc, gravity);
     }
 
-  if (include_size && FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **)&s) == FcResultMatch)
+  if (FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **)&s) == FcResultMatch)
     {
       if (s && *s)
         {

@@ -177,11 +177,23 @@ typedef enum {
  * @PANGO_FONT_MASK_WEIGHT: the font weight is specified.
  * @PANGO_FONT_MASK_STRETCH: the font stretch is specified.
  * @PANGO_FONT_MASK_SIZE: the font size is specified.
- * @PANGO_FONT_MASK_GRAVITY: the font gravity is specified (Since: 1.16.)
- * @PANGO_FONT_MASK_VARIATIONS: OpenType font variations are specified (Since: 1.42)
  *
  * The bits in a `PangoFontMask` correspond to the set fields in a
  * `PangoFontDescription`.
+ */
+/**
+ * PANGO_FONT_MASK_GRAVITY:
+ *
+ * The font gravity is specified.
+ *
+ * Since: 1.16
+ */
+/**
+ * PANGO_FONT_MASK_VARIATIONS:
+ *
+ * OpenType font variations are specified.
+ *
+ * Since: 1.42
  */
 typedef enum {
   PANGO_FONT_MASK_FAMILY  = 1 << 0,

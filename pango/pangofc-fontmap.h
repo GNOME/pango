@@ -202,6 +202,8 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
  * fontconfig that have that.
  *
  * Since: 1.24
+ *
+ * Deprecated: 1.56: Use FC_PRGNAME
  */
 #define PANGO_FC_PRGNAME "prgname"
 
@@ -220,6 +222,8 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
  * fontconfig that have that.
  *
  * Since: 1.34
+ *
+ * Deprecated: 1.56: Use FC_FONT_FEATURES
  */
 #define PANGO_FC_FONT_FEATURES "fontfeatures"
 
@@ -236,6 +240,8 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
  *
  * This is equivalent to FC_FONT_VARIATIONS in versions of
  * fontconfig that have that.
+ *
+ * Deprecated: 1.56: Use FC_FONT_VARIATIONS
  */
 #define PANGO_FC_FONT_VARIATIONS "fontvariations"
 
