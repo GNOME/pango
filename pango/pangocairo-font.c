@@ -656,7 +656,7 @@ pango_cairo_font_private_get_font_options (PangoCairoFontPrivate *cf_priv,
   if (cf_priv->scaled_font)
     cairo_scaled_font_get_font_options (cf_priv->scaled_font, options);
   else if (cf_priv->data)
-    return cairo_font_options_merge (options, cf_priv->data->options);
+    cairo_font_options_merge (options, cf_priv->data->options);
 }
 
 static void
