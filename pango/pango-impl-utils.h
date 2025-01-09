@@ -248,14 +248,6 @@ pango_get_ignorable_size (gunichar  ch,
   return nick;
 }
 
-/* Backward compatibility shim, to avoid bumping up the minimum
- * required version of GLib; most of our uses of g_memdup() are
- * safe, and those that aren't have been fixed
- */
-#if !GLIB_CHECK_VERSION (2, 67, 3)
-# define g_memdup2(mem,size)    g_memdup((mem),(size))
-#endif
-
 static inline void
 pango_parse_variations (const char            *variations,
                         hb_ot_var_axis_info_t *axes,
