@@ -804,6 +804,7 @@ test_font_scale_variations (void)
 
   g_object_unref (font);
   pango_font_description_free (desc);
+  cairo_font_options_destroy (options);
   g_object_unref (context);
   g_object_unref (fontmap);
 }
@@ -859,6 +860,8 @@ test_font_custom (void)
 #endif
 
   g_free (path);
+
+  g_object_unref (fontmap);
 }
 
 int
