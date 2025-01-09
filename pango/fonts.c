@@ -1387,7 +1387,7 @@ parse_features (const char  *word,
                 size_t       wordlen,
                 char       **features)
 {
-  if (word[0] == '!')
+  if (word[0] == '#')
     {
       /* XXX: actually validate here */
       *features = g_strndup (word + 1, wordlen - 1);
@@ -1439,8 +1439,7 @@ parse_features (const char  *word,
  * of the form @‍axis1=value,axis2=value,...
  *
  * FEATURES is a comma-separated list of font features of the form
- * !‍feature1,feature2..., where each feature is of the form
- * feat=n.
+ * \#‍feature1=value,feature2=value,...
  *
  * Any one of the options may be absent. If FAMILY-LIST is absent, then
  * the family_name field of the resulting font description will be
@@ -1450,7 +1449,7 @@ parse_features (const char  *word,
  *
  * A typical example:
  *
- *     Cantarell Italic Light 15 @‍wght=200 !‍tnum=1
+ *     Cantarell Italic Light 15 @‍wght=200 #‍tnum=1
  *
  * Returns: (transfer full): a new `PangoFontDescription`.
  */
@@ -1730,7 +1729,7 @@ pango_font_description_to_string (const PangoFontDescription *desc)
   if ((desc->features && desc->mask & PANGO_FONT_MASK_FEATURES) &&
       desc->features[0] != '\0')
     {
-      g_string_append (result, " !");
+      g_string_append (result, " #");
       g_string_append (result, desc->features);
     }
 
