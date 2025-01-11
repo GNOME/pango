@@ -1,4 +1,19 @@
-gidocgen = find_program('gi-docgen', required: get_option('documentation'))
+gidocgen = find_program('gi-docgen', required: get_option('documentation'), native: true)
+
+gidocgen_common_args = [
+  '--quiet',
+  '--no-namespace-dir',
+]
+
+if get_option('werror')
+  gidocgen_common_args += ['--fatal-warnings']
+endif
+
+docs_dir = pango_datadir / 'doc'
+
+if get_option('documentation') and not build_gir
+  error('API reference requires introspection.')
+endif
 
 pango_content_files = [
   'pango_rendering.md',
@@ -49,164 +64,158 @@ pango_content_files = [
 doc_conf = configuration_data()
 doc_conf.set('PANGO_VERSION', meson.project_version())
 
-docs_dir = pango_datadir / 'doc'
+if get_option('documentation')
+  pango_toml = configure_file(input: 'pango.toml.in',
+                              output: 'pango.toml',
+                              configuration: doc_conf)
 
-pango_toml = configure_file(input: 'pango.toml.in',
-                            output: 'pango.toml',
-                            configuration: doc_conf)
-
-custom_target('pango-doc',
-  input: pango_gir[0],
-  output: 'Pango',
-  command: [
-    gidocgen,
-    'generate',
-    '--quiet',
-    '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
-    '--config', pango_toml,
-    '--output-dir=@OUTPUT@',
-    '--no-namespace-dir',
-    '--content-dir=@0@'.format(meson.current_source_dir()),
-    '@INPUT@',
-  ],
-  depend_files: [ pango_toml, pango_content_files],
-  build_by_default: true,
-  install: true,
-  install_dir: docs_dir,
-)
-
-if build_pangoft2
-  pangoft2_toml = configure_file(input: 'pangoft2.toml.in',
-                                 output: 'pangoft2.toml',
-                                 configuration: doc_conf)
-
-  custom_target('pangoft-doc',
-    input: pangoft2_gir[0],
-    output: 'PangoFT2',
+  custom_target('pango-doc',
+    input: pango_gir[0],
+    output: 'Pango',
     command: [
       gidocgen,
       'generate',
-      '--quiet',
+      gidocgen_common_args,
       '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
-      '--config', pangoft2_toml,
+      '--config', pango_toml,
       '--output-dir=@OUTPUT@',
-      '--no-namespace-dir',
       '--content-dir=@0@'.format(meson.current_source_dir()),
       '@INPUT@',
     ],
-    depend_files: [ pangoft2_toml, 'pango-name.png' ],
+    depend_files: [ pango_toml, pango_content_files],
     build_by_default: true,
     install: true,
     install_dir: docs_dir,
   )
-endif
 
-if xft_dep.found() and fontconfig_dep.found()
-  pangoxft_toml = configure_file(input: 'pangoxft.toml.in',
-                                 output: 'pangoxft.toml',
-                                 configuration: doc_conf)
-
-  custom_target('pangoxft-doc',
-    input: pangoxft_gir[0],
-    output: 'PangoXft',
-    command: [
-      gidocgen,
-      'generate',
-      '--quiet',
-      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
-      '--config', pangoxft_toml,
-      '--output-dir=@OUTPUT@',
-      '--no-namespace-dir',
-      '--content-dir=@0@'.format(meson.current_source_dir()),
-      '@INPUT@',
-    ],
-    depend_files: [ pangoxft_toml, 'pango-name.png' ],
-    build_by_default: true,
-    install: true,
-    install_dir: docs_dir,
-  )
-endif
-
-if cairo_dep.found()
-  pangocairo_content_files = [
-    'pango_cairo.md',
-    'pango-name.png',
-    'rotated-text.png',
-  ]
-
-  pangocairo_toml = configure_file(input: 'pangocairo.toml.in',
-                                   output: 'pangocairo.toml',
+  if build_pangoft2
+    pangoft2_toml = configure_file(input: 'pangoft2.toml.in',
+                                   output: 'pangoft2.toml',
                                    configuration: doc_conf)
 
-  custom_target('pangocairo-doc',
-    input: pangocairo_gir[0],
-    output: 'PangoCairo',
-    command: [
-      gidocgen,
-      'generate',
-      '--quiet',
-      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
-      '--config', pangocairo_toml,
-      '--output-dir=@OUTPUT@',
-      '--no-namespace-dir',
-      '--content-dir=@0@'.format(meson.current_source_dir()),
-      '@INPUT@',
-    ],
-    depend_files: [ pangocairo_toml, pangocairo_content_files ],
-    build_by_default: true,
-    install: true,
-    install_dir: docs_dir,
-  )
-endif
+    custom_target('pangoft-doc',
+      input: pangoft2_gir[0],
+      output: 'PangoFT2',
+      command: [
+        gidocgen,
+        'generate',
+        gidocgen_common_args,
+        '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+        '--config', pangoft2_toml,
+        '--output-dir=@OUTPUT@',
+        '--content-dir=@0@'.format(meson.current_source_dir()),
+        '@INPUT@',
+      ],
+      depend_files: [ pangoft2_toml, 'pango-name.png' ],
+      build_by_default: true,
+      install: true,
+      install_dir: docs_dir,
+    )
+  endif
 
-if fontconfig_dep.found()
-  pangoot_toml = configure_file(input: 'pangoot.toml.in',
-                                output: 'pangoot.toml',
-                                configuration: doc_conf)
+  if xft_dep.found() and fontconfig_dep.found()
+    pangoxft_toml = configure_file(input: 'pangoxft.toml.in',
+                                   output: 'pangoxft.toml',
+                                   configuration: doc_conf)
 
-  custom_target('pangoot-doc',
-    input: pangoot_gir[0],
-    output: 'PangoOT',
-    command: [
-      gidocgen,
-      'generate',
-      '--quiet',
-      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
-      '--config', pangoot_toml,
-      '--output-dir=@OUTPUT@',
-      '--no-namespace-dir',
-      '--content-dir=@0@'.format(meson.current_source_dir()),
-      '@INPUT@',
-    ],
-    depend_files: [ pangoot_toml, 'pango-name.png' ],
-    build_by_default: true,
-    install: true,
-    install_dir: docs_dir,
-  )
+    custom_target('pangoxft-doc',
+      input: pangoxft_gir[0],
+      output: 'PangoXft',
+      command: [
+        gidocgen,
+        'generate',
+        gidocgen_common_args,
+        '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+        '--config', pangoxft_toml,
+        '--output-dir=@OUTPUT@',
+        '--content-dir=@0@'.format(meson.current_source_dir()),
+        '@INPUT@',
+      ],
+      depend_files: [ pangoxft_toml, 'pango-name.png' ],
+      build_by_default: true,
+      install: true,
+      install_dir: docs_dir,
+    )
+  endif
 
-  pangofc_toml = configure_file(input: 'pangofc.toml.in',
-                                output: 'pangofc.toml',
-                                configuration: doc_conf)
+  if cairo_dep.found()
+    pangocairo_content_files = [
+      'pango_cairo.md',
+      'pango-name.png',
+      'rotated-text.png',
+    ]
 
-  custom_target('pangofc-doc',
-    input: pangofc_gir[0],
-    output: 'PangoFc',
-    command: [
-      gidocgen,
-      'generate',
-      '--quiet',
-      '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
-      '--config', pangofc_toml,
-      '--output-dir=@OUTPUT@',
-      '--no-namespace-dir',
-      '--content-dir=@0@'.format(meson.current_source_dir()),
-      '@INPUT@',
-    ],
-    depend_files: [ pangofc_toml, 'pango-name.png' ],
-    build_by_default: true,
-    install: true,
-    install_dir: docs_dir,
-  )
+    pangocairo_toml = configure_file(input: 'pangocairo.toml.in',
+                                     output: 'pangocairo.toml',
+                                     configuration: doc_conf)
+
+    custom_target('pangocairo-doc',
+      input: pangocairo_gir[0],
+      output: 'PangoCairo',
+      command: [
+        gidocgen,
+        'generate',
+        gidocgen_common_args,
+        '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+        '--config', pangocairo_toml,
+        '--output-dir=@OUTPUT@',
+        '--content-dir=@0@'.format(meson.current_source_dir()),
+        '@INPUT@',
+      ],
+      depend_files: [ pangocairo_toml, pangocairo_content_files ],
+      build_by_default: true,
+      install: true,
+      install_dir: docs_dir,
+    )
+  endif
+
+  if fontconfig_dep.found()
+    pangoot_toml = configure_file(input: 'pangoot.toml.in',
+                                  output: 'pangoot.toml',
+                                  configuration: doc_conf)
+
+    custom_target('pangoot-doc',
+      input: pangoot_gir[0],
+      output: 'PangoOT',
+      command: [
+        gidocgen,
+        'generate',
+        gidocgen_common_args,
+        '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+        '--config', pangoot_toml,
+        '--output-dir=@OUTPUT@',
+        '--content-dir=@0@'.format(meson.current_source_dir()),
+        '@INPUT@',
+      ],
+      depend_files: [ pangoot_toml, 'pango-name.png' ],
+      build_by_default: true,
+      install: true,
+      install_dir: docs_dir,
+    )
+
+    pangofc_toml = configure_file(input: 'pangofc.toml.in',
+                                  output: 'pangofc.toml',
+                                  configuration: doc_conf)
+
+    custom_target('pangofc-doc',
+      input: pangofc_gir[0],
+      output: 'PangoFc',
+      command: [
+        gidocgen,
+        'generate',
+        gidocgen_common_args,
+        '--add-include-path=@0@'.format(meson.current_build_dir() / '../pango'),
+        '--config', pangofc_toml,
+        '--output-dir=@OUTPUT@',
+        '--content-dir=@0@'.format(meson.current_source_dir()),
+        '@INPUT@',
+      ],
+      depend_files: [ pangofc_toml, 'pango-name.png' ],
+      build_by_default: true,
+      install: true,
+      install_dir: docs_dir,
+    )
+  endif
 endif
 
 rst2man = find_program('rst2man', 'rst2man.py', required: get_option('man-pages'))
