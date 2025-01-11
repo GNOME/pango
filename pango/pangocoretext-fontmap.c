@@ -526,9 +526,8 @@ pango_core_text_face_describe (PangoFontFace *face)
 
   PangoFontDescription * ret = _pango_core_text_font_description_from_ct_font_descriptor (ctface->ctfontdescriptor);
 
-  if (ctface->synthetic_small_caps) {
+  if (ctface->synthetic_small_caps)
     pango_font_description_set_variant (ret, PANGO_VARIANT_SMALL_CAPS);
-  }
 
   return ret;
 }
@@ -674,7 +673,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
                                  GINT_TO_POINTER ((gint)face->weight),
                                  face);
 
-          if (ct_font_descriptor_is_small_caps(desc))
+          if (ct_font_descriptor_is_small_caps (desc))
             g_hash_table_insert (small_caps_faces,
                                  GINT_TO_POINTER ((gint)face->weight),
                                  face);
@@ -692,7 +691,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
           PangoCoreTextFace *face = l->data;
 
           if (!g_hash_table_lookup (italic_faces,
-                                    GINT_TO_POINTER ((gint)face->weight)))
+                                    GUINT_TO_POINTER ((gint)face->weight)))
             {
               PangoCoreTextFace *italic_face;
 
@@ -726,10 +725,9 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
                 small_caps_face->style_name = g_strdup ("Small-Caps");
               else
                 small_caps_face->style_name = g_strdup_printf ("%s Small-Caps",
-                                                           face->style_name);
+                                                               face->style_name);
 
-              synthetic_faces = g_list_prepend (synthetic_faces,
-                                                small_caps_face);
+              synthetic_faces = g_list_prepend (synthetic_faces, small_caps_face);
             }
         }
 
@@ -743,6 +741,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
 
       g_list_free (faces);
       g_hash_table_destroy (italic_faces);
+      g_hash_table_destroy (small_caps_faces);
     }
 
   if (n_faces)
