@@ -57,15 +57,6 @@ if host_system == 'windows'
   add_project_arguments('-D_WIN32_WINNT=_WIN32_WINNT_WIN10', language: 'c')
 endif
 
-# Keep in sync with glib_req
-add_project_arguments([
-    '-DG_LOG_USE_STRUCTURED=1',
-    '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_80',
-    '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_80',
-  ],
-  language: 'c'
-)
-
 # Compiler and linker flags
 common_cflags = []
 common_cppflags = []
@@ -214,27 +205,32 @@ endif
 # Dependencies
 pango_deps = []
 
-glib_req = '>= 2.80'
-fribidi_req = '>= 1.0.6'
-libthai_req = '>= 0.1.9'
-harfbuzz_req = '>= 8.4.0'
+glib_major_req = 2
+glib_minor_req = 80
+
+glib_req       = '>= @0@.@1@'.format(glib_major_req, glib_minor_req)
+fribidi_req    = '>= 1.0.6'
+libthai_req    = '>= 0.1.9'
+harfbuzz_req   = '>= 8.4.0'
 fontconfig_req = '>= 2.15.0'
-xft_req = '>= 2.0.0'
-cairo_req = '>= 1.18.0'
+xft_req        = '>= 2.0.0'
+cairo_req      = '>= 1.18.0'
 
-# libm
+add_project_arguments([
+    '-DG_LOG_USE_STRUCTURED=1',
+    '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_@0@_@1@'.format(glib_major_req, glib_minor_req),
+    '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_@0@_@1@'.format(glib_major_req, glib_minor_req),
+
+  ],
+  language: 'c'
+)
+
 mathlib_dep = cc.find_library('m', required: false)
-pango_deps += mathlib_dep
-
-# gobject
 glib_dep = dependency('glib-2.0', version: glib_req)
 gobject_dep = dependency('gobject-2.0', version: glib_req)
 gio_dep = dependency('gio-2.0', version: glib_req)
-pango_deps += [glib_dep, gobject_dep, gio_dep]
-
-fribidi_dep = dependency('fribidi', version: fribidi_req,
-                         default_options: ['docs=false'])
-pango_deps += fribidi_dep
+fribidi_dep = dependency('fribidi', version: fribidi_req, default_options: ['docs=false'])
+pango_deps += [mathlib_dep, glib_dep, gobject_dep, gio_dep, fribidi_dep]
 
 thai_dep = dependency('libthai', version: libthai_req, required: get_option('libthai'))
 if thai_dep.found()
