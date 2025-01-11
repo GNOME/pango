@@ -515,6 +515,16 @@ if cairo_dwrite_dep.found()
   pango_conf.set('HAVE_CAIRO_WIN32_DIRECTWRITE', 1)
 endif
 
+# introspection
+gir = find_program('g-ir-scanner', required : get_option('introspection'))
+
+if not gir.found() and get_option('introspection').enabled()
+  error('Introspection enabled, but g-ir-scanner not found.')
+endif
+
+build_gir = gir.found() and (get_option('introspection').enabled() or
+                             (get_option('introspection').allowed() and get_option('documentation')))
+
 # libsysprof-capture support
 libsysprof_capture_dep = dependency('sysprof-capture-4',
   required: get_option('sysprof'),
@@ -570,7 +580,7 @@ summary('Linker', cc.get_linker_id(), section: 'Toolchain')
 
 summary('Debugging', get_option('debug'), section: 'Build')
 summary('Optimization', get_option('optimization'), section: 'Build')
-summary('Introspection', gir.found(), section: 'Build')
+summary('Introspection', build_gir, section: 'Build')
 summary('Documentation', get_option('documentation'), section: 'Build')
 summary('Build Testsuite', get_option('build-testsuite'), section: 'Build')
 summary('Build Examples', get_option('build-examples'), section: 'Build')
