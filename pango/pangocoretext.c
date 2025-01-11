@@ -74,6 +74,9 @@ pango_core_text_font_describe (PangoFont *font)
   if (variations)
     pango_font_description_set_variations (desc, variations);
 
+  if (pango_core_text_font_key_get_synthetic_small_caps (priv->key))
+    pango_font_description_set_variant (desc, PANGO_VARIANT_SMALL_CAPS);
+
   return desc;
 }
 

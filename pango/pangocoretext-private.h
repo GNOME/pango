@@ -142,6 +142,8 @@ double                pango_core_text_font_key_get_resolution       (const Pango
 _PANGO_EXTERN
 gboolean              pango_core_text_font_key_get_synthetic_italic (const PangoCoreTextFontKey *key);
 _PANGO_EXTERN
+gboolean              pango_core_text_font_key_get_synthetic_small_caps (const PangoCoreTextFontKey *key);
+_PANGO_EXTERN
 gpointer              pango_core_text_font_key_get_context_key      (const PangoCoreTextFontKey *key);
 _PANGO_EXTERN
 const PangoMatrix    *pango_core_text_font_key_get_matrix           (const PangoCoreTextFontKey *key);
