@@ -137,7 +137,7 @@ if build_gir
     '--quiet',
   ]
   harfbuzz_gobject_dep = dependency('harfbuzz-gobject',
-                                    version: harfbuzz_req_version,
+                                    version: harfbuzz_req,
                                     required: false,
                                     fallback: ['harfbuzz', 'libharfbuzz_gobject_dep'])
 

@@ -57,7 +57,7 @@ if host_system == 'windows'
   add_project_arguments('-D_WIN32_WINNT=_WIN32_WINNT_WIN10', language: 'c')
 endif
 
-# Keep in sync with glib_req_version
+# Keep in sync with glib_req
 add_project_arguments([
     '-DG_LOG_USE_STRUCTURED=1',
     '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_80',
@@ -214,29 +214,29 @@ endif
 # Dependencies
 pango_deps = []
 
-glib_req_version = '>= 2.80'
-fribidi_req_version = '>= 1.0.6'
-libthai_req_version = '>= 0.1.9'
-harfbuzz_req_version = '>= 8.4.0'
-fontconfig_req_version = '>= 2.15.0'
-xft_req_version = '>= 2.0.0'
-cairo_req_version = '>= 1.18.0'
+glib_req = '>= 2.80'
+fribidi_req = '>= 1.0.6'
+libthai_req = '>= 0.1.9'
+harfbuzz_req = '>= 8.4.0'
+fontconfig_req = '>= 2.15.0'
+xft_req = '>= 2.0.0'
+cairo_req = '>= 1.18.0'
 
 # libm
 mathlib_dep = cc.find_library('m', required: false)
 pango_deps += mathlib_dep
 
 # gobject
-glib_dep = dependency('glib-2.0', version: glib_req_version)
-gobject_dep = dependency('gobject-2.0', version: glib_req_version)
-gio_dep = dependency('gio-2.0', version: glib_req_version)
+glib_dep = dependency('glib-2.0', version: glib_req)
+gobject_dep = dependency('gobject-2.0', version: glib_req)
+gio_dep = dependency('gio-2.0', version: glib_req)
 pango_deps += [glib_dep, gobject_dep, gio_dep]
 
-fribidi_dep = dependency('fribidi', version: fribidi_req_version,
+fribidi_dep = dependency('fribidi', version: fribidi_req,
                          default_options: ['docs=false'])
 pango_deps += fribidi_dep
 
-thai_dep = dependency('libthai', version: libthai_req_version, required: get_option('libthai'))
+thai_dep = dependency('libthai', version: libthai_req, required: get_option('libthai'))
 if thai_dep.found()
   pango_conf.set('HAVE_LIBTHAI', 1)
   pango_deps += thai_dep
@@ -272,7 +272,7 @@ if fontconfig_required or fontconfig_option.enabled()
 endif
 
 harfbuzz_dep = dependency('harfbuzz',
-                          version: harfbuzz_req_version,
+                          version: harfbuzz_req,
                           default_options: harfbuzz_fallback_options)
 
 pango_deps += harfbuzz_dep
@@ -285,7 +285,7 @@ endif
 # Override user option 'auto' to 'enabled' on platforms that always
 # require fontconfig.
 fontconfig_option = fontconfig_required ? true : fontconfig_option
-fontconfig_dep = dependency('fontconfig', version: fontconfig_req_version,
+fontconfig_dep = dependency('fontconfig', version: fontconfig_req,
                             required: fontconfig_option)
 
 if fontconfig_dep.found()
@@ -327,7 +327,7 @@ if build_pangoft2
 endif
 
 build_pangoxft = false
-xft_dep = dependency('xft', version: xft_req_version, required: get_option('xft'))
+xft_dep = dependency('xft', version: xft_req, required: get_option('xft'))
 if xft_dep.found() and fontconfig_dep.found() and freetype_dep.found()
   pango_conf.set('HAVE_XFT', 1)
   pango_deps += dependency('xrender', required: false)
@@ -369,7 +369,7 @@ endif
 
 cairo_dep = dependency(
   'cairo',
-  version: cairo_req_version,
+  version: cairo_req,
   required: get_option('cairo'),
   default_options: cairo_fallback_options,
 )
@@ -382,7 +382,7 @@ if host_system == 'windows'
     # cairo < 1.17.8 used a different name
     cairo_dwrite_dep = dependency(
       ['cairo-dwrite-font', 'cairo-win32-dwrite-font'],
-      version: cairo_req_version,
+      version: cairo_req,
       required: false
     )
   endif
@@ -414,9 +414,9 @@ if cairo_dep.found()
   # Note that Cairo can be built with FreeType but without FontConfig
 
   cairo_font_backends = [
-    [ 'cairo-ft', cairo_req_version, 'HAVE_CAIRO_FREETYPE', 'freetype', ],
-    [ 'cairo-win32', cairo_req_version, 'HAVE_CAIRO_WIN32', 'win32', ],
-    [ 'cairo-quartz', cairo_req_version, 'HAVE_CAIRO_QUARTZ', 'quartz', ],
+    [ 'cairo-ft', cairo_req, 'HAVE_CAIRO_FREETYPE', 'freetype', ],
+    [ 'cairo-win32', cairo_req, 'HAVE_CAIRO_WIN32', 'win32', ],
+    [ 'cairo-quartz', cairo_req, 'HAVE_CAIRO_QUARTZ', 'quartz', ],
   ]
 
   if cairo_found_type == 'internal'
@@ -475,10 +475,10 @@ int main() {
   # - define
   # - backend name
   cairo_surface_backends = [
-    [ 'cairo-png', cairo_req_version, 'HAVE_CAIRO_PNG', 'png', ],
-    [ 'cairo-ps', cairo_req_version, 'HAVE_CAIRO_PS', 'ps', ],
-    [ 'cairo-pdf', cairo_req_version, 'HAVE_CAIRO_PDF', 'pdf', ],
-    [ 'cairo-xlib', cairo_req_version, 'HAVE_CAIRO_XLIB', 'xlib', ],
+    [ 'cairo-png', cairo_req, 'HAVE_CAIRO_PNG', 'png', ],
+    [ 'cairo-ps', cairo_req, 'HAVE_CAIRO_PS', 'ps', ],
+    [ 'cairo-pdf', cairo_req, 'HAVE_CAIRO_PDF', 'pdf', ],
+    [ 'cairo-xlib', cairo_req, 'HAVE_CAIRO_XLIB', 'xlib', ],
   ]
 
   foreach b: cairo_surface_backends
