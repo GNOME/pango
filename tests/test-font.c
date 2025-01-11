@@ -500,8 +500,7 @@ test_roundtrip_small_caps (void)
   guint num = 0;
 
   fontmap = pango_cairo_font_map_new ();
-  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0 ||
-      strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
     {
       g_test_incomplete_printf ("Small Caps support needs to be added to %s",
                                 G_OBJECT_TYPE_NAME (fontmap));
