@@ -1094,6 +1094,7 @@ pango_fc_is_supported_font_format (FcPattern* pattern)
   FcResult res;
   const char *file;
   const char *fontwrapper;
+  const char *fontformat;
 
   /* Patterns without FC_FILE are problematic, since our caching is based
    * on filenames.
@@ -1104,10 +1105,22 @@ pango_fc_is_supported_font_format (FcPattern* pattern)
 
   /* Harfbuzz supports only SFNT fonts. */
   res = FcPatternGetString (pattern, FC_FONT_WRAPPER, 0, (FcChar8 **)(void*)&fontwrapper);
-  if (res != FcResultMatch)
-    return FALSE;
+  if (res == FcResultMatch)
+    return strcmp (fontwrapper, "SFNT") == 0;
 
-  return strcmp (fontwrapper, "SFNT") == 0;
+  res = FcPatternGetString (pattern, FC_FONTFORMAT, 0, (FcChar8 **)(void*)&fontformat);
+   if (res != FcResultMatch)
+     return FALSE;
+
+  /* FIXME: "CFF" is used for both CFF in OpenType and bare CFF files, but
+   * HarfBuzz does not support the later and FontConfig does not seem
+   * to have a way to tell them apart.
+   */
+  if (g_ascii_strcasecmp (fontformat, "TrueType") == 0 ||
+      g_ascii_strcasecmp (fontformat, "CFF") == 0)
+    return TRUE;
+
+  return FALSE;
 }
 
 static FcFontSet *
