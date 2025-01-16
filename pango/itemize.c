@@ -1088,6 +1088,7 @@ collect_font_scale (PangoContext  *context,
                   break;
                 case PANGO_FONT_SCALE_SUPERSCRIPT:
                   if (prev &&
+                      prev->analysis.font &&
                       hb_ot_metrics_get_position (pango_font_get_hb_font (prev->analysis.font),
                                                   HB_OT_METRICS_TAG_SUPERSCRIPT_EM_Y_SIZE,
                                                   &y_size))
@@ -1102,6 +1103,7 @@ collect_font_scale (PangoContext  *context,
                   break;
                 case PANGO_FONT_SCALE_SUBSCRIPT:
                   if (prev &&
+                      prev->analysis.font &&
                       hb_ot_metrics_get_position (pango_font_get_hb_font (prev->analysis.font),
                                                   HB_OT_METRICS_TAG_SUBSCRIPT_EM_Y_SIZE,
                                                   &y_size))
@@ -1115,7 +1117,8 @@ collect_font_scale (PangoContext  *context,
                     }
                   break;
                 case PANGO_FONT_SCALE_SMALL_CAPS:
-                  if (hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
+                  if (item->analysis.font &&
+                      hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
                                                   HB_OT_METRICS_TAG_CAP_HEIGHT,
                                                   &cap_height) &&
                       hb_ot_metrics_get_position (pango_font_get_hb_font (item->analysis.font),
