@@ -875,6 +875,7 @@ thread_data_new (FcOp             op,
 
   td->patterns = pango_fc_patterns_ref (patterns);
   td->pattern = FcPatternDuplicate (patterns->pattern);
+
   td->config = FcConfigReference (pango_fc_font_map_get_config (patterns->fontmap));
   td->fonts = font_set_copy (pango_fc_font_map_get_config_fonts (patterns->fontmap));
 
@@ -1123,15 +1124,34 @@ pango_fc_is_supported_font_format (FcPattern* pattern)
   return FALSE;
 }
 
+static FcPattern *
+pattern_set_order (FcPattern *pat,
+                   int        order)
+{
+  int o;
+
+  if (FcPatternGetInteger (pat, FC_ORDER, 0, &o) == FcResultMatch &&
+      o == order)
+    {
+      FcPatternReference (pat);
+      return pat;
+    }
+
+  pat = FcPatternDuplicate (pat);
+  FcPatternRemove (pat, FC_ORDER, 0);
+  FcPatternAddInteger (pat, FC_ORDER, order);
+
+  return pat;
+}
+
 static FcFontSet *
 filter_by_format (FcFontSet **sets, int nsets)
 {
   FcFontSet *result;
-  int set;
 
   result = FcFontSetCreate ();
 
-  for (set = 0; set < nsets; set++)
+  for (int set = 0; set < nsets; set++)
     {
       FcFontSet *fontset = sets[set];
       int i;
@@ -1141,11 +1161,12 @@ filter_by_format (FcFontSet **sets, int nsets)
 
       for (i = 0; i < fontset->nfont; i++)
         {
-          if (!pango_fc_is_supported_font_format (fontset->fonts[i]))
+          FcPattern *pat = fontset->fonts[i];
+
+          if (!pango_fc_is_supported_font_format (pat))
             continue;
 
-          FcPatternReference (fontset->fonts[i]);
-          FcFontSetAdd (result, fontset->fonts[i]);
+          FcFontSetAdd (result, pattern_set_order (pat, set));
         }
     }
 
@@ -2091,6 +2112,9 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
    * to work around a bug in libgnomeprint where it doesn't look
    * for FC_PIXEL_SIZE. See http://bugzilla.gnome.org/show_bug.cgi?id=169020
    *
+   * The reason for passing FC_ORDER == FcSetApplication is that we want
+   * to prefer application fonts over system fonts regardless of version.
+   *
    * Putting FC_SIZE in here slightly reduces the efficiency
    * of caching of patterns and fonts when working with multiple different
    * dpi values.
@@ -2106,6 +2130,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 			    FC_DPI, FcTypeDouble, dpi,
 			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / 1024. / dpi),
 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
+                            FC_ORDER, FcTypeInteger, FcSetApplication,
 			    NULL);
 
   if (variations)
@@ -2568,8 +2593,8 @@ pango_fc_font_map_changed (PangoFontMap *fontmap)
  * pango_fc_font_map_config_changed:
  * @fcfontmap: a `PangoFcFontMap`
  *
- * Informs font map that the fontconfig configuration (i.e., FcConfig
- * object) used by this font map has changed.
+ * Informs font map that the fontconfig configuration (i.e.,
+ * the `FcConfig` object) used by this font map has changed.
  *
  * This currently calls [method@PangoFc.FontMap.cache_clear] which
  * ensures that list of fonts, etc will be regenerated using the
@@ -2590,10 +2615,9 @@ pango_fc_font_map_config_changed (PangoFcFontMap *fcfontmap)
  *
  * Set the `FcConfig` for this font map to use.
  *
- * The default value
- * is %NULL, which causes Fontconfig to use its global "current config".
- * You can create a new `FcConfig` object and use this API to attach it
- * to a font map.
+ * The default value is `NULL`, which causes Fontconfig to use its global
+ * "current config". You can create a new `FcConfig` object and use this
+ * API to attach it to a font map.
  *
  * This is particularly useful for example, if you want to use application
  * fonts with Pango. For that, you would create a fresh `FcConfig`, add your
@@ -2604,6 +2628,9 @@ pango_fc_font_map_config_changed (PangoFcFontMap *fcfontmap)
  *
  * This function acquires a reference to the `FcConfig` object; the caller
  * does **not** need to retain a reference.
+ *
+ * See [method@Pango.FontMap.add_font_file] for a backend-independent way
+ * of using application fonts with Pango.
  *
  * Since: 1.38
  */
@@ -2664,8 +2691,9 @@ pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap)
 
       wait_for_fc_init ();
 
-      sets[0] = FcConfigGetFonts (fcfontmap->priv->config, FcSetApplication);
-      sets[1] = FcConfigGetFonts (fcfontmap->priv->config, FcSetSystem);
+      sets[FcSetSystem] = FcConfigGetFonts (fcfontmap->priv->config, FcSetSystem);
+      sets[FcSetApplication] = FcConfigGetFonts (fcfontmap->priv->config, FcSetApplication);
+
       fcfontmap->priv->fonts = filter_by_format (sets, 2);
     }
 
