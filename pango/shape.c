@@ -797,7 +797,7 @@ pango_shape_internal (const char          *item_text,
  * @text: the text to process
  * @length: the length (in bytes) of @text
  * @analysis: `PangoAnalysis` structure from [func@Pango.itemize]
- * @glyphs: glyph string in which to store results
+ * @glyphs: (out caller-allocates): glyph string in which to store results
  *
  * Convert the characters in @text into glyphs.
  *
@@ -834,7 +834,7 @@ pango_shape (const char          *text,
  * @paragraph_text: (nullable): text of the paragraph (see details).
  * @paragraph_length: the length (in bytes) of @paragraph_text. -1 means nul-terminated text.
  * @analysis: `PangoAnalysis` structure from [func@Pango.itemize].
- * @glyphs: glyph string in which to store results.
+ * @glyphs: (out caller-allocates): glyph string in which to store results.
  *
  * Convert the characters in @text into glyphs.
  *
@@ -884,7 +884,7 @@ pango_shape_full (const char          *item_text,
  * @paragraph_length: the length (in bytes) of @paragraph_text.
  *     -1 means nul-terminated text.
  * @analysis:  `PangoAnalysis` structure from [func@Pango.itemize]
- * @glyphs: glyph string in which to store results
+ * @glyphs: (out caller-allocates): glyph string in which to store results
  * @flags: flags influencing the shaping process
  *
  * Convert the characters in @text into glyphs.
@@ -930,7 +930,7 @@ pango_shape_with_flags (const char          *item_text,
  * @paragraph_length: the length (in bytes) of @paragraph_text.
  *     -1 means nul-terminated text.
  * @log_attrs: (nullable): array of `PangoLogAttr` for @item
- * @glyphs: glyph string in which to store results
+ * @glyphs: (out caller-allocates): glyph string in which to store results
  * @flags: flags influencing the shaping process
  *
  * Convert the characters in @item into glyphs.
