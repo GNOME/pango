@@ -174,8 +174,10 @@ pango_script_iter_free (PangoScriptIter *iter)
 /**
  * pango_script_iter_get_range:
  * @iter: a `PangoScriptIter`
- * @start: (out) (optional): location to store start position of the range
- * @end: (out) (optional): location to store end position of the range
+ * @start: (out) (optional) (transfer none): location to store start
+ *   position of the range
+ * @end: (out) (optional) (transfer none): location to store end position
+ *   of the range
  * @script: (out) (optional): location to store script for range
  *
  * Gets information about the range to which @iter currently points.

@@ -2432,8 +2432,9 @@ tailor_break (const char    *text,
  * @text: text to break. Must be valid UTF-8
  * @length: length of text in bytes (may be -1 if @text is nul-terminated)
  * @analysis: (nullable): a `PangoAnalysis` structure for the @text
- * @attrs: logical attributes to fill in
- * @attrs_len: size of the array passed as @attrs
+ * @attrs: (array length=attrs_len) (out caller-allocates): logical
+ *   attributes to fill in
+ * @attrs_len: (in): size of the array passed as @attrs
  *
  * This is the default break algorithm.
  *
@@ -2466,8 +2467,9 @@ pango_default_break (const char    *text,
  * @text: the text to process. Must be valid UTF-8
  * @length: length of @text in bytes (may be -1 if @text is nul-terminated)
  * @analysis: `PangoAnalysis` structure for @text
- * @attrs: (array length=attrs_len): an array to store character information in
- * @attrs_len: size of the array passed as @attrs
+ * @attrs: (array length=attrs_len) (out caller-allocates): an array to
+ *   store character information in
+ * @attrs_len: (in): size of the array passed as @attrs
  *
  * Determines possible line, word, and character breaks
  * for a string of Unicode text with a single analysis.
@@ -2498,9 +2500,9 @@ pango_break (const char    *text,
  * @analysis: `PangoAnalysis` for @text
  * @offset: Byte offset of @text from the beginning of the
  *   paragraph, or -1 to ignore attributes from @analysis
- * @attrs: (array length=attrs_len): array with one `PangoLogAttr`
- *   per character in @text, plus one extra, to be filled in
- * @attrs_len: length of @attrs array
+ * @attrs: (array length=attrs_len) (out caller-allocates): array with one
+ *   `PangoLogAttr` per character in @text, plus one extra, to be filled in
+ * @attrs_len: (in): length of @attrs array
  *
  * Apply language-specific tailoring to the breaks in @attrs.
  *
@@ -2545,9 +2547,9 @@ pango_tailor_break (const char    *text,
  * @length: length of text in bytes (may be -1 if @text is nul-terminated)
  * @attr_list: `PangoAttrList` to apply
  * @offset: Byte offset of @text from the beginning of the paragraph
- * @attrs: (array length=attrs_len): array with one `PangoLogAttr`
- *   per character in @text, plus one extra, to be filled in
- * @attrs_len: length of @attrs array
+ * @attrs: (array length=attrs_len) (out caller-allocates): array with one
+ *   `PangoLogAttr` per character in @text, plus one extra, to be filled in
+ * @attrs_len: (in): length of @attrs array
  *
  * Apply customization from attributes to the breaks in @attrs.
  *
@@ -2591,9 +2593,9 @@ pango_attr_break (const char    *text,
  * @length: length in bytes of @text
  * @level: embedding level, or -1 if unknown
  * @language: language tag
- * @attrs: (array length=attrs_len): array with one `PangoLogAttr`
- *   per character in @text, plus one extra, to be filled in
- * @attrs_len: length of @attrs array
+ * @attrs: (array length=attrs_len) (out caller-allocates): array with one
+ *   `PangoLogAttr` per character in @text, plus one extra, to be filled in
+ * @attrs_len: (in): length of @attrs array
  *
  * Computes a `PangoLogAttr` for each character in @text.
  *

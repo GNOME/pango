@@ -560,7 +560,7 @@ split_before_cluster_start (ApplyAttrsState *state)
 
 /**
  * pango_glyph_item_apply_attrs:
- * @glyph_item: a shaped item
+ * @glyph_item: (transfer full): a shaped item
  * @text: text that @list applies to
  * @list: a `PangoAttrList`
  *
@@ -806,9 +806,10 @@ pango_glyph_item_letter_space (PangoGlyphItem *glyph_item,
  * @text: text that @glyph_item corresponds to
  *   (glyph_item->item->offset is an offset from the
  *   start of @text)
- * @logical_widths: (array): an array whose length is the number of
- *   characters in glyph_item (equal to glyph_item->item->num_chars)
- *   to be filled in with the resulting character widths.
+ * @logical_widths: (array) (out caller-allocates): an array whose length
+ *   is the number of characters in glyph_item (equal to
+ *   `glyph_item->item->num_chars`) to be filled in with the resulting
+ *   character widths.
  *
  * Given a `PangoGlyphItem` and the corresponding text, determine the
  * width corresponding to each character.
