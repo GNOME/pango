@@ -547,10 +547,14 @@ pango_font_map_real_reload_font (PangoFontMap *fontmap,
  * @context: (nullable): a `PangoContext`
  * @variations: (nullable): font variations to use
  *
- * Returns a new font that is like @font, except that its size
- * is multiplied by @scale, its backend-dependent configuration
- * (e.g. cairo font options) is replaced by the one in @context,
- * and its variations are replaced by @variations.
+ * Returns a new font that is like @font, except that it is scaled
+ * by @scale, its backend-dependent configuration (e.g. cairo font options)
+ * is replaced by the one in @context, and its variations are replaced
+ * by @variations.
+ *
+ * Note that the scaling here is meant to be linear, so this
+ * scaling can be used to render a font on a hi-dpi display
+ * without changing its optical size.
  *
  * Returns: (transfer full): the modified font
  *

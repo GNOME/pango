@@ -815,12 +815,12 @@ test_font_scale (void)
 
   g_assert_true (scaled_font != font);
 
-  scaled_desc = pango_font_describe (scaled_font);
+  scaled_desc = pango_font_describe_with_absolute_size (scaled_font);
 
   /* FIXME there are rounding errors in the win32 font map code, so we have
    * to compare the sizes with some slop
    */
-  g_assert_cmpfloat_with_epsilon (16.5, pango_font_description_get_size (scaled_desc) / (double) PANGO_SCALE, 0.005);
+  g_assert_cmpfloat_with_epsilon (16.5 * 96.0 / 72.0, pango_font_description_get_size (scaled_desc) / (double) PANGO_SCALE, 0.005);
 
   pango_font_description_set_size (scaled_desc, 16.5 * 1024);
 

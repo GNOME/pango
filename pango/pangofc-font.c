@@ -1019,7 +1019,11 @@ pango_fc_font_create_hb_font (PangoFont *font)
 
       hb_ot_var_get_axis_infos (hb_face, 0, &n_axes, axes);
       for (i = 0; i < n_axes; i++)
-        coords[axes[i].axis_index] = axes[i].default_value;
+        {
+          coords[axes[i].axis_index] = axes[i].default_value;
+          if (axes[i].tag == HB_TAG ('o', 'p', 's', 'z'))
+            coords[axes[i].axis_index] = point_size;
+        }
 
       if (FcPatternGetInteger (pattern, FC_INDEX, 0, &index) == FcResultMatch &&
           index != 0)
