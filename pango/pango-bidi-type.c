@@ -88,7 +88,7 @@ pango_bidi_type_for_unichar (gunichar ch)
  * @text: the text to itemize.
  * @length: the number of bytes (not characters) to process, or -1
  *   if @text is nul-terminated and the length should be calculated.
- * @pbase_dir: input base direction, and output resolved direction.
+ * @pbase_dir: (inout): input base direction, and output resolved direction.
  *
  * Return the bidirectional embedding levels of the input paragraph.
  *
@@ -98,8 +98,9 @@ pango_bidi_type_for_unichar (gunichar ch)
  * If the input base direction is a weak direction, the direction of the
  * characters in the text will determine the final resolved direction.
  *
- * Return value: a newly allocated array of embedding levels, one item per
- *   character (not byte), that should be freed using [func@GLib.free].
+ * Returns: (array) (transfer full): a newly allocated array of embedding
+ *   levels, one item per character (not byte), that should be freed using
+ *   [func@GLib.free].
  *
  * Since: 1.4
  */
@@ -298,7 +299,7 @@ pango_unichar_direction (gunichar ch)
 /**
  * pango_get_mirror_char:
  * @ch: a Unicode character
- * @mirrored_ch: location to store the mirrored character
+ * @mirrored_ch: (out) (optional): location to store the mirrored character
  *
  * Returns the mirrored character of a Unicode character.
  *

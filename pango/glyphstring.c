@@ -317,9 +317,10 @@ pango_glyph_string_get_width (PangoGlyphString *glyphs)
  * @text: the text corresponding to the glyphs
  * @length: the length of @text, in bytes
  * @embedding_level: the embedding level of the string
- * @logical_widths: (array): an array whose length is the number of
- *   characters in text (equal to `g_utf8_strlen (text, length)` unless
- *   text has `NUL` bytes) to be filled in with the resulting character widths.
+ * @logical_widths: (array) (out caller-allocates): an array whose length is
+ *   the number of characters in text (equal to `g_utf8_strlen (text, length)`
+ *   unless text has `NUL` bytes) to be filled in with the resulting character
+ *   widths.
  *
  * Given a `PangoGlyphString` and corresponding text, determine the width
  * corresponding to each character.
@@ -365,7 +366,7 @@ pango_glyph_string_get_logical_widths (PangoGlyphString *glyphs,
  * @index_: the byte index within @text
  * @trailing: whether we should compute the result for the beginning (%FALSE)
  *   or end (%TRUE) of the character.
- * @x_pos: (out): location to store result
+ * @x_pos: (out) (optional): location to store result
  *
  * Converts from character position to x position.
  *
@@ -406,7 +407,7 @@ pango_glyph_string_index_to_x (PangoGlyphString *glyphs,
  * @index_: the byte index within @text
  * @trailing: whether we should compute the result for the beginning (%FALSE)
  *   or end (%TRUE) of the character.
- * @x_pos: (out): location to store result
+ * @x_pos: (out) (optional): location to store result
  *
  * Converts from character position to x position.
  *
@@ -629,9 +630,11 @@ fallback:
  * @length: the number of bytes (not characters) in text.
  * @analysis: the analysis information return from [func@itemize]
  * @x_pos: the x offset (in Pango units)
- * @index_: (out): location to store calculated byte index within @text
- * @trailing: (out): location to store a boolean indicating whether the
- *   user clicked on the leading or trailing edge of the character
+ * @index_: (out) (optional): location to store calculated byte index
+ *   within @text
+ * @trailing: (out) (optional): location to store a boolean indicating
+ *   whether the user clicked on the leading or trailing edge of the
+ *   character
  *
  * Convert from x offset to character position.
  *
