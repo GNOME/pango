@@ -1791,9 +1791,6 @@ pango_fc_font_map_reload_font (PangoFontMap *fontmap,
           pixel_size = point_size * dpi / 72.;
         }
 
-      FcPatternRemove (pattern, FC_SIZE, 0);
-      FcPatternAddDouble (pattern, FC_SIZE, point_size * scale);
-
       FcPatternRemove (pattern, FC_PIXEL_SIZE, 0);
       FcPatternAddDouble (pattern, FC_PIXEL_SIZE, pixel_size * scale);
     }
