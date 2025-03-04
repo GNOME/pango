@@ -3325,6 +3325,7 @@ ensure_tab_width (PangoLayout *layout)
       PangoFontDescription *font_desc = pango_font_description_copy_static (pango_context_get_font_description (layout->context));
       PangoLanguage *language = NULL;
       PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
+      const char *eight_spaces = "        ";
 
       if (pango_context_get_round_glyph_positions (layout->context))
         shape_flags |= PANGO_SHAPE_ROUND_POSITIONS;
@@ -3361,7 +3362,7 @@ ensure_tab_width (PangoLayout *layout)
       _pango_attr_list_destroy (&tmp_attrs);
 
       item = items->data;
-      pango_shape_with_flags ("        ", 8, "        ", 8, &item->analysis, glyphs, shape_flags);
+      pango_shape_with_flags (eight_spaces, 8, eight_spaces, 8, &item->analysis, glyphs, shape_flags);
 
       pango_item_free (item);
       g_list_free (items);
