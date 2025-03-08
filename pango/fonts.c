@@ -1440,6 +1440,7 @@ parse_features (const char  *word,
  *
  * FEATURES is a comma-separated list of font features of the form
  * \#‍feature1=value,feature2=value,...
+ * The =value part can be ommitted if the value is 1.
  *
  * Any one of the options may be absent. If FAMILY-LIST is absent, then
  * the family_name field of the resulting font description will be
