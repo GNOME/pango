@@ -1440,6 +1440,7 @@ parse_features (const char  *word,
  *
  * FEATURES is a comma-separated list of font features of the form
  * \#‍feature1=value,feature2=value,...
+ * The =value part can be ommitted if the value is 1.
  *
  * Any one of the options may be absent. If FAMILY-LIST is absent, then
  * the family_name field of the resulting font description will be
@@ -1643,6 +1644,72 @@ g_ascii_format_nearest_multiple (char   *buf,
   g_ascii_formatd (buf, len, buf1, value);
 }
 
+static void
+append_variations (GString    *str,
+                   const char *variations)
+{
+  const char *p;
+
+  if (!strchr (variations, ' '))
+    {
+      g_string_append (str, variations);
+      return;
+    }
+
+  p = variations;
+  while (p && *p)
+    {
+      const char *end;
+      hb_variation_t variation;
+
+      end = strchr (p, ',');
+      if (hb_variation_from_string (p, end ? end - p: -1, &variation))
+        {
+          char buf[128];
+
+          hb_variation_to_string (&variation, buf, sizeof (buf));
+          if (p > variations)
+            g_string_append_c (str, ',');
+          g_string_append (str, buf);
+        }
+
+      p = end ? end + 1 : NULL;
+    }
+}
+
+static void
+append_features (GString    *str,
+                 const char *features)
+{
+  const char *p;
+
+  if (!strchr (features, ' '))
+    {
+      g_string_append (str, features);
+      return;
+    }
+
+  p = features;
+  while (p && *p)
+    {
+      const char *end;
+      hb_feature_t feature;
+
+      end = strchr (p, ',');
+      if (hb_feature_from_string (p, end ? end - p: -1, &feature))
+        {
+          char buf[128];
+
+          hb_feature_to_string (&feature, buf, sizeof (buf));
+          if (p > features)
+            g_string_append_c (str, ',');
+          g_string_append (str, buf);
+        }
+
+      p = end ? end + 1 : NULL;
+    }
+}
+
 /**
  * pango_font_description_to_string:
  * @desc: a `PangoFontDescription`
@@ -1723,14 +1790,14 @@ pango_font_description_to_string (const PangoFontDescription *desc)
       desc->variations[0] != '\0')
     {
       g_string_append (result, " @");
-      g_string_append (result, desc->variations);
+      append_variations (result, desc->variations);
     }
 
   if ((desc->features && desc->mask & PANGO_FONT_MASK_FEATURES) &&
       desc->features[0] != '\0')
     {
       g_string_append (result, " #");
-      g_string_append (result, desc->features);
+      append_features (result, desc->features);
     }
 
   return g_string_free (result, FALSE);

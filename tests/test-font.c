@@ -260,6 +260,25 @@ test_features_and_variations (void)
 }
 
 static void
+test_features_serialization (void)
+{
+  PangoFontDescription *desc;
+  gchar *str;
+
+  desc = pango_font_description_from_string ("Cantarell 14");
+  g_assert_nonnull (desc);
+  g_assert_cmpint (pango_font_description_get_set_fields (desc) & PANGO_FONT_MASK_FEATURES, ==, 0);
+  g_assert_null (pango_font_description_get_features (desc));
+
+  pango_font_description_set_features (desc, "tnum 1, cv05 2");
+  str = pango_font_description_to_string (desc);
+  g_assert_cmpstr (str, ==, "Cantarell 14 #tnum,cv05=2");
+  g_free (str);
+
+  pango_font_description_free (desc);
+}
+
+static void
 test_metrics (void)
 {
   PangoFontMap *fontmap;
@@ -997,6 +1016,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/features", test_features);
   g_test_add_func ("/pango/fontdescription/features-and-variations", test_features_and_variations);
   g_test_add_func ("/pango/fontdescription/empty-features", test_empty_features);
+  g_test_add_func ("/pango/fontdescription/features-serialization", test_features_serialization);
   g_test_add_func ("/pango/fontdescription/to-filename", test_to_filename);
   g_test_add_func ("/pango/fontdescription/set-gravity", test_set_gravity);
   g_test_add_func ("/pango/fontdescription/match", test_match);
