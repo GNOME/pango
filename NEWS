@@ -1,3 +1,12 @@
+Overview of changes in 1.56.3, xx-xx-xxxx
+=========================================
+
+Overview of changes in 1.56.2, 04-03-2025
+=========================================
+- Annotation fixes
+- fontconfig: Set optical size for fonts with an opsz axis
+- fontconfig: Make panog_font_map_reload_font scale linearly
+
 Overview of changes in 1.56.1, 18-01-2025
 =========================================
 - Avoid criticals when there are no fonts
@@ -9,7 +18,7 @@ Overview of changes in 1.56.0, 09-01-2025
 - Support setting font features in font descriptions
 - serialization: Document the tab array format
 - serialization: Accept attributes without range
-- win32: Improve the pango_font_map_reload_implementation
+- win32: Improve the pango_font_map_reload_font implementation
 - win32: Take variations into account for caching
 - layout: Fix measuring ellipsis runs with shapes
 - build: Require C11
