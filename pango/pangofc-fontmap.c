@@ -119,7 +119,7 @@ typedef enum {
 static GMutex fc_init_mutex;
 static GCond fc_init_cond;
 static DefaultConfig fc_initialized = DEFAULT_CONFIG_NOT_INITIALIZED;
-
+static GThreadPool *fc_thread_pool;
 
 typedef struct _PangoFcFontFaceData PangoFcFontFaceData;
 typedef struct _PangoFcFace         PangoFcFace;
@@ -169,8 +169,6 @@ struct _PangoFcFontMapPrivate
 
   FcConfig *config;
   FcFontSet *fonts;
-
-  GAsyncQueue *queue;
 };
 
 struct _PangoFcFontFaceData
@@ -844,7 +842,6 @@ typedef enum {
   FC_INIT,
   FC_MATCH,
   FC_SORT,
-  FC_END,
 } FcOp;
 
 typedef struct {
@@ -981,45 +978,29 @@ match_in_thread (gpointer task_data)
   return NULL;
 }
 
-static gpointer
-fc_thread_func (gpointer data)
+static void
+fc_thread_func (gpointer data,
+                gpointer unused)
 {
-  GAsyncQueue *queue = data;
-  gboolean done = FALSE;
+  ThreadData *td = data;
 
-  while (!done)
+  switch (td->op)
     {
-      ThreadData *td = g_async_queue_pop (queue);
+    case FC_INIT:
+      init_in_thread (td);
+      break;
 
-      switch (td->op)
-        {
-        case FC_INIT:
-          init_in_thread (td);
-          break;
+    case FC_MATCH:
+      match_in_thread (td);
+      break;
 
-        case FC_MATCH:
-          match_in_thread (td);
-          break;
+    case FC_SORT:
+      sort_in_thread (td);
+      break;
 
-        case FC_SORT:
-          sort_in_thread (td);
-          break;
-
-        case FC_END:
-          thread_data_free (td);
-          done = TRUE;
-          break;
-
-        default:
-          g_assert_not_reached ();
-        }
+    default:
+      g_assert_not_reached ();
     }
-
-  g_async_queue_unref (queue);
-
-  pango_trace_mark (PANGO_TRACE_CURRENT_TIME, "end fontconfig thread", NULL);
-
-  return NULL;
 }
 
 static PangoFcPatterns *
@@ -1042,7 +1023,7 @@ pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
   g_mutex_init (&pats->mutex);
   g_cond_init (&pats->cond);
 
-  g_async_queue_push (fontmap->priv->queue, thread_data_new (FC_MATCH, pats));
+  g_thread_pool_push (fc_thread_pool, thread_data_new (FC_MATCH, pats), NULL);
 
   g_hash_table_insert (fontmap->priv->patterns_hash, pats->pattern, pats);
 
@@ -1218,7 +1199,7 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
       before = PANGO_TRACE_CURRENT_TIME;
 
       if (!pats->fontset)
-        g_async_queue_push (pats->fontmap->priv->queue, thread_data_new (FC_SORT, pats));
+        g_thread_pool_push (fc_thread_pool, thread_data_new (FC_SORT, pats), NULL);
 
       g_mutex_lock (&pats->mutex);
 
@@ -1519,20 +1500,28 @@ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_
                                   G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_fc_font_map_list_model_init))
 
 static void
-start_fontconfig_thread (PangoFcFontMap *fcfontmap)
+start_fontconfig_thread_pool (PangoFcFontMap *fcfontmap)
 {
-  GThread *thread;
-
   g_mutex_lock (&fc_init_mutex);
 
-  thread = g_thread_new ("[pango] fontconfig", fc_thread_func, g_async_queue_ref (fcfontmap->priv->queue));
-  g_thread_unref (thread);
+  if (g_once_init_enter (&fc_thread_pool))
+    {
+      guint nproc = g_get_num_processors ();
+      guint num_threads = CLAMP (2, nproc - 1, 32);
+      GThreadPool *the_pool = g_thread_pool_new (fc_thread_func,
+                                                 NULL,
+                                                 num_threads,
+                                                 FALSE,
+                                                 NULL);
+      g_thread_pool_set_max_unused_threads (num_threads);
+      g_once_init_leave (&fc_thread_pool, the_pool);
+    }
 
   if (fc_initialized == DEFAULT_CONFIG_NOT_INITIALIZED)
     {
       fc_initialized = DEFAULT_CONFIG_INITIALIZING;
 
-      g_async_queue_push (fcfontmap->priv->queue, thread_data_new (FC_INIT, NULL));
+      g_thread_pool_push (fc_thread_pool, thread_data_new (FC_INIT, NULL), NULL);
     }
 
   g_mutex_unlock (&fc_init_mutex);
@@ -1589,9 +1578,7 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 						     NULL);
   priv->dpi = -1;
 
-  priv->queue = g_async_queue_new ();
-
-  start_fontconfig_thread (fcfontmap);
+  start_fontconfig_thread_pool (fcfontmap);
 }
 
 static void
@@ -1625,11 +1612,6 @@ pango_fc_font_map_fini (PangoFcFontMap *fcfontmap)
   g_free (priv->families);
   priv->n_families = -1;
   priv->families = NULL;
-
-  g_async_queue_push (fcfontmap->priv->queue, thread_data_new (FC_END, NULL));
-
-  g_async_queue_unref (priv->queue);
-  priv->queue = NULL;
 }
 
 static void
