@@ -2730,7 +2730,8 @@ pango_fc_font_map_get_font_face_data (PangoFcFontMap *fcfontmap,
 typedef struct {
   PangoCoverage parent_instance;
 
-  FcCharSet *charset;
+  FcCharSet *covered;
+  FcCharSet *not_covered;
 } PangoFcCoverage;
 
 typedef struct {
@@ -2751,10 +2752,26 @@ pango_fc_coverage_real_get (PangoCoverage *coverage,
                             int            index)
 {
   PangoFcCoverage *fc_coverage = (PangoFcCoverage*)coverage;
+  gunichar ch1, ch2;
 
-  return FcCharSetHasChar (fc_coverage->charset, index)
-         ? PANGO_COVERAGE_EXACT
-         : PANGO_COVERAGE_NONE;
+  if (FcCharSetHasChar (fc_coverage->covered, index))
+    return PANGO_COVERAGE_EXACT;
+
+  if (FcCharSetHasChar (fc_coverage->not_covered, index))
+    return PANGO_COVERAGE_NONE;
+
+  if (g_unichar_decompose ((gunichar) index, &ch1, &ch2))
+    {
+      if ((pango_coverage_get (coverage, ch1) == PANGO_COVERAGE_EXACT) &&
+          (ch2 == 0 || pango_coverage_get (coverage, ch2) == PANGO_COVERAGE_EXACT))
+        {
+          FcCharSetAddChar (fc_coverage->covered, index);
+          return PANGO_COVERAGE_EXACT;
+        }
+    }
+
+  FcCharSetAddChar (fc_coverage->not_covered, index);
+  return PANGO_COVERAGE_NONE;
 }
 
 static void
@@ -2765,9 +2782,15 @@ pango_fc_coverage_real_set (PangoCoverage *coverage,
   PangoFcCoverage *fc_coverage = (PangoFcCoverage*)coverage;
 
   if (level == PANGO_COVERAGE_NONE)
-    FcCharSetDelChar (fc_coverage->charset, index);
+    {
+      FcCharSetDelChar (fc_coverage->covered, index);
+      FcCharSetAddChar (fc_coverage->not_covered, index);
+    }
   else
-    FcCharSetAddChar (fc_coverage->charset, index);
+    {
+      FcCharSetAddChar (fc_coverage->covered, index);
+      FcCharSetDelChar (fc_coverage->not_covered, index);
+    }
 }
 
 static PangoCoverage *
@@ -2777,7 +2800,8 @@ pango_fc_coverage_real_copy (PangoCoverage *coverage)
   PangoFcCoverage *copy;
 
   copy = g_object_new (pango_fc_coverage_get_type (), NULL);
-  copy->charset = FcCharSetCopy (fc_coverage->charset);
+  copy->covered = FcCharSetCopy (fc_coverage->covered);
+  copy->not_covered = FcCharSetCopy (fc_coverage->not_covered);
 
   return (PangoCoverage *)copy;
 }
@@ -2787,7 +2811,8 @@ pango_fc_coverage_finalize (GObject *object)
 {
   PangoFcCoverage *fc_coverage = (PangoFcCoverage*)object;
 
-  FcCharSetDestroy (fc_coverage->charset);
+  FcCharSetDestroy (fc_coverage->covered);
+  FcCharSetDestroy (fc_coverage->not_covered);
 
   G_OBJECT_CLASS (pango_fc_coverage_parent_class)->finalize (object);
 }
@@ -2847,7 +2872,8 @@ _pango_fc_font_map_fc_to_coverage (FcCharSet *charset)
   PangoFcCoverage *coverage;
 
   coverage = g_object_new (pango_fc_coverage_get_type (), NULL);
-  coverage->charset = FcCharSetCopy (charset);
+  coverage->covered = FcCharSetCopy (charset);
+  coverage->not_covered = FcCharSetCreate ();
 
   return (PangoCoverage *)coverage;
 }
