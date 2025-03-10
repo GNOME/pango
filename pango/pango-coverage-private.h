@@ -42,6 +42,7 @@ struct _PangoCoverage
   GObject parent_instance;
 
   hb_set_t *chars;
+  hb_set_t *nonchars;
 };
 
 struct _PangoCoverageClass

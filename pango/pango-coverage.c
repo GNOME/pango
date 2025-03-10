@@ -10,7 +10,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -38,35 +38,64 @@ pango_coverage_finalize (GObject *object)
 
   if (coverage->chars)
     hb_set_destroy (coverage->chars);
+  if (coverage->nonchars)
+    hb_set_destroy (coverage->nonchars);
 
   G_OBJECT_CLASS (pango_coverage_parent_class)->finalize (object);
 }
 
 static PangoCoverageLevel
 pango_coverage_real_get (PangoCoverage *coverage,
-		         int            index)
+                         int            index)
 {
+  gunichar ch1, ch2;
+
   if (coverage->chars == NULL)
     return PANGO_COVERAGE_NONE;
 
   if (hb_set_has (coverage->chars, (hb_codepoint_t)index))
     return PANGO_COVERAGE_EXACT;
-  else
-    return PANGO_COVERAGE_NONE;
+
+  if (g_unichar_decompose ((gunichar) index, &ch1, &ch2))
+    {
+      if ((pango_coverage_get (coverage, ch1) == PANGO_COVERAGE_EXACT) &&
+          (ch2 == 0 || pango_coverage_get (coverage, ch2) == PANGO_COVERAGE_EXACT))
+        {
+          pango_coverage_set (coverage, index, PANGO_COVERAGE_EXACT);
+          return PANGO_COVERAGE_EXACT;
+        }
+    }
+
+  pango_coverage_set (coverage, index, PANGO_COVERAGE_NONE);
+  return PANGO_COVERAGE_NONE;
 }
 
 static void
-pango_coverage_real_set (PangoCoverage     *coverage,
-		         int                index,
-		         PangoCoverageLevel level)
+pango_coverage_real_set (PangoCoverage      *coverage,
+                         int                 index,
+                         PangoCoverageLevel  level)
 {
-  if (coverage->chars == NULL)
-    coverage->chars = hb_set_create ();
-
   if (level != PANGO_COVERAGE_NONE)
-    hb_set_add (coverage->chars, (hb_codepoint_t)index);
+    {
+      if (coverage->chars == NULL)
+        coverage->chars = hb_set_create ();
+
+      hb_set_add (coverage->chars, (hb_codepoint_t) index);
+
+      if (coverage->nonchars)
+        hb_set_del (coverage->nonchars, (hb_codepoint_t) index);
+    }
   else
-    hb_set_del (coverage->chars, (hb_codepoint_t)index);
+    {
+      if (coverage->nonchars == NULL)
+        coverage->nonchars = hb_set_create ();
+
+      hb_set_add (coverage->nonchars, (hb_codepoint_t) index);
+
+      if (coverage->chars)
+        hb_set_del (coverage->chars, (hb_codepoint_t) index);
+    }
+
 }
 
 static PangoCoverage *
@@ -77,17 +106,11 @@ pango_coverage_real_copy (PangoCoverage *coverage)
   g_return_val_if_fail (coverage != NULL, NULL);
 
   copy = g_object_new (PANGO_TYPE_COVERAGE, NULL);
-  if (coverage->chars)
-    {
-      int i;
 
-      copy->chars = hb_set_create ();
-      for (i = hb_set_get_min (coverage->chars); i <= hb_set_get_max (coverage->chars); i++)
-        {
-          if (hb_set_has (coverage->chars, (hb_codepoint_t)i))
-            hb_set_add (copy->chars, (hb_codepoint_t)i);
-        }
-    }
+  if (coverage->chars)
+    copy->chars = hb_set_copy (coverage->chars);
+  if (coverage->nonchars)
+    copy->nonchars = hb_set_copy (coverage->nonchars);
 
   return copy;
 }
@@ -178,7 +201,7 @@ pango_coverage_unref (PangoCoverage *coverage)
  */
 PangoCoverageLevel
 pango_coverage_get (PangoCoverage *coverage,
-		    int            index)
+                    int            index)
 {
   return PANGO_COVERAGE_GET_CLASS (coverage)->get (coverage, index);
 }
@@ -193,8 +216,8 @@ pango_coverage_get (PangoCoverage *coverage,
  */
 void
 pango_coverage_set (PangoCoverage     *coverage,
-		    int                index,
-		    PangoCoverageLevel level)
+                    int                index,
+                    PangoCoverageLevel level)
 {
   PANGO_COVERAGE_GET_CLASS (coverage)->set (coverage, index, level);
 }
@@ -212,7 +235,7 @@ pango_coverage_set (PangoCoverage     *coverage,
  */
 void
 pango_coverage_max (PangoCoverage *coverage,
-		    PangoCoverage *other)
+                    PangoCoverage *other)
 {
 }
 
@@ -229,8 +252,8 @@ pango_coverage_max (PangoCoverage *coverage,
  */
 void
 pango_coverage_to_bytes (PangoCoverage  *coverage,
-			 guchar        **bytes,
-			 int            *n_bytes)
+                         guchar        **bytes,
+                         int            *n_bytes)
 {
   *bytes = NULL;
   *n_bytes = 0;
@@ -251,7 +274,7 @@ pango_coverage_to_bytes (PangoCoverage  *coverage,
  */
 PangoCoverage *
 pango_coverage_from_bytes (guchar *bytes,
-			   int     n_bytes)
+                           int     n_bytes)
 {
   return NULL;
 }
