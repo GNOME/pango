@@ -923,33 +923,6 @@ init_in_thread (gpointer task_data)
 }
 
 static gpointer
-match_in_thread (gpointer task_data)
-{
-  ThreadData *td = task_data;
-  FcResult result;
-  FcPattern *match;
-  gint64 before G_GNUC_UNUSED;
-
-  before = PANGO_TRACE_CURRENT_TIME;
-
-  match = FcFontSetMatch (td->config,
-                          &td->fonts, 1,
-                          td->pattern,
-                          &result);
-
-  pango_trace_mark (before, "FcFontSetMatch", NULL);
-
-  g_mutex_lock (&td->patterns->mutex);
-  td->patterns->match = match;
-  g_cond_signal (&td->patterns->cond);
-  g_mutex_unlock (&td->patterns->mutex);
-
-  thread_data_free (td);
-
-  return NULL;
-}
-
-static gpointer
 sort_in_thread (gpointer task_data)
 {
   ThreadData *td = task_data;
@@ -974,6 +947,36 @@ sort_in_thread (gpointer task_data)
   g_mutex_unlock (&td->patterns->mutex);
 
   thread_data_free (td);
+
+  return NULL;
+}
+
+static gpointer
+match_in_thread (gpointer task_data)
+{
+  ThreadData *td = task_data;
+  FcResult result;
+  FcPattern *match;
+  gint64 before G_GNUC_UNUSED;
+
+  before = PANGO_TRACE_CURRENT_TIME;
+
+  match = FcFontSetMatch (td->config,
+                          &td->fonts, 1,
+                          td->pattern,
+                          &result);
+
+  pango_trace_mark (before, "FcFontSetMatch", NULL);
+
+  g_mutex_lock (&td->patterns->mutex);
+  td->patterns->match = match;
+  g_cond_signal (&td->patterns->cond);
+  g_mutex_unlock (&td->patterns->mutex);
+
+  if (result == FcResultNoMatch)
+    sort_in_thread (td);
+  else
+    thread_data_free (td);
 
   return NULL;
 }
@@ -1040,7 +1043,6 @@ pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
   g_cond_init (&pats->cond);
 
   g_async_queue_push (fontmap->priv->queue, thread_data_new (FC_MATCH, pats));
-  g_async_queue_push (fontmap->priv->queue, thread_data_new (FC_SORT, pats));
 
   g_hash_table_insert (fontmap->priv->patterns_hash, pats->pattern, pats);
 
@@ -1214,6 +1216,9 @@ pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prep
       gboolean waited = FALSE;
 
       before = PANGO_TRACE_CURRENT_TIME;
+
+      if (!pats->fontset)
+        g_async_queue_push (pats->fontmap->priv->queue, thread_data_new (FC_SORT, pats));
 
       g_mutex_lock (&pats->mutex);
 
