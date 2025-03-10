@@ -71,6 +71,24 @@ test_coverage_copy (void)
   g_object_unref (coverage2);
 }
 
+static void
+test_coverage_decomposition (void)
+{
+  PangoCoverage *coverage;
+
+  coverage = pango_coverage_new ();
+
+  pango_coverage_set (coverage, 0x004f, PANGO_COVERAGE_EXACT); /* Capital Letter O */
+  pango_coverage_set (coverage, 0x0303, PANGO_COVERAGE_EXACT); /* Combining Tilde */
+  pango_coverage_set (coverage, 0x0304, PANGO_COVERAGE_EXACT); /* Combining Macron */
+
+  g_assert_cmpint (pango_coverage_get (coverage, 0x0d5), ==, PANGO_COVERAGE_EXACT); /* Capital Letter O with Tilde */
+  g_assert_cmpint (pango_coverage_get (coverage, 0x014c), ==, PANGO_COVERAGE_EXACT); /* Capital Letter O with Macron */
+  g_assert_cmpint (pango_coverage_get (coverage, 0x022c), ==, PANGO_COVERAGE_EXACT); /* Capital Letter O with Tilde and Macron */
+
+  g_object_unref (coverage);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -78,6 +96,7 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/coverage/basic", test_coverage_basic);
   g_test_add_func ("/coverage/copy", test_coverage_copy);
+  g_test_add_func ("/coverage/decomposition", test_coverage_decomposition);
 
   return g_test_run ();
 }
