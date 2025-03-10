@@ -178,7 +178,7 @@ width_iter_is_upright (gunichar ch)
   };
   static const int max = sizeof(upright) / sizeof(upright[0]);
   int st = 0;
-  int ed = max;
+  int ed = max - 1;
 
   if (ch < upright[0][0])
     return FALSE;

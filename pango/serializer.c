@@ -1188,7 +1188,7 @@ json_parser_fill_tabs (GtkJsonParser *parser,
   index = 0;
   do
     {
-      int pos;
+      int pos = 0;
       PangoTabAlign align = PANGO_TAB_LEFT;
       gunichar ch = 0;
 

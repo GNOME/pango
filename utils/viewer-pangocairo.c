@@ -895,6 +895,7 @@ parse_annotate_arg (const char  *option_name,
                            G_OPTION_ERROR, G_OPTION_ERROR_FAILED,
                            "%s is not an allowed value for %s. "
                            "See --help-cairo", parts[i], option_name);
+              g_strfreev (parts);
               return FALSE;
             }
         }
