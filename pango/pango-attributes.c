@@ -2954,11 +2954,12 @@ pango_attr_list_from_string (const char *text)
           p++; \
           endp = strchr (p, '"'); \
           if (!endp) goto fail; \
+          /* check the next character like other attributes */ \
+          if (!is_valid_end_char (*(endp + 1))) goto fail; \
           str = g_strndup (p, endp - p); \
           attr = pango_attr_##name##_new (str); \
           g_free (str); \
-          endp++; \
-          if (!is_valid_end_char (*endp)) goto fail;
+          endp++;
 
       switch (attr_type)
         {

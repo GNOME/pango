@@ -106,7 +106,7 @@ diff_bytes (GBytes  *b1,
             GError **error)
 {
   const char *command[] = { "diff", "-u", "-i", NULL, NULL, NULL };
-  char *diff, *tmpfile, *tmpfile2;
+  char *diff = NULL, *tmpfile = NULL, *tmpfile2 = NULL;
   int fd;
   const char *text;
   gsize len;
