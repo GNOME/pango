@@ -38,6 +38,7 @@
 #include "pango-impl-utils.h"
 #include "pangowin32.h"
 #include "pangowin32-private.h"
+#include "pango-coverage-private.h"
 
 #define MAX_FREED_FONTS 256
 
@@ -932,10 +933,8 @@ pango_win32_font_get_coverage (PangoFont     *font,
       hb_codepoint_t ch = HB_SET_VALUE_INVALID;
 
       hb_face_collect_unicodes (hb_face, chars);
-      while (hb_set_next(chars, &ch))
-        pango_coverage_set (coverage, ch, PANGO_COVERAGE_EXACT);
 
-      hb_set_destroy (chars);
+      coverage->chars = chars;
       win32face->coverage = coverage;
     }
 
