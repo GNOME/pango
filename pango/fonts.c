@@ -1124,6 +1124,8 @@ pango_font_description_free (PangoFontDescription *desc)
  * @n_descs: number of font descriptions in @descs
  *
  * Frees an array of font descriptions.
+ *
+ * Deprecated: 1.56: Just use pango_font_description_free in a loop
  */
 void
 pango_font_descriptions_free (PangoFontDescription **descs,
