@@ -133,6 +133,12 @@ if build_gir
   gir_args = [
     '--quiet',
   ]
+  gir_dep = dependency('gobject-introspection-1.0')
+  if gir_dep.version().version_compare('>=1.83.2')
+    gir_args += [
+     '--doc-format=gi-docgen',
+    ]
+  endif
   harfbuzz_gobject_dep = dependency('harfbuzz-gobject',
                                     version: harfbuzz_req,
                                     required: false,
