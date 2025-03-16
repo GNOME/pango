@@ -1,5 +1,13 @@
-Overview of changes in 1.56.3, xx-xx-xxxx
+Overview of changes in 1.56.4, xx-xx-xxxx
 =========================================
+
+Overview of changes in 1.56.3, 16-03-2025
+=========================================
+- Improve font description serialization
+- fontconfig: Avoid FcFontSetSort when possible
+- coverage: Extend coverage by Unicode decomposition
+- win32: Speed up coverage creation
+- Deprecate pango_font_descriptions_free
 
 Overview of changes in 1.56.2, 04-03-2025
 =========================================
