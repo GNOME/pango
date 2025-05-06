@@ -140,8 +140,7 @@ pango_renderer_finalize (GObject *gobject)
 {
   PangoRenderer *renderer = PANGO_RENDERER (gobject);
 
-  if (renderer->matrix)
-    pango_matrix_free (renderer->matrix);
+  pango_matrix_free (renderer->matrix);
 
   G_OBJECT_CLASS (pango_renderer_parent_class)->finalize (gobject);
 }
