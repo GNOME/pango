@@ -1023,8 +1023,8 @@ pango_units_to_double (int i)
 
 /**
  * pango_extents_to_pixels:
- * @inclusive: (nullable): rectangle to round to pixels inclusively
- * @nearest: (nullable): rectangle to round to nearest pixels
+ * @inclusive: (inout) (optional): rectangle to round to pixels inclusively
+ * @nearest: (inout) (optional): rectangle to round to nearest pixels
  *
  * Converts extents from Pango units to device units.
  *
@@ -1155,10 +1155,10 @@ _pango_shape_get_extents (gint              n_chars,
  * pango_find_paragraph_boundary:
  * @text: UTF-8 text
  * @length: length of @text in bytes, or -1 if nul-terminated
- * @paragraph_delimiter_index: (out): return location for index of
- *   delimiter
- * @next_paragraph_start: (out): return location for start of next
- *   paragraph
+ * @paragraph_delimiter_index: (out) (optional): return location
+ *  for index of delimiter
+ * @next_paragraph_start: (out) (optional): return location for
+ *  start of next paragraph
  *
  * Locates a paragraph boundary in @text.
  *
