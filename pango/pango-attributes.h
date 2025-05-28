@@ -288,7 +288,7 @@ typedef enum {
 #define PANGO_ATTR_INDEX_TO_TEXT_END ((guint)(G_MAXUINT + 0))
 
 /**
- * PangoAttribute:
+ * PangoAttribute: (copy-func pango_attribute_copy) (free-func pango_attribute_destroy)
  * @klass: the class structure holding information about the type of the attribute
  * @start_index: the start index of the range (in bytes).
  * @end_index: end index of the range (in bytes). The character at this index
