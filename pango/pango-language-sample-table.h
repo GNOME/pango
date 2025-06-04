@@ -173,8 +173,8 @@ LANGUAGE(
 	)
 LANGUAGE(
 	 en	/* English */,
-	 GSPECI,
-	 "The quick brown fox jumps over the lazy dog."
+	 MISC,
+	 "The wizard quickly jinxed the gnomes before they vaporized."
 	)
 LANGUAGE(
 	 enm	/* Middle English */,
