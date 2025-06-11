@@ -1998,8 +1998,8 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
           g_hash_table_insert (warned_fonts, g_strdup (ctmp1), GINT_TO_POINTER (1));
 
           ctmp2 = pango_font_description_to_string (tmp_desc);
-          g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
-                     "expect ugly output.", ctmp1, ctmp2);
+          g_printerr ("couldn't load font \"%s\", falling back to \"%s\", "
+                      "expect ugly output.", ctmp1, ctmp2);
           g_free (ctmp2);
         }
       G_UNLOCK (warned_fonts);
@@ -2034,8 +2034,8 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
 
           ctmp2 = pango_font_description_to_string (tmp_desc);
 
-          g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
-                     "expect ugly output.", ctmp1, ctmp2);
+          g_printerr ("couldn't load font \"%s\", falling back to \"%s\", "
+                      "expect ugly output.", ctmp1, ctmp2);
           g_free (ctmp2);
         }
       G_UNLOCK (warned_fonts);
