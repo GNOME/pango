@@ -256,13 +256,13 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
       dpi = pango_cairo_context_get_resolution (context);
 
       if (dpi <= 0)
-        dpi = cwfontmap->dpi;
+        dpi = ((PangoWin32FontMap *) cwfontmap)->dpi;
 
       options = cairo_font_options_copy (_pango_cairo_context_get_merged_font_options (context));
     }
   else
     {
-      dpi = cwfontmap->dpi;
+      dpi = ((PangoWin32FontMap *) cwfontmap)->dpi;
       options = cairo_font_options_create ();
     }
 

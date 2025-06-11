@@ -33,44 +33,24 @@ struct _PangoCairoWin32FontMapClass
   PangoWin32FontMapClass parent_class;
 };
 
-static guint
-pango_cairo_win32_font_map_get_serial (PangoFontMap *fontmap)
-{
-  PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (fontmap);
-
-  return cwfontmap->serial;
-}
-
-static void
-pango_cairo_win32_font_map_changed (PangoFontMap *fontmap)
-{
-  PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (fontmap);
-
-  cwfontmap->serial++;
-  if (cwfontmap->serial == 0)
-    cwfontmap->serial++;
-
-  pango_win32_font_map_cache_clear (fontmap);
-}
-
 static void
 pango_cairo_win32_font_map_set_resolution (PangoCairoFontMap *cfontmap,
 					   double             dpi)
 {
-  PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (cfontmap);
+  PangoWin32FontMap *wfontmap = PANGO_WIN32_FONT_MAP (cfontmap);
 
-  cwfontmap->serial++;
-  if (cwfontmap->serial == 0)
-    cwfontmap->serial++;
-  cwfontmap->dpi = dpi;
+  wfontmap->serial++;
+  if (wfontmap->serial == 0)
+    wfontmap->serial++;
+  wfontmap->dpi = dpi;
 }
 
 static double
 pango_cairo_win32_font_map_get_resolution (PangoCairoFontMap *cfontmap)
 {
-  PangoCairoWin32FontMap *cwfontmap = PANGO_CAIRO_WIN32_FONT_MAP (cfontmap);
+  PangoWin32FontMap *wfontmap = PANGO_WIN32_FONT_MAP (cfontmap);
 
-  return cwfontmap->dpi;
+  return wfontmap->dpi;
 }
 
 static cairo_font_type_t
@@ -115,8 +95,6 @@ pango_cairo_win32_font_map_class_init (PangoCairoWin32FontMapClass *class)
   PangoFontMapClassPrivate *pclass;
 
   gobject_class->finalize  = pango_cairo_win32_font_map_finalize;
-  fontmap_class->get_serial = pango_cairo_win32_font_map_get_serial;
-  fontmap_class->changed = pango_cairo_win32_font_map_changed;
   win32fontmap_class->find_font = pango_cairo_win32_font_map_find_font;
 
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT_MAP);
@@ -127,6 +105,4 @@ pango_cairo_win32_font_map_class_init (PangoCairoWin32FontMapClass *class)
 static void
 pango_cairo_win32_font_map_init (PangoCairoWin32FontMap *cwfontmap)
 {
-  cwfontmap->serial = 1;
-  cwfontmap->dpi = GetDeviceCaps (_pango_win32_get_display_dc (), LOGPIXELSY);
 }

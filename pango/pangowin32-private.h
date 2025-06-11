@@ -103,7 +103,7 @@ struct _PangoWin32FontMap
   /* keeps track of the system font aliases that we might have */
   GHashTable *aliases;
 
-  double resolution;		/* (points / pixel) * PANGO_SCALE */
+  double dpi;		/* (points / pixel) * PANGO_SCALE */
 
   /* for loading custom fonts on Windows 10+ */
   gpointer font_set_builder1; /* IDWriteFontSetBuilder1 */

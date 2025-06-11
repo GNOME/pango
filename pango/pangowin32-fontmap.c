@@ -624,7 +624,7 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   create_standard_family (win32fontmap, "Fantasy");
   create_standard_family (win32fontmap, "System-ui");
 
-  win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (hdc, LOGPIXELSY)) * 72.0;
+  win32fontmap->dpi = 96.0;
 }
 
 static void
@@ -1062,7 +1062,7 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
   int size = pango_font_description_get_size (description);
 
   if (pango_font_description_get_size_is_absolute (description))
-    size = (int) 0.5 + (size * win32fontmap->resolution) / PANGO_SCALE;
+    size = (int) 0.5 + (size * 72 / win32fontmap->dpi);
 
   PING (("got best match:%S size=%d",face->logfontw.lfFaceName,size));
 
@@ -1334,7 +1334,7 @@ _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
   /* OK, we have a match; let's modify it to fit this size */
 
   *out = * (LOGFONTW *) match;
-  out->lfHeight = -(int)((double)size / win32fontmap->resolution + 0.5);
+  out->lfHeight = -(int) ((double) size * win32fontmap->dpi / (72 * PANGO_SCALE) + 0.5);
   out->lfWidth = 0;
 }
 

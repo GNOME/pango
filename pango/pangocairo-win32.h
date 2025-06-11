@@ -37,9 +37,6 @@ typedef struct _PangoCairoWin32FontMap PangoCairoWin32FontMap;
 struct _PangoCairoWin32FontMap
 {
   PangoWin32FontMap parent_instance;
-
-  guint serial;
-  double dpi;
 };
 
 PANGO_AVAILABLE_IN_ALL
