@@ -175,10 +175,6 @@ struct _PangoWin32Face
   char *face_name;
   gboolean is_synthetic;
 
-  gboolean has_cmap;
-  guint16 cmap_format;
-  gpointer cmap;
-
   GSList *cached_fonts;
 };
 
@@ -199,9 +195,6 @@ struct _PangoWin32MetricsInfo
 #define MAKE_TT_TABLE_NAME(c1, c2, c3, c4) \
    (((guint32)c4) << 24 | ((guint32)c3) << 16 | ((guint32)c2) << 8 | ((guint32)c1))
 
-#define CMAP (MAKE_TT_TABLE_NAME('c','m','a','p'))
-#define CMAP_HEADER_SIZE 4
-
 #define NAME (MAKE_TT_TABLE_NAME('n','a','m','e'))
 #define NAME_HEADER_SIZE 6
 
@@ -217,39 +210,6 @@ struct _PangoWin32MetricsInfo
 #define UCS4_ENCODING_ID 10
 
 /* All the below structs must be packed! */
-
-struct cmap_encoding_subtable
-{
-  guint16 platform_id;
-  guint16 encoding_id;
-  guint32 offset;
-};
-
-struct format_4_cmap
-{
-  guint16 format;
-  guint16 length;
-  guint16 language;
-  guint16 seg_count_x_2;
-  guint16 search_range;
-  guint16 entry_selector;
-  guint16 range_shift;
-
-  guint16 reserved;
-
-  guint16 arrays[1];
-};
-
-struct format_12_cmap
-{
-  guint16 format;
-  guint16 reserved;
-  guint32 length;
-  guint32 language;
-  guint32 count;
-
-  guint32 groups[1];
-};
 
 struct name_header
 {
@@ -289,10 +249,6 @@ HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
 
 _PANGO_EXTERN
 HDC             _pango_win32_get_display_dc                 (void);
-
-_PANGO_EXTERN
-gpointer        _pango_win32_copy_cmap (gpointer cmap,
-                                        guint16 cmap_format);
 
 _PANGO_EXTERN
 gboolean        pango_win32_dwrite_font_check_is_hinted       (PangoWin32Font    *font);

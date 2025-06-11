@@ -634,10 +634,6 @@ create_standard_family (PangoWin32FontMap *win32fontmap,
 
               new_face->is_synthetic = TRUE;
 
-              new_face->has_cmap = old_face->has_cmap;
-              new_face->cmap_format = old_face->cmap_format;
-              new_face->cmap = _pango_win32_copy_cmap (old_face->cmap, old_face->cmap_format);
-
               new_face->cached_fonts = NULL;
 
               new_face->family = new_family;
@@ -1759,10 +1755,6 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 
   win32face->is_synthetic = is_synthetic;
 
-  win32face->has_cmap = TRUE;
-  win32face->cmap_format = 0;
-  win32face->cmap = NULL;
-
   win32face->cached_fonts = NULL;
 
   win32face->family = win32family =
@@ -1868,8 +1860,6 @@ pango_win32_face_finalize (GObject *object)
     g_object_unref (win32face->coverage);
 
   g_free (win32face->face_name);
-
-  g_free (win32face->cmap);
 
   g_slist_free (win32face->cached_fonts);
 //  g_slist_free_full (win32face->cached_fonts, g_object_unref); // This doesn't work.
@@ -2008,8 +1998,8 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
           g_hash_table_insert (warned_fonts, g_strdup (ctmp1), GINT_TO_POINTER (1));
 
           ctmp2 = pango_font_description_to_string (tmp_desc);
-          g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
-                     "expect ugly output.", ctmp1, ctmp2);
+          g_printerr ("couldn't load font \"%s\", falling back to \"%s\", "
+                      "expect ugly output.", ctmp1, ctmp2);
           g_free (ctmp2);
         }
       G_UNLOCK (warned_fonts);
@@ -2044,8 +2034,8 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
 
           ctmp2 = pango_font_description_to_string (tmp_desc);
 
-          g_warning ("couldn't load font \"%s\", falling back to \"%s\", "
-                     "expect ugly output.", ctmp1, ctmp2);
+          g_printerr ("couldn't load font \"%s\", falling back to \"%s\", "
+                      "expect ugly output.", ctmp1, ctmp2);
           g_free (ctmp2);
         }
       G_UNLOCK (warned_fonts);
