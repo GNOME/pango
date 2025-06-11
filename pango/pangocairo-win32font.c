@@ -96,7 +96,7 @@ pango_cairo_win32_font_create_font_face (PangoCairoFont *font)
     {
       cairo_font_face_t *cairo_face = cairo_dwrite_font_face_create_for_dwrite_fontface (dwrite_font_face);
 
-      if (cairo_face != NULL)
+      if (cairo_font_face_status (cairo_face) == CAIRO_STATUS_SUCCESS)
         {
           static const cairo_user_data_key_t key;
 
@@ -110,6 +110,7 @@ pango_cairo_win32_font_create_font_face (PangoCairoFont *font)
         {
           g_warning ("cairo_font_face creation failed with DirectWrite, fallback to GDI");
           pango_win32_dwrite_font_face_release (dwrite_font_face);
+          cairo_font_face_destroy (cairo_face);
         }
     }
 #endif
