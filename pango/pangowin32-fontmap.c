@@ -825,6 +825,14 @@ pango_win32_shutdown_display (void)
   g_clear_object (&default_fontmap);
 }
 
+static inline void
+pangowin32_release_com_obj (gpointer object)
+{
+  IUnknown *This = object;
+
+  This->lpVtbl->Release (This);
+}
+
 static void
 pango_win32_font_map_finalize (GObject *object)
 {
@@ -832,10 +840,8 @@ pango_win32_font_map_finalize (GObject *object)
 
   pango_win32_font_map_fini (win32fontmap);
 
-  pango_win32_dwrite_release_font_set_builders (win32fontmap);
-
-  if (win32fontmap->font_set_builder != NULL)
-    g_free (win32fontmap->font_set_builder);
+  g_clear_pointer (&win32fontmap->font_set_builder1, pangowin32_release_com_obj);
+  g_clear_pointer (&win32fontmap->font_set_builder, pangowin32_release_com_obj);
 
   G_OBJECT_CLASS (pango_win32_font_map_parent_class)->finalize (object);
 }

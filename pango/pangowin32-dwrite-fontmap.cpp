@@ -33,12 +33,6 @@
 #  define UUID_OF_IDWriteFactory5 IID_IDWriteFactory5
 # endif
 
-struct _PangoWin32DWriteFontSetBuilder
-{
-  IDWriteFontSetBuilder1 *font_set_builder1;
-  IDWriteFontSetBuilder *font_set_builder;
-};
-
 #ifdef STRICT
 #undef STRICT
 #endif
@@ -148,18 +142,6 @@ pango_win32_dwrite_items_destroy (PangoWin32DWriteItems *dwrite_items)
     dwrite_items->dwrite_factory3->Release ();
 
   g_free (dwrite_items);
-}
-
-void
-pango_win32_dwrite_release_font_set_builders (PangoWin32FontMap *win32fontmap)
-{
-  PangoWin32DWriteFontSetBuilder *win10_font_set_builder = win32fontmap->font_set_builder;
-
-  if (win10_font_set_builder != NULL)
-    {
-      pangowin32_release_com_obj (&win10_font_set_builder->font_set_builder1);
-      pangowin32_release_com_obj (&win10_font_set_builder->font_set_builder);
-    }
 }
 
 static IDWriteFontFace *
@@ -291,26 +273,16 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
   IDWriteFontCollection *sys_collection = NULL;
   IDWriteFontSet *fontset = NULL;
   PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
-  PangoWin32DWriteFontSetBuilder *win10_font_set_builder = NULL;
 
-  /* the following code requires items from dwrite_3.h */
-  if (dwrite_items->have_idwritefactory5 || dwrite_items->have_idwritefactory3)
+  if (map->font_set_builder1 != NULL)
     {
-      if (map->font_set_builder == NULL)
-        map->font_set_builder = g_new0 (PangoWin32DWriteFontSetBuilder, 1);
-
-      win10_font_set_builder = map->font_set_builder;
-
-      if (dwrite_items->have_idwritefactory5 &&
-          win10_font_set_builder->font_set_builder1 != NULL)
-       {
-         hr = win10_font_set_builder->font_set_builder1->CreateFontSet (&fontset);
-       }
-      else if (dwrite_items->have_idwritefactory3 &&
-          win10_font_set_builder->font_set_builder != NULL)
-       {
-         hr = win10_font_set_builder->font_set_builder->CreateFontSet (&fontset);
-       }
+      IDWriteFontSetBuilder1 *builder = (IDWriteFontSetBuilder1 *) map->font_set_builder1;
+      hr = builder->CreateFontSet (&fontset);
+    }
+  else if (map->font_set_builder != NULL)
+    {
+      IDWriteFontSetBuilder *builder = (IDWriteFontSetBuilder *) map->font_set_builder;
+      hr = builder->CreateFontSet (&fontset);
     }
 
   if (SUCCEEDED (hr) && fontset != NULL)
@@ -711,8 +683,8 @@ add_custom_font_factory5 (PangoFontMap     *font_map,
   HRESULT hr = S_OK;
   IDWriteFontFile *font_file = NULL;
   PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
-  PangoWin32DWriteFontSetBuilder *win10_font_set_builder = win32fontmap->font_set_builder;
   wchar_t *filepath_w = reinterpret_cast<wchar_t*> (g_utf8_to_utf16 (filepath, -1, NULL, NULL, error));
+  IDWriteFontSetBuilder1 *font_set_builder = (IDWriteFontSetBuilder1 *) win32fontmap->font_set_builder1;
 
   if (filepath_w == NULL)
     {
@@ -721,22 +693,21 @@ add_custom_font_factory5 (PangoFontMap     *font_map,
       return FALSE;
     }
 
-  if (win10_font_set_builder->font_set_builder1 == NULL)
+  if (font_set_builder == NULL)
     {
-      IDWriteFontSetBuilder1 *font_set_builder = NULL;
-
       hr = factory5->CreateFontSetBuilder (&font_set_builder);
       if (SUCCEEDED (hr) && font_set_builder != NULL)
-        win10_font_set_builder->font_set_builder1 = font_set_builder;
-    }
-
-  if (FAILED (hr) || win10_font_set_builder->font_set_builder1 == NULL)
-    {
-      g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
-                   "Setup for IDWriteFontSetBuilder1 failed with error code %x\n",
-                   (unsigned)hr);
-      hr = E_FAIL;
-      goto out;
+        {
+          win32fontmap->font_set_builder1 = font_set_builder;
+        }
+      else
+        {
+          g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                      "Setup for IDWriteFontSetBuilder1 failed with error code %x\n",
+                      (unsigned)hr);
+          hr = E_FAIL;
+          goto out;
+        }
     }
 
   hr = factory5->CreateFontFileReference (filepath_w, nullptr, &font_file);
@@ -750,7 +721,7 @@ add_custom_font_factory5 (PangoFontMap     *font_map,
       goto out;
     }
 
-  hr = win10_font_set_builder->font_set_builder1->AddFontFile (font_file);
+  hr = font_set_builder->AddFontFile (font_file);
 
   if (FAILED (hr))
     {
@@ -785,11 +756,11 @@ add_custom_font_factory3 (PangoFontMap     *font_map,
   HRESULT hr = S_OK;
   IDWriteFontFile *font_file = NULL;
   PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (font_map);
-  PangoWin32DWriteFontSetBuilder *win10_font_set_builder = win32fontmap->font_set_builder;
   wchar_t *filepath_w = reinterpret_cast<wchar_t*> (g_utf8_to_utf16 (filepath, -1, NULL, NULL, error));
   gboolean supported;
   DWRITE_FONT_FILE_TYPE file_type;
   UINT32 num_fonts;
+  IDWriteFontSetBuilder *font_set_builder = (IDWriteFontSetBuilder *) win32fontmap->font_set_builder;
 
   if (filepath_w == NULL)
     {
@@ -798,23 +769,22 @@ add_custom_font_factory3 (PangoFontMap     *font_map,
       return FALSE;
     }
 
-  if (win10_font_set_builder->font_set_builder == NULL)
+  if (font_set_builder == NULL)
     {
-      IDWriteFontSetBuilder *font_set_builder = NULL;
-
       hr = factory3->CreateFontSetBuilder (&font_set_builder);
 
       if (SUCCEEDED (hr) && font_set_builder != NULL)
-        win10_font_set_builder->font_set_builder = font_set_builder;
-    }
-
-  if (FAILED (hr) || win10_font_set_builder->font_set_builder == NULL)
-    {
-      g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
-                   "Setup for IDWriteFontSetBuilder failed with error code %x\n",
-                   (unsigned)hr);
-      hr = E_FAIL;
-      goto out;
+        {
+          win32fontmap->font_set_builder = font_set_builder;
+        }
+      else
+        {
+          g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
+                      "Setup for IDWriteFontSetBuilder failed with error code %x\n",
+                      (unsigned)hr);
+          hr = E_FAIL;
+          goto out;
+        }
     }
 
   hr = factory3->CreateFontFileReference (filepath_w, nullptr, &font_file);
@@ -869,7 +839,7 @@ add_custom_font_factory3 (PangoFontMap     *font_map,
           break;
         }
 
-      win10_font_set_builder->font_set_builder->AddFontFaceReference (ref);
+      font_set_builder->AddFontFaceReference (ref);
     }
 
 out:
