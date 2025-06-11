@@ -33,7 +33,7 @@ static PangoFontMetrics cantarell_unhinted_metrics = {
   .ascent = 14764,
   .descent = 3259,
   .height = 18023,
-  .approximate_char_width = 6679,
+  .approximate_char_width = 6734,
   .approximate_digit_width = 9216,
   .underline_position = -1502,
   .underline_thickness = 751,
@@ -45,7 +45,7 @@ static PangoFontMetrics cantarell_hinted_metrics = {
   .ascent = 15360,
   .descent = 4096,
   .height = 18432,
-  .approximate_char_width = 6679,
+  .approximate_char_width = 6734,
   .approximate_digit_width = 9216,
   .underline_position = -1024,
   .underline_thickness = 1024,
@@ -53,7 +53,7 @@ static PangoFontMetrics cantarell_hinted_metrics = {
   .strikethrough_thickness = 1024,
 };
 
-#if 1
+#ifdef DEBUG
 static void
 print_metrics (PangoFont *font)
 {
@@ -116,7 +116,9 @@ test_cantarell_font_metrics (void)
       return;
     }
 
+#ifdef DEBUG
   print_metrics (font);
+#endif
 
   metrics = pango_font_get_metrics (font, pango_language_from_string ("en"));
 
@@ -134,7 +136,9 @@ test_cantarell_font_metrics (void)
 
   font = load_font_with_font_options (fontmap, desc, CAIRO_HINT_STYLE_FULL, CAIRO_HINT_METRICS_ON);
 
+#ifdef DEBUG
   print_metrics (font);
+#endif
 
   metrics = pango_font_get_metrics (font, pango_language_from_string ("en"));
 
@@ -286,6 +290,22 @@ static GlyphMetrics cantarell_hinted_glyphs[] = {
     .ink = (PangoRectangle) { 1024, -11264, 7168, 11264 },
     .logical = (PangoRectangle) { 0, -15360, 8192, 19456 }
   },
+  { .name = "n",
+    .id = 360,
+    .ink = (PangoRectangle) { 1024, -8192, 7168, 8192 },
+    .logical = (PangoRectangle) { 0, -15360, 8192, 19456 }
+  },
+  { .name = "t",
+    .id = 430,
+    .ink = (PangoRectangle) { 0, -11264, 5120, 11264 },
+    .logical = (PangoRectangle) { 0, -15360, 5120, 19456 }
+  },
+  { .name = "p",
+    .id = 406,
+    .ink = (PangoRectangle) { 1024, -8192, 7168, 12288 },
+    .logical = (PangoRectangle) { 0, -15360, 8192, 19456 }
+  },
+
   { .name = "A",
     .id = 1,
     .ink = (PangoRectangle) { 0, -11264, 10240, 11264 },
@@ -326,9 +346,24 @@ static GlyphMetrics cantarell_hinted_glyphs[] = {
     .ink = (PangoRectangle) { 1024, -11264, 9216, 11264 },
     .logical = (PangoRectangle) { 0, -15360, 11264, 19456 }
   },
+  { .name = "N",
+    .id = 115,
+    .ink = (PangoRectangle) { 1024, -11264, 9216, 11264 },
+    .logical = (PangoRectangle) { 0, -15360, 11264, 19456 }
+  },
+  { .name = "T",
+    .id = 187,
+    .ink = (PangoRectangle) { 0, -11264, 9216, 11264 },
+    .logical = (PangoRectangle) { 0, -15360, 8192, 19456 }
+  },
+  { .name = "P",
+    .id = 162,
+    .ink = (PangoRectangle) { 1024, -11264, 8192, 11264 },
+    .logical = (PangoRectangle) { 0, -15360, 9216, 19456 }
+  },
 };
 
-#if 0
+#ifdef DEBUG
 static void
 print_glyph_metrics (PangoFont  *font,
                      const char *name)
@@ -398,7 +433,7 @@ test_cantarell_glyph_metrics (void)
 
   font = load_font_with_font_options (fontmap, desc, CAIRO_HINT_STYLE_FULL, CAIRO_HINT_METRICS_ON);
 
-#if 0
+#ifdef DEBUG
   print_glyph_metrics (font, "a");
   print_glyph_metrics (font, "b");
   print_glyph_metrics (font, "c");
@@ -407,6 +442,9 @@ test_cantarell_glyph_metrics (void)
   print_glyph_metrics (font, "f");
   print_glyph_metrics (font, "g");
   print_glyph_metrics (font, "h");
+  print_glyph_metrics (font, "n");
+  print_glyph_metrics (font, "t");
+  print_glyph_metrics (font, "p");
 
   print_glyph_metrics (font, "A");
   print_glyph_metrics (font, "B");
@@ -416,6 +454,9 @@ test_cantarell_glyph_metrics (void)
   print_glyph_metrics (font, "F");
   print_glyph_metrics (font, "G");
   print_glyph_metrics (font, "H");
+  print_glyph_metrics (font, "N");
+  print_glyph_metrics (font, "T");
+  print_glyph_metrics (font, "P");
 #endif
 
   for (int i = 0; i < G_N_ELEMENTS (cantarell_hinted_glyphs); i++)
