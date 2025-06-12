@@ -294,8 +294,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
           cairo_font_options_equal (options, options2))
         {
           g_object_ref (win32font);
-          if (win32font->in_cache)
-            _pango_win32_fontmap_cache_remove (PANGO_FONT_MAP (win32fontmap), win32font);
 
           cairo_font_options_destroy (options);
           cairo_font_options_destroy (options2);
