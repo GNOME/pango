@@ -242,10 +242,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   PangoWin32Font *win32font;
   double size;
   double dpi;
-#define USE_FACE_CACHED_FONTS
-#ifdef USE_FACE_CACHED_FONTS
   GSList *tmp_list;
-#endif
   cairo_matrix_t font_matrix;
   cairo_font_options_t *options;
   const char *variations;
@@ -275,7 +272,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   variations = pango_font_description_get_variations (desc);
   cairo_font_options_set_variations (options, variations);
 
-#ifdef USE_FACE_CACHED_FONTS
   tmp_list = face->cached_fonts;
   while (tmp_list)
     {
@@ -301,7 +297,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
       cairo_font_options_destroy (options2);
       tmp_list = tmp_list->next;
     }
-#endif
 
   cwfont = g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT, NULL);
   win32font = PANGO_WIN32_FONT (cwfont);
@@ -314,11 +309,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
       g_object_add_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) &win32font->fontmap);
     }
 
-  win32font->win32face = face;
-
-#ifdef USE_FACE_CACHED_FONTS
   face->cached_fonts = g_slist_prepend (face->cached_fonts, win32font);
-#endif
 
   /* FIXME: This is a pixel size, so not really what we want for describe(),
    * but it's what we need when computing the scale factor.
