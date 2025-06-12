@@ -953,6 +953,10 @@ test_font_custom (void)
   PangoFontMap *fontmap;
   char *path;
   GError *error = NULL;
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  const char *name;
 
   fontmap = pango_cairo_font_map_new ();
 
@@ -969,33 +973,37 @@ test_font_custom (void)
   pango_font_map_add_font_file (fontmap, path, &error);
   g_assert_no_error (error);
 
+  /* Check that we get the font back */
+  context = pango_font_map_create_context (fontmap);
+  desc = pango_font_description_from_string ("Cantarell 11");
+  font = pango_font_map_load_font (fontmap, context, desc);
+
+  g_assert_true (font != NULL);
+
+  name = pango_font_family_get_name (pango_font_face_get_family (pango_font_get_face (font)));
+
+  g_assert_cmpstr (name, ==, "Cantarell");
+
   /* Check that we got our Cantarell, not the system one.
    * FIXME: do a similar check for dwrite
    */
 #ifdef HAVE_FREETYPE
   if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoFcFontMap") == 0)
     {
-      PangoContext *context;
-      PangoFontDescription *desc;
-      PangoFont *font;
       FcPattern *pattern;
       const char *filename;
-
-      context = pango_font_map_create_context (fontmap);
-      desc = pango_font_description_from_string ("Cantarell 11");
-      font = pango_font_map_load_font (fontmap, context, desc);
 
       pattern = pango_fc_font_get_pattern (PANGO_FC_FONT (font));
       if (FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **)&filename) != FcResultMatch)
         filename = "tough luck";
 
       g_assert_cmpstr (filename, ==, path);
-
-      g_object_unref (font);
-      pango_font_description_free (desc);
-      g_object_unref (context);
     }
 #endif
+
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (context);
 
   g_free (path);
 
