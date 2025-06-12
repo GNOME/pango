@@ -244,7 +244,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   double dpi;
 #define USE_FACE_CACHED_FONTS
 #ifdef USE_FACE_CACHED_FONTS
-  PangoWin32FontMap *win32fontmap;
   GSList *tmp_list;
 #endif
   cairo_matrix_t font_matrix;
@@ -277,8 +276,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   cairo_font_options_set_variations (options, variations);
 
 #ifdef USE_FACE_CACHED_FONTS
-  win32fontmap = PANGO_WIN32_FONT_MAP (cwfontmap);
-
   tmp_list = face->cached_fonts;
   while (tmp_list)
     {
@@ -294,8 +291,6 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
           cairo_font_options_equal (options, options2))
         {
           g_object_ref (win32font);
-          if (win32font->in_cache)
-            _pango_win32_fontmap_cache_remove (PANGO_FONT_MAP (win32fontmap), win32font);
 
           cairo_font_options_destroy (options);
           cairo_font_options_destroy (options2);
