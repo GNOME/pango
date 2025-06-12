@@ -837,8 +837,8 @@ pango_win32_font_finalize (GObject *object)
   g_slist_foreach (win32font->metrics_by_lang, (GFunc)free_metrics_info, NULL);
   g_slist_free (win32font->metrics_by_lang);
 
-  if (win32font->win32face)
-    pango_win32_font_entry_remove (win32font->win32face, PANGO_FONT (win32font));
+  pango_win32_font_entry_remove (win32font->win32face, PANGO_FONT (win32font));
+  g_object_unref (win32font->win32face);
 
   g_hash_table_destroy (win32font->glyph_info);
 
@@ -884,7 +884,7 @@ pango_win32_font_describe_absolute (PangoFont *font)
 
 static PangoCoverage *
 pango_win32_font_get_coverage (PangoFont     *font,
-			       PangoLanguage *lang G_GNUC_UNUSED)
+                               PangoLanguage *lang G_GNUC_UNUSED)
 {
   PangoWin32Face *win32face = ((PangoWin32Font *)font)->win32face;
 

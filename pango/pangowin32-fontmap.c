@@ -1166,7 +1166,7 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
   if (!win32font)
     return NULL;
 
-  win32font->win32face = face;
+  win32font->win32face = g_object_ref (face);
   face->cached_fonts = g_slist_prepend (face->cached_fonts, win32font);
 
   return (PangoFont *)win32font;
@@ -1853,8 +1853,7 @@ pango_win32_face_finalize (GObject *object)
 
   g_free (win32face->face_name);
 
-  g_slist_free (win32face->cached_fonts);
-//  g_slist_free_full (win32face->cached_fonts, g_object_unref); // This doesn't work.
+  g_assert (win32face->cached_fonts == NULL);
 
   G_OBJECT_CLASS (pango_win32_family_parent_class)->finalize (object);
 }
