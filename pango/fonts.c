@@ -2053,7 +2053,10 @@ pango_font_default_get_face (PangoFont *font)
 {
   PangoFontMap *map = pango_font_get_font_map (font);
 
-  return PANGO_FONT_MAP_GET_CLASS (map)->get_face (map,font);
+  if (map)
+    return PANGO_FONT_MAP_GET_CLASS (map)->get_face (map,font);
+  else
+    return NULL;
 }
 
 static void
@@ -2314,7 +2317,10 @@ pango_font_get_font_map (PangoFont *font)
  *
  * Gets the `PangoFontFace` to which @font belongs.
  *
- * Returns: (transfer none): the `PangoFontFace`
+ * Note that this function can return `NULL` in cases
+ * where the font outlives its font map.
+ *
+ * Returns: (transfer none) (nullable): the `PangoFontFace`
  *
  * Since: 1.46
  */
