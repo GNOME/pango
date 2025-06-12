@@ -309,6 +309,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
       g_object_add_weak_pointer (G_OBJECT (win32font->fontmap), (gpointer *) &win32font->fontmap);
     }
 
+  win32font->win32face = g_object_ref (face);
   face->cached_fonts = g_slist_prepend (face->cached_fonts, win32font);
 
   /* FIXME: This is a pixel size, so not really what we want for describe(),
