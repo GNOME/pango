@@ -272,6 +272,20 @@ pango_rectangle_equal (const PangoRectangle *a,
          a->height == b->height;
 }
 
+#define assert_rectangle_equal(a, b) \
+G_STMT_START { \
+  const PangoRectangle *ar = (a); \
+  const PangoRectangle *br = (b); \
+  if (!pango_rectangle_equal (ar, br)) \
+    { \
+      char msg[1024]; \
+      g_snprintf (msg, sizeof (msg), "assertion failed ( { %d %d %d %d } == { %d %d %d %d } )", \
+                  ar->x, ar->y, ar->width, ar->height, \
+                  br->x, br->y, br->width, br->height); \
+      g_assertion_message (G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, msg); \
+    } \
+} G_STMT_END
+
 static void
 test_boxes_glyph_metrics (void)
 {
@@ -310,8 +324,8 @@ test_boxes_glyph_metrics (void)
       PangoRectangle ink, logical;
 
       pango_font_get_glyph_extents (font, gm->id, &ink, &logical);
-      g_assert_true (pango_rectangle_equal (&ink, &gm->ink));
-      g_assert_true (pango_rectangle_equal (&logical, &gm->logical));
+      assert_rectangle_equal (&ink, &gm->ink);
+      assert_rectangle_equal (&logical, &gm->logical);
     }
 
   g_object_unref (font);
