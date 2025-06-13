@@ -68,12 +68,20 @@ get_font_map_with_boxes (void)
   path = g_test_build_filename (G_TEST_DIST, "fonts", "boxes.ttf", NULL);
 
   pango_font_map_add_font_file (fontmap, path, &error);
-  g_assert_no_error (error);
+  if (error)
+    {
+      g_clear_error (&error);
+      g_clear_object (&fontmap);
+      return NULL;
+    }
 
   desc = pango_font_description_from_string ("Boxes 1px");
   font = load_font_with_font_options (fontmap, desc, CAIRO_HINT_STYLE_NONE, CAIRO_HINT_METRICS_OFF);
 
-  g_assert_cmpstr (pango_font_family_get_name (pango_font_face_get_family (pango_font_get_face (font))), ==,  "Boxes");
+  if (strcmp (pango_font_family_get_name (pango_font_face_get_family (pango_font_get_face (font))),  "Boxes") != 0)
+    {
+      g_clear_object (&fontmap);
+    }
 
   g_object_unref (font);
   pango_font_description_free (desc);
@@ -124,6 +132,11 @@ test_boxes_font_metrics (void)
   PangoFontMetrics *metrics;
 
   fontmap = get_font_map_with_boxes ();
+  if (!fontmap)
+    {
+      g_test_fail_printf ("Failed to get a fontmap with Boxes");
+      return;
+    }
 
   desc = pango_font_description_from_string ("Boxes 100px");
   font = load_font_with_font_options (fontmap, desc, CAIRO_HINT_STYLE_NONE, CAIRO_HINT_METRICS_OFF);
@@ -267,6 +280,11 @@ test_boxes_glyph_metrics (void)
   PangoFont *font;
 
   fontmap = get_font_map_with_boxes ();
+  if (!fontmap)
+    {
+      g_test_fail_printf ("Failed to get a fontmap with Boxes");
+      return;
+    }
 
   desc = pango_font_description_from_string ("Boxes 100px");
   font = load_font_with_font_options (fontmap, desc, CAIRO_HINT_STYLE_NONE, CAIRO_HINT_METRICS_OFF);
