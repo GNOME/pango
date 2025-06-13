@@ -90,7 +90,6 @@ struct _PangoWin32FontMap
   PangoFontMap parent_instance;
 
   PangoWin32FontCache *font_cache;
-  GQueue *freed_fonts;
   guint serial;
 
   /* Map Pango family names to PangoWin32Family structs */
@@ -140,14 +139,10 @@ struct _PangoWin32Font
   PangoFontMap *fontmap;
 
   /* Written by _pango_win32_font_get_hfont: */
-  HFONT hfont;
+  HFONT hfont;  
 
   PangoWin32Face *win32face;
 
-  /* If TRUE, font is in cache of recently unused fonts and not otherwise
-   * in use.
-   */
-  gboolean in_cache;
   GHashTable *glyph_info;
 
   /* whether the font supports hinting */
@@ -239,10 +234,6 @@ void            _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
 
 _PANGO_EXTERN
 GType           pango_win32_font_map_get_type      (void) G_GNUC_CONST;
-
-_PANGO_EXTERN
-void            _pango_win32_fontmap_cache_remove   (PangoFontMap   *fontmap,
-						     PangoWin32Font *xfont);
 
 _PANGO_EXTERN
 HFONT		_pango_win32_font_get_hfont         (PangoFont          *font);
