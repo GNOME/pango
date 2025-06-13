@@ -47,7 +47,7 @@ endif
 if cairo_dep.found()
   test_cflags += '-DHAVE_CAIRO'
   tests += [
-    # [ 'test-font-data', [ 'test-font-data.c', 'test-common.c' ], [ libpangocairo_dep ] + common_deps ],
+    [ 'test-font-data', [ 'test-font-data.c', 'test-common.c' ], [ libpangocairo_dep ] + common_deps ],
     [ 'test-bidi', [ 'test-bidi.c' ], [ libpangocairo_dep ] ],
     [ 'testcontext', [ 'testcontext.c' ], [ libpangocairo_dep ] ],
     [ 'testiter', [ 'testiter.c' ], [ libpangocairo_dep ] ],
