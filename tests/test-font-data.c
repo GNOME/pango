@@ -83,14 +83,15 @@ get_font_map_with_boxes (void)
 }
 
 static PangoFontMetrics boxes_unhinted_metrics = {
-  .ascent = 2048,
-  .descent = 1024,
-  .height = 3072,
-  .approximate_char_width = 590,
-  .approximate_digit_width = 1024,
+  .ascent = 204800,
+  .descent = 102400,
+  .height = 307200,
+  .approximate_char_width = 49273,
+  .approximate_digit_width = 58368,
+  /* Font doesn't have these set, so we get pango defaults */
   .underline_position = -1024,
   .underline_thickness = 1024,
-  .strikethrough_position = 1024,
+  .strikethrough_position = 102400,
   .strikethrough_thickness = 1024,
 };
 
@@ -124,7 +125,7 @@ test_boxes_font_metrics (void)
 
   fontmap = get_font_map_with_boxes ();
 
-  desc = pango_font_description_from_string ("Boxes 1px");
+  desc = pango_font_description_from_string ("Boxes 100px");
   font = load_font_with_font_options (fontmap, desc, CAIRO_HINT_STYLE_NONE, CAIRO_HINT_METRICS_OFF);
 
 #ifdef DEBUG
@@ -161,58 +162,58 @@ typedef struct
 static GlyphMetrics boxes_unhinted_glyphs[] = {
   { .name = "A",
     .id = 1,
-    .ink = (PangoRectangle) { 0, -1, 1, 1 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -100, 100, 100 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "B",
     .id = 2,
-    .ink = (PangoRectangle) { 0, -2, 2, 2 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -200, 200, 200 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "C",
     .id = 3,
-    .ink = (PangoRectangle) { 0, -4, 4, 4 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -400, 400, 400 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "D",
     .id = 4,
-    .ink = (PangoRectangle) { 0, -8, 8, 8 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -800, 800, 800 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "E",
     .id = 5,
-    .ink = (PangoRectangle) { 0, -16, 16, 16 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -1600, 1600, 1600 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "F",
     .id = 6,
-    .ink = (PangoRectangle) { 0, -32, 32, 32 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -3200, 3200, 3200 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "G",
     .id = 7,
-    .ink = (PangoRectangle) { 0, -64, 64, 64 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -6400, 6400, 6400 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "H",
     .id = 8,
-    .ink = (PangoRectangle) { 0, -128, 128, 128 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -12800, 12800, 12800 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "I",
     .id = 9,
-    .ink = (PangoRectangle) { 0, -256, 256, 256 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -25600, 25600, 25600 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "J",
     .id = 10,
-    .ink = (PangoRectangle) { 0, -512, 512, 512 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -51200, 51200, 51200 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
   { .name = "K",
     .id = 11,
-    .ink = (PangoRectangle) { 0, -1024, 1024, 1024 },
-    .logical = (PangoRectangle) { 0, -2048, 1024, 3072 }
+    .ink = (PangoRectangle) { 0, -102400, 102400, 102400 },
+    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
   },
 };
 
@@ -267,7 +268,7 @@ test_boxes_glyph_metrics (void)
 
   fontmap = get_font_map_with_boxes ();
 
-  desc = pango_font_description_from_string ("Boxes 1px");
+  desc = pango_font_description_from_string ("Boxes 100px");
   font = load_font_with_font_options (fontmap, desc, CAIRO_HINT_STYLE_NONE, CAIRO_HINT_METRICS_OFF);
 
 #ifdef DEBUG
