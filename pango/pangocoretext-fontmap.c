@@ -84,6 +84,7 @@ struct _PangoCoreTextFace
   PangoWeight weight;
   CTFontSymbolicTraits traits;
   guint synthetic_italic : 1;
+  guint synthetic_small_caps : 1;
 };
 
 struct _PangoCoreTextFaceClass
@@ -495,6 +496,7 @@ pango_core_text_face_copy (const PangoCoreTextFace *old)
   face->weight = old->weight;
   face->traits = old->traits;
   face->synthetic_italic = old->synthetic_italic;
+  face->synthetic_small_caps = old->synthetic_small_caps;
 
   return face;
 }
@@ -506,6 +508,7 @@ pango_core_text_face_from_ct_font_descriptor (CTFontDescriptorRef desc)
                                           NULL);
 
   face->synthetic_italic = FALSE;
+  face->synthetic_small_caps = FALSE;
 
   face->ctfontdescriptor = CFRetain (desc);
 
@@ -521,7 +524,13 @@ pango_core_text_face_describe (PangoFontFace *face)
 {
   PangoCoreTextFace *ctface = PANGO_CORE_TEXT_FACE (face);
 
-  return _pango_core_text_font_description_from_ct_font_descriptor (ctface->ctfontdescriptor);
+  PangoFontDescription * ret = _pango_core_text_font_description_from_ct_font_descriptor (ctface->ctfontdescriptor);
+
+  if (ctface->synthetic_small_caps) {
+    pango_font_description_set_variant (ret, PANGO_VARIANT_SMALL_CAPS);
+  }
+
+  return ret;
 }
 
 static const char *
@@ -566,7 +575,7 @@ pango_core_text_face_is_synthesized (PangoFontFace *face)
 {
   PangoCoreTextFace *cface = PANGO_CORE_TEXT_FACE (face);
 
-  return cface->synthetic_italic;
+  return cface->synthetic_italic || cface->synthetic_small_caps;
 }
 
 static PangoFontFamily *
@@ -609,6 +618,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
       GList *faces = NULL;
       GList *synthetic_faces = NULL;
       GHashTable *italic_faces;
+      GHashTable *small_caps_faces;
       const char *real_family = get_real_family (ctfamily->family_name);
       CTFontCollectionRef collection;
       CFArrayRef ctfaces;
@@ -645,6 +655,7 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
       ctfaces = CTFontCollectionCreateMatchingFontDescriptors (collection);
 
       italic_faces = g_hash_table_new (g_direct_hash, g_direct_equal);
+      small_caps_faces = g_hash_table_new (g_direct_hash, g_direct_equal);
 
       count = ctfaces ? CFArrayGetCount (ctfaces) : 0;
       for (i = 0; i < count; i++)
@@ -660,6 +671,11 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
           if ((face->traits & kCTFontItalicTrait) == kCTFontItalicTrait ||
               pango_core_text_face_is_oblique (face))
             g_hash_table_insert (italic_faces,
+                                 GINT_TO_POINTER ((gint)face->weight),
+                                 face);
+
+          if (ct_font_descriptor_is_small_caps(desc))
+            g_hash_table_insert (small_caps_faces,
                                  GINT_TO_POINTER ((gint)face->weight),
                                  face);
         }
@@ -694,6 +710,26 @@ pango_core_text_family_list_faces (PangoFontFamily  *family,
                                                            face->style_name);
 
               synthetic_faces = g_list_prepend (synthetic_faces, italic_face);
+            }
+          if (!g_hash_table_lookup (small_caps_faces,
+                                    GINT_TO_POINTER ((gint)face->weight)))
+            {
+              PangoCoreTextFace *small_caps_face;
+
+              small_caps_face = pango_core_text_face_copy (face);
+
+              small_caps_face->family = ctfamily;
+              small_caps_face->synthetic_small_caps = true;
+
+              g_free (small_caps_face->style_name);
+              if (strcasecmp (face->style_name, "regular") == 0)
+                small_caps_face->style_name = g_strdup ("Small-Caps");
+              else
+                small_caps_face->style_name = g_strdup_printf ("%s Small-Caps",
+                                                           face->style_name);
+
+              synthetic_faces = g_list_prepend (synthetic_faces,
+                                                small_caps_face);
             }
         }
 
@@ -1016,6 +1052,7 @@ struct _PangoCoreTextFontKey
   int pointsize;
   double resolution;
   gboolean synthetic_italic;
+  gboolean synthetic_small_caps;
   gpointer context_key;
   char *variations;
 };
@@ -1025,7 +1062,8 @@ pango_core_text_font_key_init (PangoCoreTextFontKey    *key,
                                PangoCoreTextFontMap    *ctfontmap,
                                PangoCoreTextFontsetKey *fontset_key,
                                CTFontDescriptorRef      ctdescriptor,
-                               gboolean                 synthetic_italic)
+                               gboolean                 synthetic_italic,
+                               gboolean                 synthetic_small_caps)
 {
   key->fontmap = ctfontmap;
   key->ctfontdescriptor = ctdescriptor;
@@ -1033,6 +1071,7 @@ pango_core_text_font_key_init (PangoCoreTextFontKey    *key,
   key->pointsize = fontset_key->pointsize;
   key->resolution = fontset_key->resolution;
   key->synthetic_italic = synthetic_italic;
+  key->synthetic_small_caps = synthetic_small_caps;
   key->gravity = pango_core_text_fontset_key_get_gravity (fontset_key);
   key->context_key = pango_core_text_fontset_key_get_context_key (fontset_key);
   key->variations = (char *) pango_font_description_get_variations (fontset_key->desc);
@@ -1048,6 +1087,7 @@ pango_core_text_font_key_init_from_key (PangoCoreTextFontKey       *key,
   key->pointsize = orig->pointsize;
   key->resolution = orig->resolution;
   key->synthetic_italic = orig->synthetic_italic;
+  key->synthetic_small_caps = orig->synthetic_small_caps;
   key->gravity = orig->gravity;
   key->context_key = orig->context_key;
   key->variations = orig->variations;
@@ -1065,6 +1105,7 @@ pango_core_text_font_key_copy (const PangoCoreTextFontKey *old)
   key->pointsize = old->pointsize;
   key->resolution = old->resolution;
   key->synthetic_italic = old->synthetic_italic;
+  key->synthetic_small_caps = old->synthetic_small_caps;
   key->gravity = old->gravity;
   if (old->context_key)
     key->context_key = PANGO_CORE_TEXT_FONT_MAP_GET_CLASS (key->fontmap)->context_key_copy (key->fontmap, old->context_key);
@@ -1117,6 +1158,7 @@ pango_core_text_font_key_equal (const PangoCoreTextFontKey *key_a,
       key_a->pointsize == key_b->pointsize &&
       key_a->resolution == key_b->resolution &&
       key_a->synthetic_italic == key_b->synthetic_italic &&
+      key_a->synthetic_small_caps == key_b->synthetic_small_caps &&
       g_strcmp0 (key_a->variations, key_b->variations) == 0)
     {
       if (key_a->context_key && key_b->context_key)
@@ -1146,6 +1188,12 @@ gboolean
 pango_core_text_font_key_get_synthetic_italic (const PangoCoreTextFontKey *key)
 {
   return key->synthetic_italic;
+}
+
+gboolean
+pango_core_text_font_key_get_synthetic_small_caps (const PangoCoreTextFontKey *key)
+{
+  return key->synthetic_small_caps;
 }
 
 gpointer
@@ -1217,12 +1265,13 @@ static PangoCoreTextFont *
 pango_core_text_font_map_new_font (PangoCoreTextFontMap    *fontmap,
                                    PangoCoreTextFontsetKey *fontset_key,
                                    CTFontDescriptorRef      ctfontdescriptor,
-                                   gboolean                 synthetic_italic)
+                                   gboolean                 synthetic_italic,
+                                   gboolean                 synthetic_small_caps)
 {
   PangoCoreTextFontKey key;
 
   pango_core_text_font_key_init (&key, fontmap, fontset_key, ctfontdescriptor,
-                                 synthetic_italic);
+                                 synthetic_italic, synthetic_small_caps);
 
   return pango_core_text_font_map_new_font_from_key (fontmap, &key);
 }
@@ -1708,7 +1757,8 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
               font = pango_core_text_font_map_new_font (key->fontmap,
                                                         key,
                                                         family_face->ctfontdescriptor,
-                                                        family_face->synthetic_italic);
+                                                        family_face->synthetic_italic,
+                                                        family_face->synthetic_small_caps);
 
               if (font)
                 {
@@ -1784,6 +1834,7 @@ pango_core_text_fontset_load_font (PangoCoreTextFontset *ctfontset,
   font = pango_core_text_font_map_new_font (ctfontset->key->fontmap,
                                             ctfontset->key,
                                             ctdescriptor,
+                                            FALSE,
                                             FALSE);
 
   return PANGO_FONT (font);
@@ -1952,6 +2003,7 @@ pango_core_text_font_map_find_face (PangoCoreTextFontMap       *map,
 {
   CTFontDescriptorRef desc;
   gboolean synthetic_italic;
+  gboolean synthetic_small_caps;
   char *family;
   char *family_name;
   char *style_name;
@@ -1962,6 +2014,7 @@ pango_core_text_font_map_find_face (PangoCoreTextFontMap       *map,
 
   desc = pango_core_text_font_key_get_ctfontdescriptor (key);
   synthetic_italic = pango_core_text_font_key_get_synthetic_italic (key);
+  synthetic_small_caps = pango_core_text_font_key_get_synthetic_small_caps (key);
 
   family_name = ct_font_descriptor_get_family_name (desc, FALSE);
   style_name = ct_font_descriptor_get_style_name (desc);
@@ -1983,6 +2036,7 @@ pango_core_text_font_map_find_face (PangoCoreTextFontMap       *map,
           if (face->weight == weight &&
               face->traits == traits &&
               face->synthetic_italic == synthetic_italic &&
+              face->synthetic_small_caps == synthetic_small_caps &&
               strcmp (face->style_name, style_name) == 0)
             {
               result = face;
