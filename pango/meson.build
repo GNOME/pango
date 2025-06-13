@@ -132,6 +132,7 @@ pango_dep_sources = [pango_enum_h]
 if build_gir
   gir_args = [
     '--quiet',
+    '--doc-format=gi-docgen',
   ]
   harfbuzz_gobject_dep = dependency('harfbuzz-gobject',
                                     version: harfbuzz_req,

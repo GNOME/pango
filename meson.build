@@ -209,6 +209,7 @@ glib_major_req = 2
 glib_minor_req = 80
 
 glib_req       = '>= @0@.@1@'.format(glib_major_req, glib_minor_req)
+gi_req         = '>= 1.83.2'
 fribidi_req    = '>= 1.0.6'
 libthai_req    = '>= 0.1.9'
 harfbuzz_req   = '>= 8.4.0'
@@ -229,6 +230,7 @@ mathlib_dep = cc.find_library('m', required: false)
 glib_dep = dependency('glib-2.0', version: glib_req)
 gobject_dep = dependency('gobject-2.0', version: glib_req)
 gio_dep = dependency('gio-2.0', version: glib_req)
+gi_dep = dependency('gobject-introspection-1.0', version: gi_req)
 fribidi_dep = dependency('fribidi', version: fribidi_req, default_options: ['docs=false'])
 pango_deps += [mathlib_dep, glib_dep, gobject_dep, gio_dep, fribidi_dep]
 
@@ -522,8 +524,8 @@ if not gir.found() and get_option('introspection').enabled()
   error('Introspection enabled, but g-ir-scanner not found.')
 endif
 
-build_gir = gir.found() and (get_option('introspection').enabled() or
-                             (get_option('introspection').allowed() and get_option('documentation')))
+build_gir = gi_dep.found() and gir.found() and (get_option('introspection').enabled() or
+                                               (get_option('introspection').allowed() and get_option('documentation')))
 
 # libsysprof-capture support
 libsysprof_capture_dep = dependency('sysprof-capture-4',
