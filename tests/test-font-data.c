@@ -255,8 +255,8 @@ print_glyph_metrics (PangoFont  *font,
 
       g_print ("{ .name = \"%s\",\n", name);
       g_print ("  .id = %u,\n", glyph);
-      g_print ("  .ink = (PangoRectangle) { %d, %d, %d, %d },\n", ink.x, ink.y, ink.width, ink.height);
-      g_print ("  .logical = (PangoRectangle) { %d, %d, %d, %d }\n", logical.x, logical.y, logical.width, logical.height);
+      g_print ("  .ink = { %d, %d, %d, %d },\n", ink.x, ink.y, ink.width, ink.height);
+      g_print ("  .logical = { %d, %d, %d, %d }\n", logical.x, logical.y, logical.width, logical.height);
       g_print ("},\n");
     }
 }
@@ -272,14 +272,15 @@ pango_rectangle_equal (const PangoRectangle *a,
          a->height == b->height;
 }
 
-#define assert_rectangle_equal(a, b) \
+#define assert_rectangle_equal(s, a, b) \
 G_STMT_START { \
   const PangoRectangle *ar = (a); \
   const PangoRectangle *br = (b); \
   if (!pango_rectangle_equal (ar, br)) \
     { \
       char msg[1024]; \
-      g_snprintf (msg, sizeof (msg), "assertion failed ( { %d %d %d %d } == { %d %d %d %d } )", \
+      g_snprintf (msg, sizeof (msg), "assertion failed for %s ( { %d %d %d %d } == { %d %d %d %d } )", \
+                  s, \
                   ar->x, ar->y, ar->width, ar->height, \
                   br->x, br->y, br->width, br->height); \
       g_assertion_message (G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, msg); \
@@ -322,10 +323,13 @@ test_boxes_glyph_metrics (void)
     {
       GlyphMetrics *gm = &boxes_unhinted_glyphs[i];
       PangoRectangle ink, logical;
+      char str[64];
 
       pango_font_get_glyph_extents (font, gm->id, &ink, &logical);
-      assert_rectangle_equal (&ink, &gm->ink);
-      assert_rectangle_equal (&logical, &gm->logical);
+      g_snprintf (str, sizeof (str), "%s (ink)", gm->name);
+      assert_rectangle_equal (str, &ink, &gm->ink);
+      g_snprintf (str, sizeof (str), "%s (logical)", gm->name);
+      assert_rectangle_equal (str, &logical, &gm->logical);
     }
 
   g_object_unref (font);
