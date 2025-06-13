@@ -119,7 +119,8 @@ macos:
     - branches@dehesselle/pango
   stage: build
   tags:
-    - macosarm
+    - macos
+    - arm64
   needs: []
   variables:
     # ragel     -Wno-unused-const-variable, -Wno-overloaded-virtual
