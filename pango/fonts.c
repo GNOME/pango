@@ -1593,7 +1593,7 @@ append_field (GString *str, const char *what, const FieldMap *map, int n_element
       return;
     }
 
-  if (G_LIKELY (str->len > 0 || str->str[str->len -1] != ' '))
+  if (G_LIKELY (str->len > 0 && str->str[str->len -1] != ' '))
     g_string_append_c (str, ' ');
   g_string_append_printf (str, "%s=%d", what, val);
 }
