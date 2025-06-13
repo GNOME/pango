@@ -2160,6 +2160,34 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   if (prgname)
     FcPatternAddString (pattern, FC_PRGNAME, (FcChar8*) prgname);
 
+  switch (variant)
+    {
+    case PANGO_VARIANT_SMALL_CAPS:
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "smcp=1");
+      break;
+    case PANGO_VARIANT_ALL_SMALL_CAPS:
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "smcp=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "c2sc=1");
+      break;
+    case PANGO_VARIANT_PETITE_CAPS:
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "pcap=1");
+      break;
+    case PANGO_VARIANT_ALL_PETITE_CAPS:
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "pcap=1");
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "c2pc=1");
+      break;
+    case PANGO_VARIANT_UNICASE:
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "unic=1");
+      break;
+    case PANGO_VARIANT_TITLE_CAPS:
+      FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "titl=1");
+      break;
+    case PANGO_VARIANT_NORMAL:
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+
   if (features)
     {
       char **feat = g_strsplit (features, ",", -1);
@@ -2168,36 +2196,6 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
         FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) feat[i]);
 
       g_strfreev (feat);
-    }
-  else
-    {
-      switch (variant)
-        {
-        case PANGO_VARIANT_SMALL_CAPS:
-          FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "smcp=1");
-          break;
-        case PANGO_VARIANT_ALL_SMALL_CAPS:
-          FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "smcp=1");
-          FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "c2sc=1");
-          break;
-        case PANGO_VARIANT_PETITE_CAPS:
-          FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "pcap=1");
-          break;
-        case PANGO_VARIANT_ALL_PETITE_CAPS:
-          FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "pcap=1");
-          FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "c2pc=1");
-          break;
-        case PANGO_VARIANT_UNICASE:
-          FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "unic=1");
-          break;
-        case PANGO_VARIANT_TITLE_CAPS:
-          FcPatternAddString (pattern, FC_FONT_FEATURES, (FcChar8*) "titl=1");
-          break;
-        case PANGO_VARIANT_NORMAL:
-          break;
-        default:
-          g_assert_not_reached ();
-        }
     }
 
   return pattern;
