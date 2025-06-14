@@ -71,6 +71,7 @@ if cairo_dep.found()
     if host_system != 'darwin'
       tests += [
         [ 'test-layout', [ 'test-layout.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] + common_deps ],
+        [ 'test-layout2', [ 'test-layout2.c'], [ libpangocairo_dep, libpangoft2_dep ] + common_deps ],
         [ 'test-fonts', [ 'test-fonts.c', 'test-common.c' ], [ libpangocairo_dep, libpangoft2_dep ] + common_deps ],
         [ 'test-no-fonts', [ 'test-no-fonts.c' ], [ libpangocairo_dep, libpangoft2_dep ] ],
       ]
