@@ -3791,6 +3791,7 @@ insert_run (PangoLayoutLine  *line,
   if (glyphs)
     run->glyphs = glyphs;
   else if (last_run && state->log_widths_offset == 0 &&
+           state->glyphs &&
            !(run_item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN))
     {
       run->glyphs = state->glyphs;
@@ -3973,9 +3974,14 @@ tab_width_change (ParaBreakState *state)
  * and until we've found at least some place to break.
  *
  * If @no_break_at_end is %TRUE, then %BREAK_ALL_FIT will never be
- * returned even everything fits; the run will be broken earlier,
+ * returned even when everything fits; the run will be broken earlier,
  * or %BREAK_NONE_FIT returned. This is used when the end of the
  * run is not a break position.
+ *
+ * Note that sometimes, %BREAK_ALL_FIT and %BREAK_NONE_FIT are the only
+ * possible return values (e.g. for single-glyph runs). In such cases,
+ * if both @force_fit and @no_break_at_end are true, %BREAK_ALL_FIT
+ * is returned.
  *
  * This function is the core of our line-breaking, and it is long and involved.
  * Here is an outline of the algorithm, without all the bookkeeping:
@@ -4287,9 +4293,7 @@ retry_break:
       break_num_chars = item->num_chars;
       break_width = orig_width;
       break_extra_width = orig_extra_width;
-      if (break_glyphs)
-        pango_glyph_string_free (break_glyphs);
-      break_glyphs = NULL;
+      g_clear_pointer (&break_glyphs, pango_glyph_string_free);
       goto retry_break;
     }
 
@@ -4574,11 +4578,27 @@ process_line (PangoLayout    *layout,
 
           old_num_chars = item->num_chars;
           result = process_item (layout, line, state, TRUE, TRUE, last_item_in_line);
-          g_assert (result == BREAK_SOME_FIT || result == BREAK_EMPTY_FIT);
+          switch (result)
+            {
+            case BREAK_ALL_FIT:
+              state->items = g_list_delete_link (state->items, state->items);
+              state->start_offset += old_num_chars;
+              break;
 
-          state->start_offset += old_num_chars - item->num_chars;
+            case BREAK_EMPTY_FIT:
+              wrapped = TRUE;
+              break;
 
-          wrapped = TRUE;
+            case BREAK_SOME_FIT:
+              state->start_offset += old_num_chars - item->num_chars;
+              wrapped = TRUE;
+              break;
+
+            case BREAK_NONE_FIT:
+            case BREAK_LINE_SEPARATOR:
+            default:
+              g_assert_not_reached ();
+            }
           goto done;
 
         case BREAK_LINE_SEPARATOR:
