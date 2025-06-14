@@ -166,7 +166,7 @@ test_boxes_font_metrics (void)
 
 typedef struct
 {
-  char name[2];
+  const char *name;
   PangoGlyph id;
   PangoRectangle ink;
   PangoRectangle logical;
@@ -175,58 +175,58 @@ typedef struct
 static GlyphMetrics boxes_unhinted_glyphs[] = {
   { .name = "A",
     .id = 1,
-    .ink = (PangoRectangle) { 0, -100, 100, 100 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -100, 100, 100 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "B",
     .id = 2,
-    .ink = (PangoRectangle) { 0, -200, 200, 200 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -200, 200, 200 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "C",
     .id = 3,
-    .ink = (PangoRectangle) { 0, -400, 400, 400 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -400, 400, 400 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "D",
     .id = 4,
-    .ink = (PangoRectangle) { 0, -800, 800, 800 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -800, 800, 800 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "E",
     .id = 5,
-    .ink = (PangoRectangle) { 0, -1600, 1600, 1600 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -1600, 1600, 1600 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "F",
     .id = 6,
-    .ink = (PangoRectangle) { 0, -3200, 3200, 3200 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -3200, 3200, 3200 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "G",
     .id = 7,
-    .ink = (PangoRectangle) { 0, -6400, 6400, 6400 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -6400, 6400, 6400 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "H",
     .id = 8,
-    .ink = (PangoRectangle) { 0, -12800, 12800, 12800 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -12800, 12800, 12800 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "I",
     .id = 9,
-    .ink = (PangoRectangle) { 0, -25600, 25600, 25600 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -25600, 25600, 25600 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "J",
     .id = 10,
-    .ink = (PangoRectangle) { 0, -51200, 51200, 51200 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -51200, 51200, 51200 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
   { .name = "K",
     .id = 11,
-    .ink = (PangoRectangle) { 0, -102400, 102400, 102400 },
-    .logical = (PangoRectangle) { 0, -204800, 102400, 307200 }
+    .ink = { 0, -102400, 102400, 102400 },
+    .logical = { 0, -204800, 102400, 307200 }
   },
 };
 
