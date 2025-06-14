@@ -15,6 +15,13 @@
     <GlyphID id="9" name="I"/>
     <GlyphID id="10" name="J"/>
     <GlyphID id="11" name="K"/>
+    <GlyphID id="12" name="L"/>
+    <GlyphID id="13" name="M"/>
+    <GlyphID id="14" name="N"/>
+    <GlyphID id="15" name="O"/>
+    <GlyphID id="16" name="P"/>
+
+    <GlyphID id="100" name="Z"/>
   </GlyphOrder>
 
   <head>
@@ -90,6 +97,13 @@
     <mtx name="I" width="1024" lsb="0"/>
     <mtx name="J" width="1024" lsb="0"/>
     <mtx name="K" width="1024" lsb="0"/>
+    <mtx name="L" width="1024" lsb="0"/>
+    <mtx name="M" width="1024" lsb="512"/>
+    <mtx name="N" width="1024" lsb="512"/>
+    <mtx name="O" width="1024" lsb="0"/>
+    <mtx name="P" width="1024" lsb="256"/>
+
+    <mtx name="Z" width="1024" lsb="0"/>
   </hmtx>
 
   <cmap>
@@ -107,6 +121,13 @@
       <map code="0x49" name="I"/>
       <map code="0x4a" name="J"/>
       <map code="0x4b" name="K"/>
+      <map code="0x4c" name="L"/>
+      <map code="0x4d" name="M"/>
+      <map code="0x4e" name="N"/>
+      <map code="0x4f" name="O"/>
+      <map code="0x50" name="P"/>
+
+      <map code="0x5a" name="Z"/>
     </cmap_format_4>
   </cmap>
 
@@ -224,6 +245,67 @@
         <pt x="1024" y="0" on="1"/>
         <pt x="1024" y="1024" on="1"/>
         <pt x="0" y="1024" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+    <TTGlyph name="L" xMin="0" yMin="0" xMax="0" yMax="0">
+      <contour>
+        <pt x="0" y="0" on="1"/>
+        <pt x="512" y="0" on="1"/>
+        <pt x="512" y="512" on="1"/>
+        <pt x="0" y="512" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+    <TTGlyph name="M" xMin="0" yMin="0" xMax="0" yMax="0">
+      <contour>
+        <pt x="512" y="0" on="1"/>
+        <pt x="1024" y="0" on="1"/>
+        <pt x="1024" y="512" on="1"/>
+        <pt x="512" y="512" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+    <TTGlyph name="N" xMin="0" yMin="0" xMax="0" yMax="0">
+      <contour>
+        <pt x="512" y="512" on="1"/>
+        <pt x="1024" y="512" on="1"/>
+        <pt x="1024" y="1024" on="1"/>
+        <pt x="512" y="1024" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+    <TTGlyph name="O" xMin="0" yMin="0" xMax="0" yMax="0">
+      <contour>
+        <pt x="0" y="512" on="1"/>
+        <pt x="512" y="512" on="1"/>
+        <pt x="512" y="1024" on="1"/>
+        <pt x="0" y="1024" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+    <TTGlyph name="P" xMin="0" yMin="0" xMax="0" yMax="0">
+      <contour>
+        <pt x="256" y="256" on="1"/>
+        <pt x="768" y="256" on="1"/>
+        <pt x="768" y="768" on="1"/>
+        <pt x="256" y="768" on="1"/>
+      </contour>
+      <instructions/>
+    </TTGlyph>
+
+    <TTGlyph name="Z" xMin="0" yMin="0" xMax="0" yMax="0">
+      <contour>
+        <pt x="0" y="0" on="1"/>
+        <pt x="1024" y="0" on="1"/>
+        <pt x="1024" y="1024" on="1"/>
+        <pt x="0" y="1024" on="1"/>
+      </contour>
+      <contour>
+        <pt x="2" y="2" on="1"/>
+        <pt x="2" y="1020" on="1"/>
+        <pt x="1020" y="1020" on="1"/>
+        <pt x="1020" y="2" on="1"/>
       </contour>
       <instructions/>
     </TTGlyph>
