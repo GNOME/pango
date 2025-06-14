@@ -260,13 +260,19 @@ fontconfig_option = get_option('fontconfig').disable_auto_if(not fontconfig_requ
 harfbuzz_fallback_options = [
   'coretext=enabled',
   'directwrite=enabled',
-  'gdi=enabled'
+  'gdi=enabled',
+  'cairo=disabled',
+  'docs=disabled',
+  'utilities=disabled',
+  'tests=disabled',
 ]
 
 # Enable FreeType support in HarfBuzz if building it as a
 # subproject and FontConfig support is required or requested
 if fontconfig_required or fontconfig_option.enabled()
   harfbuzz_fallback_options += 'freetype=enabled'
+else
+  harfbuzz_fallback_options += 'freetype=disabled'
 endif
 
 harfbuzz_dep = dependency('harfbuzz',
