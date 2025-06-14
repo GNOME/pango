@@ -280,6 +280,110 @@ test_features_serialization (void)
   pango_font_description_free (desc);
 }
 
+/* Tests how we handle overlap between PangoVariant and features */
+static void
+test_features_and_variants (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc1;
+  PangoFontDescription *desc2;
+  PangoFontDescription *desc3;
+  PangoFont *font1;
+  PangoFont *font2;
+  PangoFont *font3;
+  PangoFontDescription *desc1a;
+  PangoFontDescription *desc2a;
+  PangoFontDescription *desc3a;
+
+  fontmap = get_font_map_with_cantarell ();
+  context = pango_font_map_create_context (fontmap);
+
+  desc1 = pango_font_description_from_string ("Cantarell Small-Caps 14");
+  desc2 = pango_font_description_from_string ("Cantarell 14 #smcp=1");
+  desc3 = pango_font_description_from_string ("Cantarell Small-Caps 14 #smcp=1");
+
+  font1 = pango_font_map_load_font (fontmap, context, desc1);
+  font2 = pango_font_map_load_font (fontmap, context, desc2);
+  font3 = pango_font_map_load_font (fontmap, context, desc3);
+
+  desc1a = pango_font_describe (font1);
+  desc2a = pango_font_describe (font2);
+  desc3a = pango_font_describe (font3);
+
+  g_assert_true (pango_font_description_equal (desc1a, desc3));
+  g_assert_true (pango_font_description_equal (desc2a, desc3));
+  g_assert_true (pango_font_description_equal (desc3a, desc3));
+
+  pango_font_description_free (desc1a);
+  pango_font_description_free (desc2a);
+  pango_font_description_free (desc3a);
+
+  g_object_unref (font1);
+  g_object_unref (font2);
+  g_object_unref (font3);
+
+  pango_font_description_free (desc1);
+  pango_font_description_free (desc2);
+  pango_font_description_free (desc3);
+
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
+/* Check that other features don't interfere with variants either,
+ * See https://gitlab.gnome.org/GNOME/pango/-/issues/855
+ */
+static void
+test_features_and_variants2 (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc1;
+  PangoFontDescription *desc2;
+  PangoFontDescription *desc3;
+  PangoFont *font1;
+  PangoFont *font2;
+  PangoFont *font3;
+  PangoFontDescription *desc1a;
+  PangoFontDescription *desc2a;
+  PangoFontDescription *desc3a;
+
+  fontmap = get_font_map_with_cantarell ();
+  context = pango_font_map_create_context (fontmap);
+
+  desc1 = pango_font_description_from_string ("Cantarell Small-Caps 14 #onum=1");
+  desc2 = pango_font_description_from_string ("Cantarell 14 #smcp=1,onum=1");
+  desc3 = pango_font_description_from_string ("Cantarell Small-Caps 14 #smcp=1,onum=1");
+
+  font1 = pango_font_map_load_font (fontmap, context, desc1);
+  font2 = pango_font_map_load_font (fontmap, context, desc2);
+  font3 = pango_font_map_load_font (fontmap, context, desc3);
+
+  desc1a = pango_font_describe (font1);
+  desc2a = pango_font_describe (font2);
+  desc3a = pango_font_describe (font3);
+
+  g_assert_true (pango_font_description_equal (desc1a, desc3));
+  g_assert_true (pango_font_description_equal (desc2a, desc3));
+  g_assert_true (pango_font_description_equal (desc3a, desc3));
+
+  pango_font_description_free (desc1a);
+  pango_font_description_free (desc2a);
+  pango_font_description_free (desc3a);
+
+  g_object_unref (font1);
+  g_object_unref (font2);
+  g_object_unref (font3);
+
+  pango_font_description_free (desc1);
+  pango_font_description_free (desc2);
+  pango_font_description_free (desc3);
+
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
 static void
 test_metrics (void)
 {
@@ -1043,6 +1147,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/scale-font/plain", test_font_scale);
   g_test_add_func ("/pango/font/scale-font/variations", test_font_scale_variations);
   g_test_add_func ("/pango/font/custom", test_font_custom);
+  g_test_add_func ("/pango/font/features-and-variants", test_features_and_variants);
+  g_test_add_func ("/pango/font/features-and-variants2", test_features_and_variants2);
 
   return g_test_run ();
 }
