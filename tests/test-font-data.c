@@ -337,6 +337,78 @@ test_boxes_glyph_metrics (void)
   g_object_unref (fontmap);
 }
 
+static GlyphMetrics boxes_unhinted_glyphs2[] = {
+  { .name = "L",
+    .id = 12,
+    .ink = { 0, -5120, 5120, 5120 },
+    .logical = { 0, -20480, 10240, 30720 }
+  },
+  { .name = "M",
+    .id = 13,
+    .ink = { 5120, -5120, 5120, 5120 },
+    .logical = { 0, -20480, 10240, 30720 }
+  },
+  { .name = "N",
+    .id = 14,
+    .ink = { 5120, -10240, 5120, 5120 },
+    .logical = { 0, -20480, 10240, 30720 }
+  },
+  { .name = "O",
+    .id = 15,
+    .ink = { 0, -10240, 5120, 5120 },
+    .logical = { 0, -20480, 10240, 30720 }
+  },
+  { .name = "P",
+    .id = 16,
+    .ink = { 2560, -7680, 5120, 5120 },
+    .logical = { 0, -20480, 10240, 30720 }
+  },
+};
+
+static void
+test_boxes_glyph_metrics2 (void)
+{
+  PangoFontDescription *desc;
+  PangoFontMap *fontmap;
+  PangoFont *font;
+
+  fontmap = get_font_map_with_boxes ();
+  if (!fontmap)
+    {
+      g_test_fail_printf ("Failed to get a fontmap with Boxes");
+      return;
+    }
+
+  desc = pango_font_description_from_string ("Boxes 10px");
+  font = load_font_with_font_options (fontmap, desc, CAIRO_HINT_STYLE_NONE, CAIRO_HINT_METRICS_OFF);
+
+#ifdef DEBUG
+  print_glyph_metrics (font, 'L');
+  print_glyph_metrics (font, 'M');
+  print_glyph_metrics (font, 'N');
+  print_glyph_metrics (font, 'O');
+  print_glyph_metrics (font, 'P');
+  return;
+#endif
+
+  for (int i = 0; i < G_N_ELEMENTS (boxes_unhinted_glyphs2); i++)
+    {
+      GlyphMetrics *gm = &boxes_unhinted_glyphs2[i];
+      PangoRectangle ink, logical;
+      char str[64];
+
+      pango_font_get_glyph_extents (font, gm->id, &ink, &logical);
+      g_snprintf (str, sizeof (str), "%s (ink)", gm->name);
+      assert_rectangle_equal (str, &ink, &gm->ink);
+      g_snprintf (str, sizeof (str), "%s (ink)", gm->name);
+      assert_rectangle_equal (str, &logical, &gm->logical);
+    }
+
+  g_object_unref (font);
+  pango_font_description_free (desc);
+  g_object_unref (fontmap);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -347,6 +419,7 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/pango/font/boxes/font-metrics", test_boxes_font_metrics);
   g_test_add_func ("/pango/font/boxes/glyph-metrics", test_boxes_glyph_metrics);
+  g_test_add_func ("/pango/font/boxes/glyph-metrics2", test_boxes_glyph_metrics2);
 
 
   return g_test_run ();
