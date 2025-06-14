@@ -2786,6 +2786,8 @@ pango_font_family_class_init (PangoFontFamilyClass *class)
    * PangoFontFamily:item-type:
    *
    * The type of items contained in this list.
+   *
+   * Since: 1.52
    */
   font_family_properties[PROP_ITEM_TYPE] =
     g_param_spec_gtype ("item-type", "", "", G_TYPE_OBJECT,
@@ -2795,6 +2797,8 @@ pango_font_family_class_init (PangoFontFamilyClass *class)
    * PangoFontFamily:n-items:
    *
    * The number of items contained in this list.
+   *
+   * Since: 1.52
    */
   font_family_properties[PROP_N_ITEMS] =
     g_param_spec_uint ("n-items", "", "", 0, G_MAXUINT, 0,
