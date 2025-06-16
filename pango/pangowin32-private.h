@@ -184,44 +184,6 @@ struct _PangoWin32MetricsInfo
   PangoFontMetrics *metrics;
 };
 
-/* TrueType defines: */
-
-#define MAKE_TT_TABLE_NAME(c1, c2, c3, c4) \
-   (((guint32)c4) << 24 | ((guint32)c3) << 16 | ((guint32)c2) << 8 | ((guint32)c1))
-
-#define NAME (MAKE_TT_TABLE_NAME('n','a','m','e'))
-#define NAME_HEADER_SIZE 6
-
-#define ENCODING_TABLE_SIZE 8
-
-#define APPLE_UNICODE_PLATFORM_ID 0
-#define MACINTOSH_PLATFORM_ID 1
-#define ISO_PLATFORM_ID 2
-#define MICROSOFT_PLATFORM_ID 3
-
-#define SYMBOL_ENCODING_ID 0
-#define UNICODE_ENCODING_ID 1
-#define UCS4_ENCODING_ID 10
-
-/* All the below structs must be packed! */
-
-struct name_header
-{
-  guint16 format_selector;
-  guint16 num_records;
-  guint16 string_storage_offset;
-};
-
-struct name_record
-{
-  guint16 platform_id;
-  guint16 encoding_id;
-  guint16 language_id;
-  guint16 name_id;
-  guint16 string_length;
-  guint16 string_offset;
-};
-
 _PANGO_EXTERN
 GType           _pango_win32_font_get_type          (void) G_GNUC_CONST;
 
