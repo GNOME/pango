@@ -200,8 +200,8 @@ pango_win32_font_get_dwrite_font_face (PangoWin32Font *font)
 }
 
 static void
-pango_win32_dwrite_font_map_populate_with_collection (PangoWin32FontMap     *map,
-                                                      IDWriteFontCollection *collection)
+pango_win32_dwrite_font_map_add_collection (PangoWin32FontMap     *map,
+                                            IDWriteFontCollection *collection)
 {
   UINT32 count;
   HRESULT hr;
@@ -304,7 +304,7 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
               custom_collection1->QueryInterface (UUID_OF_IDWriteFontCollection,
                                                   reinterpret_cast<void **>(&custom_collection));
 
-              pango_win32_dwrite_font_map_populate_with_collection (map, custom_collection);
+              pango_win32_dwrite_font_map_add_collection (map, custom_collection);
 
               custom_collection->Release ();
               custom_collection1->Release ();
@@ -321,7 +321,7 @@ pango_win32_dwrite_font_map_populate (PangoWin32FontMap *map)
       return;
     }
 
-  pango_win32_dwrite_font_map_populate_with_collection (map, sys_collection);
+  pango_win32_dwrite_font_map_add_collection (map, sys_collection);
 
   sys_collection->Release ();
 }
