@@ -903,7 +903,6 @@ pango_win32_font_get_coverage (PangoFont     *font,
       hb_font_t *hb_font = pango_font_get_hb_font (font);
       hb_face_t *hb_face = hb_font_get_face (hb_font);
       hb_set_t *chars = hb_set_create ();
-      hb_codepoint_t ch = HB_SET_VALUE_INVALID;
 
       hb_face_collect_unicodes (hb_face, chars);
 
