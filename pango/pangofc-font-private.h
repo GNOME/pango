@@ -85,6 +85,8 @@ struct _PangoFcFontClass
   void (*_pango_reserved4) (void);
 };
 
+void pango_fc_font_set_face (PangoFcFont   *fcfont,
+                             PangoFontFace *face);
 
 G_END_DECLS
 #endif /* __PANGO_FC_FONT_PRIVATE_H__ */
