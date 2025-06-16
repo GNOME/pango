@@ -43,6 +43,7 @@ struct _PangoFcFontPrivate
 {
   PangoFcDecoder *decoder;
   PangoFcFontKey *key;
+  PangoFontFace *face;
 };
 
 static gboolean pango_fc_font_real_has_char  (PangoFcFont *font,
@@ -80,6 +81,7 @@ static void                 pango_fc_font_get_matrix      (PangoFont        *fon
                                                            PangoMatrix      *matrix);
 static int                  pango_fc_font_get_absolute_size (PangoFont        *font);
 static PangoVariant         pango_fc_font_get_variant       (PangoFont        *font);
+static PangoFontFace *      pango_fc_font_get_face          (PangoFont        *font);
 
 #define PANGO_FC_FONT_LOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->lock_face (font))
 #define PANGO_FC_FONT_UNLOCK_FACE(font)	(PANGO_FC_FONT_GET_CLASS (font)->unlock_face (font))
@@ -117,6 +119,7 @@ pango_fc_font_class_init (PangoFcFontClass *class)
   pclass->get_matrix = pango_fc_font_get_matrix;
   pclass->get_absolute_size = pango_fc_font_get_absolute_size;
   pclass->get_variant = pango_fc_font_get_variant;
+  pclass->get_face = pango_fc_font_get_face;
 
   /**
    * PangoFcFont:pattern:
@@ -179,6 +182,8 @@ pango_fc_font_finalize (GObject *object)
 
   if (priv->decoder)
     _pango_fc_font_set_decoder (fcfont, NULL);
+
+  g_clear_object (&priv->face);
 
   G_OBJECT_CLASS (pango_fc_font_parent_class)->finalize (object);
 }
@@ -1135,4 +1140,22 @@ pango_fc_font_get_matrix (PangoFont   *font,
   matrix->yy = fc_matrix.yy;
   matrix->x0 = 0.;
   matrix->y0 = 0.;
+}
+
+static PangoFontFace *
+pango_fc_font_get_face (PangoFont *font)
+{
+  PangoFcFont *fcfont = PANGO_FC_FONT (font);
+  PangoFcFontPrivate *priv = fcfont->priv;
+
+  return priv->face;
+}
+
+void
+pango_fc_font_set_face (PangoFcFont   *fcfont,
+                        PangoFontFace *face)
+{
+  PangoFcFontPrivate *priv = fcfont->priv;
+
+  g_set_object (&priv->face, face);
 }

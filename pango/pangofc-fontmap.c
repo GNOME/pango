@@ -2264,6 +2264,9 @@ pango_fc_font_map_new_font_from_key (PangoFcFontMap *fcfontmap,
   if (!fcfont)
     return NULL;
 
+  pango_fc_font_set_face (fcfont,
+                          pango_fc_font_map_get_face (PANGO_FONT_MAP (fcfontmap),
+                                                      PANGO_FONT (fcfont)));
   pango_fc_font_map_add (fcfontmap, key, fcfont);
 
   return (PangoFont *)fcfont;
@@ -2325,6 +2328,10 @@ pango_fc_font_map_new_font (PangoFcFontMap    *fcfontmap,
 
   if (!fcfont)
     return NULL;
+
+  pango_fc_font_set_face (fcfont,
+                          pango_fc_font_map_get_face (PANGO_FONT_MAP (fcfontmap),
+                                                      PANGO_FONT (fcfont)));
 
   /* In case the backend didn't set the fontmap */
   if (!fcfont->fontmap)
