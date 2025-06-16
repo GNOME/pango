@@ -1114,6 +1114,37 @@ test_font_custom (void)
   g_object_unref (fontmap);
 }
 
+static void
+test_font_lifecycle (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc;
+  PangoFont *font;
+  PangoFontFace *face1, *face2;
+
+  fontmap = pango_cairo_font_map_new ();
+
+  context = pango_font_map_create_context (fontmap);
+  desc = pango_font_description_from_string ("Sans 11");
+
+  font = pango_font_map_load_font (fontmap, context, desc);
+  g_assert_nonnull (font);
+
+  face1 = pango_font_get_face (font);
+  g_assert_nonnull (face1);
+
+  pango_font_description_free (desc);
+  g_object_unref (context);
+  g_object_unref (fontmap);
+
+  face2 = pango_font_get_face (font);
+  g_assert_true (face2 == face1);
+  g_assert_true (PANGO_IS_FONT_FACE (face2));
+
+  g_object_unref (font);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -1149,6 +1180,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/custom", test_font_custom);
   g_test_add_func ("/pango/font/features-and-variants", test_features_and_variants);
   g_test_add_func ("/pango/font/features-and-variants2", test_features_and_variants2);
+  g_test_add_func ("/pango/font/lifecycle", test_font_lifecycle);
 
   return g_test_run ();
 }
