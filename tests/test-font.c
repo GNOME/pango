@@ -1122,6 +1122,7 @@ test_font_lifecycle (void)
   PangoFontDescription *desc;
   PangoFont *font;
   PangoFontFace *face1, *face2;
+  hb_font_t *hb_font1, *hb_font2;
 
   fontmap = pango_cairo_font_map_new ();
 
@@ -1133,6 +1134,7 @@ test_font_lifecycle (void)
 
   face1 = pango_font_get_face (font);
   g_assert_nonnull (face1);
+  hb_font1 = pango_font_get_hb_font (font);
 
   pango_font_description_free (desc);
   g_object_unref (context);
@@ -1141,6 +1143,9 @@ test_font_lifecycle (void)
   face2 = pango_font_get_face (font);
   g_assert_true (face2 == face1);
   g_assert_true (PANGO_IS_FONT_FACE (face2));
+  hb_font2 = pango_font_get_hb_font (font);
+
+  g_assert_true (hb_font_get_face (hb_font1) == hb_font_get_face (hb_font2));
 
   g_object_unref (font);
 }
