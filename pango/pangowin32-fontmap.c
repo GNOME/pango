@@ -659,11 +659,8 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
                            (GEqualFunc) case_insensitive_str_equal, NULL, g_object_unref);
   win32fontmap->fonts =
     g_hash_table_new_full ((GHashFunc) logfontw_nosize_hash,
-                           (GEqualFunc) logfontw_nosize_equal, NULL, g_free);
-  win32fontmap->dwrite_fonts =
-    g_hash_table_new_full ((GHashFunc) logfontw_nosize_hash,
                            (GEqualFunc) logfontw_nosize_equal,
-                           NULL,
+                           g_free,
                            pango_win32_dwrite_font_release);
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
@@ -689,7 +686,6 @@ pango_win32_font_map_fini (PangoWin32FontMap *win32fontmap)
 {
   pango_win32_font_cache_free (win32fontmap->font_cache);
 
-  g_hash_table_destroy (win32fontmap->dwrite_fonts);
   g_hash_table_destroy (win32fontmap->fonts);
   g_hash_table_destroy (win32fontmap->families);
 }
@@ -1345,8 +1341,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
       dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp2);
     }
 
-  g_hash_table_insert (win32fontmap->fonts, lfp2, lfp2);
-  g_hash_table_insert (win32fontmap->dwrite_fonts, lfp2, dwrite_font);
+  g_hash_table_insert (win32fontmap->fonts, lfp2, dwrite_font);
 
   if (use_logfont_for_desc)
     description = pango_win32_font_description_from_logfontw (lfp2);
@@ -1403,15 +1398,13 @@ _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
                                      LOGFONTW       *out)
 {
   PangoWin32FontMap *win32fontmap;
-  LOGFONTW *match;
+  gpointer match;
 
   PING (("lfp.face=%S,wt=%ld,ht=%ld,size:%d",
         lfp->lfFaceName, lfp->lfWeight, lfp->lfHeight, size));
   win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
 
-  match = g_hash_table_lookup (win32fontmap->fonts, lfp);
-
-  if (!match)
+  if (!g_hash_table_lookup_extended (win32fontmap->fonts, lfp, &match, NULL))
     {
       PING (("not found"));
       return;
@@ -1419,7 +1412,7 @@ _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
 
   /* OK, we have a match; let's modify it to fit this size */
 
-  *out = *match;
+  *out = * (LOGFONTW *) match;
   out->lfHeight = -(int)((double)size / win32fontmap->resolution + 0.5);
   out->lfWidth = 0;
 }

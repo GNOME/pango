@@ -167,8 +167,8 @@ get_dwrite_font_from_pango_win32_font (PangoWin32Font *font)
   IDWriteFont *dwrite_font = NULL;
   PangoWin32FontMap *fontmap = PANGO_WIN32_FONT_MAP (font->fontmap);
 
-  dwrite_font = (IDWriteFont *) g_hash_table_lookup (fontmap->dwrite_fonts,
-                                                    &font->logfontw);
+  dwrite_font = (IDWriteFont *) g_hash_table_lookup (fontmap->fonts,
+                                                     &font->logfontw);
 
   /* create the IDWriteFont from the logfont underlying the PangoWin32Font if needed */
   if (dwrite_font == NULL)
@@ -177,8 +177,8 @@ get_dwrite_font_from_pango_win32_font (PangoWin32Font *font)
                                                                        &dwrite_font)) &&
           dwrite_font != NULL)
         {
-          g_hash_table_insert (fontmap->dwrite_fonts,
-                              &font->logfontw,
+          g_hash_table_insert (fontmap->fonts,
+                               &font->logfontw,
                                dwrite_font);
         }
     }

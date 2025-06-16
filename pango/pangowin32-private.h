@@ -94,15 +94,10 @@ struct _PangoWin32FontMap
   GHashTable *families;
 
   /* Map LOGFONTWs (taking into account only the lfFaceName, lfItalic
-   * and lfWeight fields) to LOGFONTWs corresponding to actual fonts
-   * installed.
+   * and lfWeight fields) corresponding to actual fonts to IDWriteFonts
+   * (or NULL if not loaded yet).
    */
   GHashTable *fonts;
-
-  /* Map LOGFONTWs to IDWriteFonts corresponding to actual fonts
-   * installed, if applicable.
-   */
-  GHashTable *dwrite_fonts;
 
   /* keeps track of the system font aliases that we might have */
   GHashTable *aliases;
