@@ -213,6 +213,14 @@ pango_win32_get_debug_flag (void)
   return _pango_win32_debug;
 }
 
+static PangoFontFace *
+pango_win32_font_get_face (PangoFont *font)
+{
+  PangoWin32Font *win32font = (PangoWin32Font *)font;
+
+  return PANGO_FONT_FACE (win32font->win32face);
+}
+
 static void
 _pango_win32_font_class_init (PangoWin32FontClass *class)
 {
@@ -236,6 +244,7 @@ _pango_win32_font_class_init (PangoWin32FontClass *class)
 
   pclass = g_type_class_get_private ((GTypeClass *) class, PANGO_TYPE_FONT);
   pclass->is_hinted = pango_win32_font_is_hinted;
+  pclass->get_face = pango_win32_font_get_face;
 
   _pango_win32_get_display_dc ();
 }
