@@ -883,7 +883,7 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
                                   const char   *font_file_path,
                                   GError      **error)
 {
-  gboolean succeeded;
+  gboolean succeeded = FALSE;
   PangoWin32DWriteItems *dwrite_items;
 
   g_return_val_if_fail (font_file_path != NULL, FALSE);
