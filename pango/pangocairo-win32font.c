@@ -81,7 +81,7 @@ cairo_font_iface_init (PangoCairoFontIface *iface)
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoWin32Font, pango_cairo_win32_font, PANGO_TYPE_WIN32_FONT,
-    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
+                         G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init))
 
 static cairo_font_face_t *
 pango_cairo_win32_font_create_font_face (PangoCairoFont *font)

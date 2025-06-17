@@ -88,7 +88,7 @@ cairo_font_map_iface_init (PangoCairoFontMapIface *iface)
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoWin32FontMap, pango_cairo_win32_font_map, PANGO_TYPE_WIN32_FONT_MAP,
-    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT_MAP, cairo_font_map_iface_init) });
+                         G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT_MAP, cairo_font_map_iface_init))
 
 static void
 pango_cairo_win32_font_map_finalize (GObject *object)

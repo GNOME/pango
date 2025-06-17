@@ -104,7 +104,7 @@ cairo_font_iface_init (PangoCairoFontIface *iface)
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoFcFont, pango_cairo_fc_font, PANGO_TYPE_FC_FONT,
-    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) })
+                         G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init))
 
 static void
 pango_cairo_fc_font_finalize (GObject *object)

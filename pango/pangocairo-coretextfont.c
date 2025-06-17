@@ -59,7 +59,7 @@ cairo_font_iface_init (PangoCairoFontIface *iface)
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoCoreTextFont, pango_cairo_core_text_font, PANGO_TYPE_CORE_TEXT_FONT,
-    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init) });
+                         G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT, cairo_font_iface_init))
 
 /* we want get_glyph_extents extremely fast, so we use a small wrapper here
  * to avoid having to lookup the interface data like we do for get_metrics
