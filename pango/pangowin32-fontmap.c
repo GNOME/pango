@@ -179,100 +179,6 @@ logfontw_nosize_equal (const LOGFONTW *lfp1,
           lfp1->lfWeight == lfp2->lfWeight);
 }
 
-struct EnumProcData
-{
-  HDC hdc;
-  PangoWin32FontMap *font_map;
-};
-
-static void
-synthesize_foreach (gpointer key,
-                    gpointer value,
-                    gpointer user_data)
-{
-  PangoWin32Family *win32family = value;
-  PangoWin32FontMap *win32fontmap = user_data;
-
-  enum { NORMAL, BOLDER, SLANTED };
-  PangoWin32Face *variant[4] = { NULL, NULL, NULL, NULL };
-
-  GSList *p;
-
-  LOGFONTW lf;
-
-  p = win32family->faces;
-  while (p)
-    {
-      PangoWin32Face *win32face = p->data;
-
-      /* Don't synthesize anything unless it's a monospace, serif, or sans font */
-      if (!((win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_MODERN ||
-          (win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_ROMAN ||
-          (win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_SWISS))
-        return;
-
-      if (pango_font_description_get_weight (win32face->description) == PANGO_WEIGHT_NORMAL &&
-          pango_font_description_get_style (win32face->description) == PANGO_STYLE_NORMAL)
-        variant[NORMAL] = win32face;
-
-      if (pango_font_description_get_weight (win32face->description) > PANGO_WEIGHT_NORMAL &&
-          pango_font_description_get_style (win32face->description) == PANGO_STYLE_NORMAL)
-        variant[BOLDER] = win32face;
-
-      if (pango_font_description_get_weight (win32face->description) == PANGO_WEIGHT_NORMAL &&
-          pango_font_description_get_style (win32face->description) >= PANGO_STYLE_OBLIQUE)
-        variant[SLANTED] = win32face;
-
-      if (pango_font_description_get_weight (win32face->description) > PANGO_WEIGHT_NORMAL &&
-          pango_font_description_get_style (win32face->description) >= PANGO_STYLE_OBLIQUE)
-        variant[BOLDER+SLANTED] = win32face;
-
-      p = p->next;
-    }
-
-  if (variant[NORMAL] != NULL && variant[BOLDER] == NULL)
-    {
-      lf = variant[NORMAL]->logfontw;
-      lf.lfWeight = FW_BOLD;
-      
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-
-  if (variant[NORMAL] != NULL && variant[SLANTED] == NULL)
-    {
-      lf = variant[NORMAL]->logfontw;
-      lf.lfItalic = 255;
-      
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-
-  if (variant[NORMAL] != NULL &&
-      variant[BOLDER+SLANTED] == NULL)
-    {
-      lf = variant[NORMAL]->logfontw;
-      lf.lfWeight = FW_BOLD;
-      lf.lfItalic = 255;
-
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-  else if (variant[BOLDER] != NULL &&
-           variant[BOLDER+SLANTED] == NULL)
-    {
-      lf = variant[BOLDER]->logfontw;
-      lf.lfItalic = 255;
-
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-  else if (variant[SLANTED] != NULL &&
-           variant[BOLDER+SLANTED] == NULL)
-    {
-      lf = variant[SLANTED]->logfontw;
-      lf.lfWeight = FW_BOLD;
-
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-}
-
 struct PangoAlias
 {
   char *alias;
@@ -666,8 +572,6 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   win32fontmap->font_cache = pango_win32_font_cache_new ();
 
   pango_win32_dwrite_font_map_populate (win32fontmap);
-
-  g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
 
   /* Create synthetic "Sans", "Sans-Serif", "Serif", "Monospace", "Cursive", "Fantasy" and "System-ui" families */
   create_standard_family (win32fontmap, "Sans");
