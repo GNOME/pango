@@ -302,6 +302,11 @@ static FcPattern       *pango_fc_patterns_get_font_pattern (PangoFcPatterns *pat
 static FcPattern *uniquify_pattern (PangoFcFontMap *fcfontmap,
 				    FcPattern      *pattern);
 
+static void ensure_families (PangoFcFontMap *fcfontmap);
+static void ensure_faces (PangoFcFamily *family);
+static int compare_face_pattern (FcPattern *p1,
+                                 FcPattern *p2);
+
 gpointer get_gravity_class (void);
 
 gpointer
@@ -1480,8 +1485,6 @@ pango_fc_font_map_get_item_type (GListModel *list)
   return PANGO_TYPE_FONT_FAMILY;
 }
 
-static void ensure_families (PangoFcFontMap *fcfontmap);
-
 static guint
 pango_fc_font_map_get_n_items (GListModel *list)
 {
@@ -2355,17 +2358,22 @@ pango_fc_font_map_get_face (PangoFontMap *fontmap,
   PangoFcFont *fcfont = PANGO_FC_FONT (font);
   FcResult res;
   const char *s;
-  PangoFontFamily *family;
+  PangoFcFamily *family;
 
   res = FcPatternGetString (fcfont->font_pattern, FC_FAMILY, 0, (FcChar8 **) &s);
   g_assert (res == FcResultMatch);
 
-  family = pango_font_map_get_family (fontmap, s);
+  family = (PangoFcFamily *) pango_fc_font_map_get_family (fontmap, s);
 
-  res = FcPatternGetString (fcfont->font_pattern, FC_STYLE, 0, (FcChar8 **)(void*)&s);
-  g_assert (res == FcResultMatch);
+  ensure_faces (family);
 
-  return pango_font_family_get_face (family, s);
+  for (int i = 0; i < family->n_faces; i++)
+    {
+      if (compare_face_pattern (family->faces[i]->pattern, fcfont->font_pattern) == 0)
+        return PANGO_FONT_FACE (family->faces[i]);
+    }
+
+  return NULL;
 }
 
 static void
@@ -3498,8 +3506,6 @@ pango_fc_family_get_item_type (GListModel *list)
   return PANGO_TYPE_FONT_FACE;
 }
 
-static void ensure_faces (PangoFcFamily *family);
-
 static guint
 pango_fc_family_get_n_items (GListModel *list)
 {
@@ -3553,29 +3559,37 @@ create_face (PangoFcFamily *fcfamily,
 }
 
 static int
-compare_face (const void *p1, const void *p2)
+compare_face_pattern (FcPattern *p1,
+                      FcPattern *p2)
 {
-  const PangoFcFace *f1 = *(const void **)p1;
-  const PangoFcFace *f2 = *(const void **)p2;
   int w1, w2;
   int s1, s2;
 
-  if (FcPatternGetInteger (f1->pattern, FC_WEIGHT, 0, &w1) != FcResultMatch)
+  if (FcPatternGetInteger (p1, FC_WEIGHT, 0, &w1) != FcResultMatch)
     w1 = FC_WEIGHT_MEDIUM;
 
-  if (FcPatternGetInteger (f1->pattern, FC_SLANT, 0, &s1) != FcResultMatch)
+  if (FcPatternGetInteger (p1, FC_SLANT, 0, &s1) != FcResultMatch)
     s1 = FC_SLANT_ROMAN;
 
-  if (FcPatternGetInteger (f2->pattern, FC_WEIGHT, 0, &w2) != FcResultMatch)
+  if (FcPatternGetInteger (p2, FC_WEIGHT, 0, &w2) != FcResultMatch)
     w2 = FC_WEIGHT_MEDIUM;
 
-  if (FcPatternGetInteger (f2->pattern, FC_SLANT, 0, &s2) != FcResultMatch)
+  if (FcPatternGetInteger (p2, FC_SLANT, 0, &s2) != FcResultMatch)
     s2 = FC_SLANT_ROMAN;
 
   if (s1 != s2)
     return s1 - s2; /* roman < italic < oblique */
 
   return w1 - w2; /* from light to heavy */
+}
+
+static int
+compare_face (const void *p1, const void *p2)
+{
+  const PangoFcFace *f1 = *(const void **)p1;
+  const PangoFcFace *f2 = *(const void **)p2;
+
+  return compare_face_pattern (f1->pattern, f2->pattern);
 }
 
 static void
@@ -3884,6 +3898,7 @@ insert_face (PangoFcFontMap *fcfontmap,
         {
           if (family->faces[i] == face)
             {
+              FcPatternReference (pattern);
               family->faces[i] = create_face (family, name, pattern, FALSE);
 
               g_list_model_items_changed (G_LIST_MODEL (family), i, 1, 1);
@@ -3899,6 +3914,7 @@ insert_face (PangoFcFontMap *fcfontmap,
       FcPatternReference (pattern);
       FcFontSetAdd (fcfontmap->priv->fonts, pattern);
 
+      FcPatternReference (pattern);
       face = create_face (family, name, pattern, FALSE);
 
       family->n_faces++;
@@ -3933,7 +3949,7 @@ pango_fc_font_map_add_pattern (PangoFcFontMap *fcfontmap,
   if (res != FcResultMatch)
     return;
 
-  family = (PangoFcFamily *) pango_font_map_get_family (PANGO_FONT_MAP (fcfontmap), name);
+  family = (PangoFcFamily *) pango_fc_font_map_get_family (PANGO_FONT_MAP (fcfontmap), name);
 
   if (family)
     {
