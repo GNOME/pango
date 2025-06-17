@@ -92,6 +92,7 @@ struct _PangoWin32FontMap
 
   /* Map Pango family names to PangoWin32Family structs */
   GHashTable *families;
+  gpointer *families_list;
 
   /* Map LOGFONTWs (taking into account only the lfFaceName, lfItalic
    * and lfWeight fields) corresponding to actual fonts to IDWriteFonts

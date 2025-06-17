@@ -106,6 +106,19 @@ static const char *pango_win32_face_get_face_name    (PangoFontFace *face);
 
 static PangoWin32FontMap *default_fontmap = NULL; /* MT-safe */
 
+static void
+pango_win32_font_map_ensure_families_list (PangoWin32FontMap *self)
+{
+  GPtrArray *array;
+  
+  if (self->families_list)
+    return;
+
+  array = g_hash_table_get_values_as_ptr_array (self->families);
+  self->families_list = g_ptr_array_steal (array, NULL);
+  g_ptr_array_unref (array);
+}
+
 G_DEFINE_TYPE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP)
 
 #define TOLOWER(c) \
