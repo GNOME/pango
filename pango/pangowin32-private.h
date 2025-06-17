@@ -83,8 +83,6 @@ typedef PangoFontFaceClass             PangoWin32FaceClass;
 typedef struct _PangoWin32GlyphInfo    PangoWin32GlyphInfo;
 typedef struct _PangoWin32MetricsInfo  PangoWin32MetricsInfo;
 
-typedef struct _PangoWin32DWriteFontSetBuilder PangoWin32DWriteFontSetBuilder;
-
 struct _PangoWin32FontMap
 {
   PangoFontMap parent_instance;
@@ -96,23 +94,19 @@ struct _PangoWin32FontMap
   GHashTable *families;
 
   /* Map LOGFONTWs (taking into account only the lfFaceName, lfItalic
-   * and lfWeight fields) to LOGFONTWs corresponding to actual fonts
-   * installed.
+   * and lfWeight fields) corresponding to actual fonts to IDWriteFonts
+   * (or NULL if not loaded yet).
    */
   GHashTable *fonts;
-
-  /* Map LOGFONTWs to IDWriteFonts corresponding to actual fonts
-   * installed, if applicable.
-   */
-  GHashTable *dwrite_fonts;
 
   /* keeps track of the system font aliases that we might have */
   GHashTable *aliases;
 
   double resolution;		/* (points / pixel) * PANGO_SCALE */
 
-  /* IDWriteFontSetBuilder for loading custom fonts on Windows 10+ */
-  PangoWin32DWriteFontSetBuilder *font_set_builder;
+  /* for loading custom fonts on Windows 10+ */
+  gpointer font_set_builder1; /* IDWriteFontSetBuilder1 */
+  gpointer font_set_builder; /* IDWriteFontSetBuilder */
 };
 
 struct _PangoWin32FontMapClass
@@ -165,6 +159,7 @@ struct _PangoWin32Face
 
   gpointer family;
   LOGFONTW logfontw;
+  gpointer dwrite_font;
   PangoFontDescription *description;
   PangoCoverage *coverage;
   char *face_name;
@@ -183,44 +178,6 @@ struct _PangoWin32MetricsInfo
 {
   const char *sample_str;
   PangoFontMetrics *metrics;
-};
-
-/* TrueType defines: */
-
-#define MAKE_TT_TABLE_NAME(c1, c2, c3, c4) \
-   (((guint32)c4) << 24 | ((guint32)c3) << 16 | ((guint32)c2) << 8 | ((guint32)c1))
-
-#define NAME (MAKE_TT_TABLE_NAME('n','a','m','e'))
-#define NAME_HEADER_SIZE 6
-
-#define ENCODING_TABLE_SIZE 8
-
-#define APPLE_UNICODE_PLATFORM_ID 0
-#define MACINTOSH_PLATFORM_ID 1
-#define ISO_PLATFORM_ID 2
-#define MICROSOFT_PLATFORM_ID 3
-
-#define SYMBOL_ENCODING_ID 0
-#define UNICODE_ENCODING_ID 1
-#define UCS4_ENCODING_ID 10
-
-/* All the below structs must be packed! */
-
-struct name_header
-{
-  guint16 format_selector;
-  guint16 num_records;
-  guint16 string_storage_offset;
-};
-
-struct name_record
-{
-  guint16 platform_id;
-  guint16 encoding_id;
-  guint16 language_id;
-  guint16 name_id;
-  guint16 string_length;
-  guint16 string_offset;
 };
 
 _PANGO_EXTERN
@@ -265,8 +222,6 @@ void                   pango_win32_dwrite_items_destroy       (PangoWin32DWriteI
 gboolean               pango_win32_dwrite_font_is_monospace   (gpointer               dwrite_font,
                                                                gboolean              *is_monospace);
 
-void                   pango_win32_dwrite_font_release        (gpointer               dwrite_font);
-
 _PANGO_EXTERN
 void                   pango_win32_dwrite_font_face_release   (gpointer               dwrite_font_face);
 
@@ -288,9 +243,6 @@ void                  pango_win32_font_map_cache_clear        (PangoFontMap     
 gboolean              pango_win32_dwrite_add_font_file        (PangoFontMap          *font_map,
                                                                const char            *font_file_path,
                                                                GError               **error);
-
-void
-pango_win32_dwrite_release_font_set_builders                  (PangoWin32FontMap     *win32fontmap);
 
 G_END_DECLS
 
