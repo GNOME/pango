@@ -1856,13 +1856,14 @@ _pango_fc_font_map_remove (PangoFcFontMap *fcfontmap,
 static PangoFcFamily *
 create_family (PangoFcFontMap *fcfontmap,
 	       const char     *family_name,
-	       int             spacing)
+	       int             spacing,
+               gboolean        variable)
 {
   PangoFcFamily *family = g_object_new (PANGO_FC_TYPE_FAMILY, NULL);
   family->fontmap = fcfontmap;
   family->family_name = g_strdup (family_name);
   family->spacing = spacing;
-  family->variable = FALSE;
+  family->variable = variable;
   family->patterns = FcFontSetCreate ();
 
   return family;
@@ -1952,7 +1953,7 @@ ensure_families (PangoFcFontMap *fcfontmap)
 	      if (res == FcResultNoMatch)
 		spacing = FC_PROPORTIONAL;
 
-	      temp_family = create_family (fcfontmap, s, spacing);
+	      temp_family = create_family (fcfontmap, s, spacing, FALSE);
 	      g_hash_table_insert (temp_family_hash, g_strdup (s), temp_family);
 	      priv->families[count++] = temp_family;
 	    }
@@ -1972,11 +1973,11 @@ ensure_families (PangoFcFontMap *fcfontmap)
       FcFontSetDestroy (fontset);
       g_hash_table_destroy (temp_family_hash);
 
-      priv->families[count++] = create_family (fcfontmap, "Sans", FC_PROPORTIONAL);
-      priv->families[count++] = create_family (fcfontmap, "Serif", FC_PROPORTIONAL);
-      priv->families[count++] = create_family (fcfontmap, "Monospace", FC_MONO);
-      priv->families[count++] = create_family (fcfontmap, "System-ui", FC_PROPORTIONAL);
-      
+      priv->families[count++] = create_family (fcfontmap, "Sans", FC_PROPORTIONAL, FALSE);
+      priv->families[count++] = create_family (fcfontmap, "Serif", FC_PROPORTIONAL, FALSE);
+      priv->families[count++] = create_family (fcfontmap, "Monospace", FC_MONO, FALSE);
+      priv->families[count++] = create_family (fcfontmap, "System-ui", FC_PROPORTIONAL, FALSE);
+
       qsort (priv->families, count, sizeof (PangoFcFamily *), compare_font_family_names);
 
       priv->n_families = count;
@@ -2132,8 +2133,10 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
    * to work around a bug in libgnomeprint where it doesn't look
    * for FC_PIXEL_SIZE. See http://bugzilla.gnome.org/show_bug.cgi?id=169020
    *
-   * The reason for passing FC_ORDER == FcSetApplication is that we want
+   * The reason for passing FC_ORDER == 1000 is that we want
    * to prefer application fonts over system fonts regardless of version.
+   * To make that happen, we increase the order of the pattern by 1 everytime
+   * we override an existing face with a newly added pattern.
    *
    * Putting FC_SIZE in here slightly reduces the efficiency
    * of caching of patterns and fonts when working with multiple different
@@ -2150,7 +2153,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 			    FC_DPI, FcTypeDouble, dpi,
 			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / 1024. / dpi),
 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
-                            FC_ORDER, FcTypeInteger, FcSetApplication,
+                            FC_ORDER, FcTypeInteger, 1000,
 			    NULL);
 
   if (variations)
@@ -3785,12 +3788,11 @@ pango_fc_family_is_variable (PangoFontFamily *family)
 static void
 pango_fc_family_finalize (GObject *object)
 {
-  int i;
   PangoFcFamily *fcfamily = PANGO_FC_FAMILY (object);
 
   g_free (fcfamily->family_name);
 
-  for (i = 0; i < fcfamily->n_faces; i++)
+  for (int i = 0; i < fcfamily->n_faces; i++)
     {
       fcfamily->faces[i]->family = NULL;
       g_object_unref (fcfamily->faces[i]);
@@ -3854,19 +3856,142 @@ pango_fc_font_map_get_hb_face (PangoFcFontMap *fcfontmap,
 }
 
 static gboolean
+insert_face (PangoFcFontMap *fcfontmap,
+             PangoFcFamily  *family,
+             FcPattern      *pattern)
+{
+  const char *name;
+  FcResult res;
+  PangoFcFace *face;
+
+  res = FcPatternGetString (pattern, FC_STYLE, 0, (FcChar8 **)(void*)&name);
+  if (res != FcResultMatch)
+    return FALSE;
+
+  face = PANGO_FC_FACE (pango_font_family_get_face (PANGO_FONT_FAMILY (family), name));
+  if (face)
+    {
+      int order = 0;
+
+      res = FcPatternGetInteger (face->pattern, FC_SPACING, 0, &order);
+      if (res != FcResultMatch)
+        order = 0;
+
+      pattern = pattern_set_order (pattern, order + 1);
+      FcFontSetAdd (fcfontmap->priv->fonts, pattern);
+
+      for (guint i = 0; i < family->n_faces; i++)
+        {
+          if (family->faces[i] == face)
+            {
+              family->faces[i] = create_face (family, name, pattern, FALSE);
+
+              g_list_model_items_changed (G_LIST_MODEL (family), i, 1, 1);
+
+              g_object_unref (face);
+
+              break;
+            }
+        }
+    }
+  else
+    {
+      FcPatternReference (pattern);
+      FcFontSetAdd (fcfontmap->priv->fonts, pattern);
+
+      face = create_face (family, name, pattern, FALSE);
+
+      family->n_faces++;
+      family->faces = g_renew (PangoFcFace *, family->faces, family->n_faces);
+      family->faces[family->n_faces - 1] = face;
+
+      qsort (family->faces, family->n_faces, sizeof (PangoFcFace *), compare_face);
+
+      for (guint i = 0; i < family->n_faces; i++)
+        {
+          if (family->faces[i] == face)
+            {
+              g_list_model_items_changed (G_LIST_MODEL (family), i, 0, 1);
+              break;
+            }
+        }
+    }
+
+  return TRUE;
+}
+
+static void
+pango_fc_font_map_add_pattern (PangoFcFontMap *fcfontmap,
+                               FcPattern      *pattern)
+{
+  PangoFcFontMapPrivate *priv = fcfontmap->priv;
+  const char *name;
+  FcResult res;
+  PangoFcFamily *family;
+
+  res = FcPatternGetString (pattern, FC_FAMILY, 0, (FcChar8 **)(void*)&name);
+  if (res != FcResultMatch)
+    return;
+
+  family = (PangoFcFamily *) pango_font_map_get_family (PANGO_FONT_MAP (fcfontmap), name);
+
+  if (family)
+    {
+      insert_face (fcfontmap, family, pattern);
+    }
+  else
+    {
+      int spacing = 0;
+      gboolean variable = FALSE;
+
+      res = FcPatternGetInteger (pattern, FC_SPACING, 0, &spacing);
+      if (res != FcResultMatch)
+        spacing = FC_PROPORTIONAL;
+
+      res = FcPatternGetBool (pattern, FC_VARIABLE, 0, &variable);
+      if (res != FcResultMatch)
+        variable = FALSE;
+
+      family = create_family (fcfontmap, name, spacing, variable);
+
+      if (insert_face (fcfontmap, family, pattern))
+        {
+          FcPatternReference (pattern);
+          FcFontSetAdd (fcfontmap->priv->fonts, pattern);
+
+          /* insert family into fontmap */
+          priv->n_families++;
+          priv->families = g_renew (PangoFcFamily *, priv->families, priv->n_families);
+          priv->families[priv->n_families - 1] = family;
+          qsort (priv->families, priv->n_families, sizeof (PangoFcFamily *), compare_font_family_names);
+
+          /* emit list model signals */
+          for (guint i = 0; i < priv->n_families; i++)
+            {
+              if (priv->families[i] == family)
+                {
+                  g_list_model_items_changed (G_LIST_MODEL (fcfontmap), i, 0, 1);
+                  break;
+                }
+            }
+        }
+      else
+        {
+          g_object_unref (family);
+        }
+    }
+}
+
+static gboolean
 pango_fc_font_map_add_font_file (PangoFontMap  *fontmap,
                                  const char    *filename,
                                  GError       **error)
 {
   PangoFcFontMap *fcfontmap = PANGO_FC_FONT_MAP (fontmap);
-  FcConfig *config;
+  FcFontSet *set, *sets[2], *fonts;
 
-  if (fcfontmap->priv->config)
-    config = fcfontmap->priv->config;
-  else
-    config = FcConfigGetCurrent ();
-
-  if (!FcConfigAppFontAddFile (config, (FcChar8 *) filename))
+  set = FcFontSetCreate ();
+  if (!FcFreeTypeQueryAll ((const FcChar8 *) filename, -1, NULL, NULL, set))
     {
       g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_FAILED,
                    "Adding font %s to fontconfig configuration failed",
@@ -3874,13 +3999,15 @@ pango_fc_font_map_add_font_file (PangoFontMap  *fontmap,
       return FALSE;
     }
 
-  if (config != fcfontmap->priv->config)
-    pango_fc_font_map_set_config (fcfontmap, config);
-  else
-    {
-      g_clear_pointer (&fcfontmap->priv->fonts, FcFontSetDestroy);
-      pango_fc_font_map_config_changed (fcfontmap);
-    }
+  sets[FcSetSystem] = NULL;
+  sets[FcSetApplication] = set;
+  fonts = filter_by_format (sets, 2);
+
+  for (int i = 0; i < fonts->nfont; i++)
+    pango_fc_font_map_add_pattern (fcfontmap, fonts->fonts[i]);
+
+  FcFontSetDestroy (fonts);
+  FcFontSetDestroy (set);
 
   return TRUE;
 }
