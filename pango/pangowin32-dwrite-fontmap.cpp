@@ -160,43 +160,10 @@ _pango_win32_get_dwrite_font_face_from_dwrite_font (IDWriteFont *font)
   return NULL;
 }
 
-static IDWriteFont *
-get_dwrite_font_from_pango_win32_font (PangoWin32Font *font)
-{
-  PangoWin32DWriteItems *dwrite_items = pango_win32_get_direct_write_items ();
-  IDWriteFont *dwrite_font = NULL;
-  PangoWin32FontMap *fontmap = PANGO_WIN32_FONT_MAP (font->fontmap);
-
-  dwrite_font = (IDWriteFont *) g_hash_table_lookup (fontmap->fonts,
-                                                     &font->logfontw);
-
-  /* create the IDWriteFont from the logfont underlying the PangoWin32Font if needed */
-  if (dwrite_font == NULL)
-    {
-      if (SUCCEEDED (dwrite_items->gdi_interop->CreateFontFromLOGFONT (&font->logfontw,
-                                                                       &dwrite_font)) &&
-          dwrite_font != NULL)
-        {
-          g_hash_table_insert (fontmap->fonts,
-                               &font->logfontw,
-                               dwrite_font);
-        }
-    }
-
-  return dwrite_font;
-}
-
 void *
 pango_win32_font_get_dwrite_font_face (PangoWin32Font *font)
 {
-  IDWriteFont *dwrite_font;
-
-  dwrite_font = get_dwrite_font_from_pango_win32_font (font);
-
-  if (dwrite_font != NULL)
-    return (void *)_pango_win32_get_dwrite_font_face_from_dwrite_font (dwrite_font);
-
-  return NULL;
+  return (void *) _pango_win32_get_dwrite_font_face_from_dwrite_font ((IDWriteFont *) font->win32face->dwrite_font);
 }
 
 static void
@@ -897,14 +864,6 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
     }
 
   return succeeded;
-}
-
-void
-pango_win32_dwrite_font_release (gpointer dwrite_font)
-{
-  IDWriteFont *font = static_cast<IDWriteFont *>(dwrite_font);
-
-  pangowin32_release_com_obj (&font);
 }
 
 void

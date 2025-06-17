@@ -159,6 +159,7 @@ struct _PangoWin32Face
 
   gpointer family;
   LOGFONTW logfontw;
+  gpointer dwrite_font;
   PangoFontDescription *description;
   PangoCoverage *coverage;
   char *face_name;
@@ -220,8 +221,6 @@ void                   pango_win32_dwrite_items_destroy       (PangoWin32DWriteI
 
 gboolean               pango_win32_dwrite_font_is_monospace   (gpointer               dwrite_font,
                                                                gboolean              *is_monospace);
-
-void                   pango_win32_dwrite_font_release        (gpointer               dwrite_font);
 
 _PANGO_EXTERN
 void                   pango_win32_dwrite_font_face_release   (gpointer               dwrite_font_face);
