@@ -660,7 +660,7 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   win32fontmap->fonts =
     g_hash_table_new_full ((GHashFunc) logfontw_nosize_hash,
                            (GEqualFunc) logfontw_nosize_equal,
-                           g_free,
+                           NULL,
                            g_object_unref);
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
@@ -1299,7 +1299,6 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
                          gpointer           dwrite_font,
                          gboolean           is_synthetic)
 {
-  LOGFONTW *lfp2 = NULL;
   PangoFontDescription *description;
   PangoWin32Family *win32family;
   PangoWin32Face *win32face;
@@ -1331,13 +1330,11 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
     }
 
   PING (("not found"));
-  lfp2 = g_new (LOGFONTW, 1);
-  *lfp2 = *lfp;
 
   if (dwrite_font == NULL)
     {
-      dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp2);
-      description = pango_win32_font_description_from_logfontw (lfp2);
+      dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp);
+      description = pango_win32_font_description_from_logfontw (lfp);
     }
   else
     {
@@ -1385,7 +1382,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
   PING (("name=%s, length(faces)=%d",
         win32family->family_name, g_slist_length (win32family->faces)));
 
-  g_hash_table_insert (win32fontmap->fonts, lfp2, g_object_ref (win32face));
+  g_hash_table_insert (win32fontmap->fonts, &win32face->logfontw, g_object_ref (win32face));
 }
 
 /* Given a LOGFONTW and size, make a matching LOGFONTW corresponding to
