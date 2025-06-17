@@ -48,15 +48,6 @@ struct _PangoWin32Family
   gboolean is_monospace;
 };
 
-
-#if !defined(NTM_PS_OPENTYPE)
-# define NTM_PS_OPENTYPE 0x20000
-#endif
-
-#if !defined(NTM_TYPE1)
-# define NTM_TYPE1 0x100000
-#endif
-
 #define PANGO_WIN32_TYPE_FAMILY              (pango_win32_family_get_type ())
 #define PANGO_WIN32_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FAMILY, PangoWin32Family))
 #define PANGO_WIN32_IS_FAMILY (object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FAMILY))
