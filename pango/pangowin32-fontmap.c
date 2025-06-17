@@ -119,7 +119,45 @@ pango_win32_font_map_ensure_families_list (PangoWin32FontMap *self)
   g_ptr_array_unref (array);
 }
 
-G_DEFINE_TYPE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP)
+static GType
+pango_win32_font_map_get_item_type (GListModel *list)
+{
+  return PANGO_TYPE_FONT_FAMILY;
+}
+
+static guint
+pango_win32_font_map_get_n_items (GListModel *list)
+{
+  PangoWin32FontMap *self = PANGO_WIN32_FONT_MAP (list);
+
+  return g_hash_table_size (self->families);
+}
+
+static gpointer
+pango_win32_font_map_get_item (GListModel *list,
+                               guint       position)
+{
+  PangoWin32FontMap *self = PANGO_WIN32_FONT_MAP (list);
+  gsize n;
+
+  n = g_hash_table_size (self->families);
+  if (position >= n)
+    return NULL;
+
+  pango_win32_font_map_ensure_families_list (self);
+  return g_object_ref (self->families_list[position]);
+}
+
+static void
+pango_win32_font_map_list_model_init (GListModelInterface *iface)
+{
+  iface->get_item_type = pango_win32_font_map_get_item_type;
+  iface->get_n_items = pango_win32_font_map_get_n_items;
+  iface->get_item = pango_win32_font_map_get_item;
+}
+
+G_DEFINE_TYPE_WITH_CODE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP,
+                         G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_win32_font_map_list_model_init))
 
 #define TOLOWER(c) \
   (((c) >= 'A' && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
@@ -605,6 +643,7 @@ pango_win32_font_map_fini (PangoWin32FontMap *win32fontmap)
 
   g_hash_table_destroy (win32fontmap->fonts);
   g_hash_table_destroy (win32fontmap->families);
+  g_clear_pointer (&win32fontmap->families_list, g_free);
 }
 
 static void
@@ -844,47 +883,23 @@ pango_win32_family_init (PangoWin32Family *family)
 }
 
 static void
-list_families_foreach (gpointer key,
-                       gpointer value,
-                       gpointer user_data)
-{
-  GSList **list = user_data;
-
-  *list = g_slist_prepend (*list, value);
-}
-
-static void
 pango_win32_font_map_list_families (PangoFontMap      *fontmap,
                                     PangoFontFamily ***families,
                                     int               *n_families)
 {
-  GSList *family_list = NULL;
-  GSList *tmp_list;
-  PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)fontmap;
+  PangoWin32FontMap *self = (PangoWin32FontMap *) fontmap;
+  gsize n;
 
-  if (!n_families)
-    return;
+  n = g_hash_table_size (self->families);
 
-  g_hash_table_foreach (win32fontmap->families, list_families_foreach, &family_list);
-
-  *n_families = g_slist_length (family_list);
+  if (n_families)
+    *n_families = n;
 
   if (families)
     {
-      int i = 0;
-
-      *families = g_new (PangoFontFamily *, *n_families);
-
-      tmp_list = family_list;
-      while (tmp_list)
-        {
-          (*families)[i] = tmp_list->data;
-          i++;
-          tmp_list = tmp_list->next;
-        }
+      pango_win32_font_map_ensure_families_list (self);
+      *families = g_memdup (self->families_list, sizeof (PangoFontFamily **) * n);
     }
-
-  g_slist_free (family_list);
 }
 
 static PangoWin32Family *
@@ -899,6 +914,7 @@ pango_win32_get_font_family (PangoWin32FontMap *win32fontmap,
       win32family->faces = NULL;
 
       g_hash_table_insert (win32fontmap->families, win32family->family_name, win32family);
+      g_clear_pointer (&win32fontmap->families_list, g_free);
     }
 
   return win32family;
