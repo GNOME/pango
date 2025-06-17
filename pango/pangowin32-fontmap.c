@@ -1341,8 +1341,6 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
       dwrite_font = pango_win32_logfontw_get_dwrite_font (lfp2);
     }
 
-  g_hash_table_insert (win32fontmap->fonts, lfp2, dwrite_font);
-
   if (use_logfont_for_desc)
     description = pango_win32_font_description_from_logfontw (lfp2);
   else
@@ -1386,6 +1384,8 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
 
   PING (("name=%s, length(faces)=%d",
         win32family->family_name, g_slist_length (win32family->faces)));
+
+  g_hash_table_insert (win32fontmap->fonts, lfp2, dwrite_font);
 }
 
 /* Given a LOGFONTW and size, make a matching LOGFONTW corresponding to
