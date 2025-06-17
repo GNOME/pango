@@ -258,6 +258,10 @@ pango_win32_dwrite_font_map_add_collection (PangoWin32FontMap     *map,
                 g_warning ("GDIInterop::ConvertFontToLOGFONT failed with error code %x\n",
                            (unsigned)hr);
             }
+          else
+            {
+              font->Release();
+            }
 
          face->Release ();
         }

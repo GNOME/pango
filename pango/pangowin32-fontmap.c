@@ -1349,6 +1349,7 @@ pango_win32_insert_font (PangoWin32FontMap *win32fontmap,
    */
   if (!pango_font_description_get_family (description))
     {
+      pangowin32_release_com_obj (dwrite_font);
       pango_font_description_free (description);
       return;
     }
