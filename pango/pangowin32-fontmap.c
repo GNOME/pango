@@ -48,15 +48,6 @@ struct _PangoWin32Family
   gboolean is_monospace;
 };
 
-
-#if !defined(NTM_PS_OPENTYPE)
-# define NTM_PS_OPENTYPE 0x20000
-#endif
-
-#if !defined(NTM_TYPE1)
-# define NTM_TYPE1 0x100000
-#endif
-
 #define PANGO_WIN32_TYPE_FAMILY              (pango_win32_family_get_type ())
 #define PANGO_WIN32_FAMILY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_WIN32_TYPE_FAMILY, PangoWin32Family))
 #define PANGO_WIN32_IS_FAMILY (object)       (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_WIN32_TYPE_FAMILY))
@@ -106,7 +97,58 @@ static const char *pango_win32_face_get_face_name    (PangoFontFace *face);
 
 static PangoWin32FontMap *default_fontmap = NULL; /* MT-safe */
 
-G_DEFINE_TYPE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP)
+static void
+pango_win32_font_map_ensure_families_list (PangoWin32FontMap *self)
+{
+  GPtrArray *array;
+  
+  if (self->families_list)
+    return;
+
+  array = g_hash_table_get_values_as_ptr_array (self->families);
+  self->families_list = g_ptr_array_steal (array, NULL);
+  g_ptr_array_unref (array);
+}
+
+static GType
+pango_win32_font_map_get_item_type (GListModel *list)
+{
+  return PANGO_TYPE_FONT_FAMILY;
+}
+
+static guint
+pango_win32_font_map_get_n_items (GListModel *list)
+{
+  PangoWin32FontMap *self = PANGO_WIN32_FONT_MAP (list);
+
+  return g_hash_table_size (self->families);
+}
+
+static gpointer
+pango_win32_font_map_get_item (GListModel *list,
+                               guint       position)
+{
+  PangoWin32FontMap *self = PANGO_WIN32_FONT_MAP (list);
+  gsize n;
+
+  n = g_hash_table_size (self->families);
+  if (position >= n)
+    return NULL;
+
+  pango_win32_font_map_ensure_families_list (self);
+  return g_object_ref (self->families_list[position]);
+}
+
+static void
+pango_win32_font_map_list_model_init (GListModelInterface *iface)
+{
+  iface->get_item_type = pango_win32_font_map_get_item_type;
+  iface->get_n_items = pango_win32_font_map_get_n_items;
+  iface->get_item = pango_win32_font_map_get_item;
+}
+
+G_DEFINE_TYPE_WITH_CODE (PangoWin32FontMap, pango_win32_font_map, PANGO_TYPE_FONT_MAP,
+                         G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_win32_font_map_list_model_init))
 
 #define TOLOWER(c) \
   (((c) >= 'A' && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
@@ -177,100 +219,6 @@ logfontw_nosize_equal (const LOGFONTW *lfp1,
   return (case_insensitive_wcs_equal (lfp1->lfFaceName, lfp2->lfFaceName) &&
           (lfp1->lfItalic != 0) == (lfp2->lfItalic != 0) &&
           lfp1->lfWeight == lfp2->lfWeight);
-}
-
-struct EnumProcData
-{
-  HDC hdc;
-  PangoWin32FontMap *font_map;
-};
-
-static void
-synthesize_foreach (gpointer key,
-                    gpointer value,
-                    gpointer user_data)
-{
-  PangoWin32Family *win32family = value;
-  PangoWin32FontMap *win32fontmap = user_data;
-
-  enum { NORMAL, BOLDER, SLANTED };
-  PangoWin32Face *variant[4] = { NULL, NULL, NULL, NULL };
-
-  GSList *p;
-
-  LOGFONTW lf;
-
-  p = win32family->faces;
-  while (p)
-    {
-      PangoWin32Face *win32face = p->data;
-
-      /* Don't synthesize anything unless it's a monospace, serif, or sans font */
-      if (!((win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_MODERN ||
-          (win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_ROMAN ||
-          (win32face->logfontw.lfPitchAndFamily & 0xF0) == FF_SWISS))
-        return;
-
-      if (pango_font_description_get_weight (win32face->description) == PANGO_WEIGHT_NORMAL &&
-          pango_font_description_get_style (win32face->description) == PANGO_STYLE_NORMAL)
-        variant[NORMAL] = win32face;
-
-      if (pango_font_description_get_weight (win32face->description) > PANGO_WEIGHT_NORMAL &&
-          pango_font_description_get_style (win32face->description) == PANGO_STYLE_NORMAL)
-        variant[BOLDER] = win32face;
-
-      if (pango_font_description_get_weight (win32face->description) == PANGO_WEIGHT_NORMAL &&
-          pango_font_description_get_style (win32face->description) >= PANGO_STYLE_OBLIQUE)
-        variant[SLANTED] = win32face;
-
-      if (pango_font_description_get_weight (win32face->description) > PANGO_WEIGHT_NORMAL &&
-          pango_font_description_get_style (win32face->description) >= PANGO_STYLE_OBLIQUE)
-        variant[BOLDER+SLANTED] = win32face;
-
-      p = p->next;
-    }
-
-  if (variant[NORMAL] != NULL && variant[BOLDER] == NULL)
-    {
-      lf = variant[NORMAL]->logfontw;
-      lf.lfWeight = FW_BOLD;
-      
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-
-  if (variant[NORMAL] != NULL && variant[SLANTED] == NULL)
-    {
-      lf = variant[NORMAL]->logfontw;
-      lf.lfItalic = 255;
-      
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-
-  if (variant[NORMAL] != NULL &&
-      variant[BOLDER+SLANTED] == NULL)
-    {
-      lf = variant[NORMAL]->logfontw;
-      lf.lfWeight = FW_BOLD;
-      lf.lfItalic = 255;
-
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-  else if (variant[BOLDER] != NULL &&
-           variant[BOLDER+SLANTED] == NULL)
-    {
-      lf = variant[BOLDER]->logfontw;
-      lf.lfItalic = 255;
-
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
-  else if (variant[SLANTED] != NULL &&
-           variant[BOLDER+SLANTED] == NULL)
-    {
-      lf = variant[SLANTED]->logfontw;
-      lf.lfWeight = FW_BOLD;
-
-      pango_win32_insert_font (win32fontmap, &lf, NULL, TRUE);
-    }
 }
 
 struct PangoAlias
@@ -667,8 +615,6 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 
   pango_win32_dwrite_font_map_populate (win32fontmap);
 
-  g_hash_table_foreach (win32fontmap->families, synthesize_foreach, win32fontmap);
-
   /* Create synthetic "Sans", "Sans-Serif", "Serif", "Monospace", "Cursive", "Fantasy" and "System-ui" families */
   create_standard_family (win32fontmap, "Sans");
   create_standard_family (win32fontmap, "Sans-Serif");
@@ -678,7 +624,7 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
   create_standard_family (win32fontmap, "Fantasy");
   create_standard_family (win32fontmap, "System-ui");
 
-  win32fontmap->resolution = (PANGO_SCALE / (double) GetDeviceCaps (hdc, LOGPIXELSY)) * 72.0;
+  win32fontmap->dpi = 96.0;
 }
 
 static void
@@ -688,6 +634,7 @@ pango_win32_font_map_fini (PangoWin32FontMap *win32fontmap)
 
   g_hash_table_destroy (win32fontmap->fonts);
   g_hash_table_destroy (win32fontmap->families);
+  g_clear_pointer (&win32fontmap->families_list, g_free);
 }
 
 static void
@@ -927,47 +874,23 @@ pango_win32_family_init (PangoWin32Family *family)
 }
 
 static void
-list_families_foreach (gpointer key,
-                       gpointer value,
-                       gpointer user_data)
-{
-  GSList **list = user_data;
-
-  *list = g_slist_prepend (*list, value);
-}
-
-static void
 pango_win32_font_map_list_families (PangoFontMap      *fontmap,
                                     PangoFontFamily ***families,
                                     int               *n_families)
 {
-  GSList *family_list = NULL;
-  GSList *tmp_list;
-  PangoWin32FontMap *win32fontmap = (PangoWin32FontMap *)fontmap;
+  PangoWin32FontMap *self = (PangoWin32FontMap *) fontmap;
+  gsize n;
 
-  if (!n_families)
-    return;
+  n = g_hash_table_size (self->families);
 
-  g_hash_table_foreach (win32fontmap->families, list_families_foreach, &family_list);
-
-  *n_families = g_slist_length (family_list);
+  if (n_families)
+    *n_families = n;
 
   if (families)
     {
-      int i = 0;
-
-      *families = g_new (PangoFontFamily *, *n_families);
-
-      tmp_list = family_list;
-      while (tmp_list)
-        {
-          (*families)[i] = tmp_list->data;
-          i++;
-          tmp_list = tmp_list->next;
-        }
+      pango_win32_font_map_ensure_families_list (self);
+      *families = g_memdup (self->families_list, sizeof (PangoFontFamily **) * n);
     }
-
-  g_slist_free (family_list);
 }
 
 static PangoWin32Family *
@@ -982,6 +905,7 @@ pango_win32_get_font_family (PangoWin32FontMap *win32fontmap,
       win32family->faces = NULL;
 
       g_hash_table_insert (win32fontmap->families, win32family->family_name, win32family);
+      g_clear_pointer (&win32fontmap->families_list, g_free);
     }
 
   return win32family;
@@ -1138,7 +1062,7 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
   int size = pango_font_description_get_size (description);
 
   if (pango_font_description_get_size_is_absolute (description))
-    size = (int) 0.5 + (size * win32fontmap->resolution) / PANGO_SCALE;
+    size = (int) 0.5 + (size * 72 / win32fontmap->dpi);
 
   PING (("got best match:%S size=%d",face->logfontw.lfFaceName,size));
 
@@ -1410,7 +1334,7 @@ _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
   /* OK, we have a match; let's modify it to fit this size */
 
   *out = * (LOGFONTW *) match;
-  out->lfHeight = -(int)((double)size / win32fontmap->resolution + 0.5);
+  out->lfHeight = -(int) ((double) size * win32fontmap->dpi / (72 * PANGO_SCALE) + 0.5);
   out->lfWidth = 0;
 }
 

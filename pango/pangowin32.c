@@ -867,7 +867,7 @@ pango_win32_font_describe (PangoFont *font)
   int size;
 
   desc = pango_font_description_copy (win32font->win32face->description);
-  size = (int) (0.5 + win32font->size * PANGO_WIN32_FONT_MAP (win32font->fontmap)->resolution / PANGO_SCALE);
+  size = (int) (0.5 + win32font->size * 72.0 / PANGO_WIN32_FONT_MAP (win32font->fontmap)->dpi);
   pango_font_description_set_size (desc, size);
 
   if (win32font->variations)

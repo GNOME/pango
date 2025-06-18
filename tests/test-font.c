@@ -1061,6 +1061,7 @@ test_font_custom (void)
   PangoFontDescription *desc;
   PangoFont *font;
   const char *name;
+  gsize n_families_before;
 
   fontmap = pango_cairo_font_map_new ();
 
@@ -1108,6 +1109,12 @@ test_font_custom (void)
   g_object_unref (font);
   pango_font_description_free (desc);
   g_object_unref (context);
+
+  /* Add the font again, check that nothing changed */
+  n_families_before = g_list_model_get_n_items (G_LIST_MODEL (fontmap));
+  pango_font_map_add_font_file (fontmap, path, &error);
+  g_assert_no_error (error);
+  g_assert_cmpint (n_families_before, ==, g_list_model_get_n_items (G_LIST_MODEL (fontmap)));
 
   g_free (path);
 

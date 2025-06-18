@@ -87,7 +87,7 @@ cairo_font_map_iface_init (PangoCairoFontMapIface *iface)
 }
 
 G_DEFINE_TYPE_WITH_CODE (PangoCairoCoreTextFontMap, pango_cairo_core_text_font_map, PANGO_TYPE_CORE_TEXT_FONT_MAP,
-    { G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT_MAP, cairo_font_map_iface_init) });
+                         G_IMPLEMENT_INTERFACE (PANGO_TYPE_CAIRO_FONT_MAP, cairo_font_map_iface_init))
 
 
 static PangoCoreTextFont *
