@@ -1060,6 +1060,7 @@ test_font_custom (void)
   PangoContext *context;
   PangoFontDescription *desc;
   PangoFont *font;
+  PangoFontFace *face;
   const char *name;
   gsize n_families_before;
 
@@ -1072,14 +1073,26 @@ test_font_custom (void)
       return;
     }
 
+  context = pango_font_map_create_context (fontmap);
+
+  desc = pango_font_description_from_string ("Sans 11");
+
+  font = pango_font_map_load_font (fontmap, context, desc);
+  face = pango_font_get_face (font);
+
   path = g_test_build_filename (G_TEST_DIST, "fonts", "Cantarell-VF.otf", NULL);
   if (g_test_verbose ())
     g_test_message ("adding %s to font map", path);
   pango_font_map_add_font_file (fontmap, path, &error);
   g_assert_no_error (error);
 
-  /* Check that we get the font back */
-  context = pango_font_map_create_context (fontmap);
+  /* Adding a font should not affect existing fonts *and* their faces */
+  g_assert_true (pango_font_get_face (font) == face);
+
+  g_object_unref (font);
+  pango_font_description_free (desc);
+
+  /* Check that we get the added font */
   desc = pango_font_description_from_string ("Cantarell 11");
   font = pango_font_map_load_font (fontmap, context, desc);
 
