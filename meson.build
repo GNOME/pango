@@ -206,7 +206,7 @@ endif
 pango_deps = []
 
 glib_major_req = 2
-glib_minor_req = 80
+glib_minor_req = 82
 
 glib_req       = '>= @0@.@1@'.format(glib_major_req, glib_minor_req)
 gi_req         = '>= 1.83.2'
