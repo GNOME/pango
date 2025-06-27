@@ -1,3 +1,6 @@
+Overview of changes in 1.56.5, xx-xx-xxxx
+=========================================
+
 Overview of changes in 1.56.4, 27-06-2025
 =========================================
 - fontconfig: Improve the add_font_file implementation
