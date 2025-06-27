@@ -1,5 +1,19 @@
-Overview of changes in 1.56.4, xx-xx-xxxx
+Overview of changes in 1.56.5, xx-xx-xxxx
 =========================================
+
+Overview of changes in 1.56.4, 27-06-2025
+=========================================
+- fontconfig: Improve the add_font_file implementation
+- fontconfig: Combine font features and style variants
+- fontconfig: Make sure font faces stay alive
+- win32: Drop some caching
+- win32: Make sure font faces stay alive
+- win32: Modernize and simplify the code
+- win32: Stop synthesizing fonts
+- win32: Implement list models
+- coretext: Support synthetic small caps
+- layout: Avoid assertions in line breaking
+- build: Require GLib 2.82
 
 Overview of changes in 1.56.3, 16-03-2025
 =========================================
