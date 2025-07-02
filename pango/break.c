@@ -51,11 +51,7 @@ typedef enum
 } BreakOpportunity;
 
 /* need to sync the break range to glib/gunicode.h . */
-#if GLIB_CHECK_VERSION(2, 80, 0)
 #define LAST_BREAK_TYPE G_UNICODE_BREAK_VIRAMA
-#else
-#define LAST_BREAK_TYPE G_UNICODE_BREAK_ZERO_WIDTH_JOINER
-#endif
 #define BREAK_TYPE_SAFE(btype)            \
 	 ((btype) <= LAST_BREAK_TYPE ? (btype) : G_UNICODE_BREAK_UNKNOWN)
 
@@ -627,17 +623,6 @@ default_break (const char    *text,
 	    if (script == PANGO_SCRIPT_HEBREW && type == G_UNICODE_OTHER_LETTER)
 	      WB_type = WB_Hebrew_Letter;
 
-#if !GLIB_CHECK_VERSION(2, 80, 0)
-	    /* The line break property of character 0x06DD is changed
-	       from G_UNICODE_BREAK_ALPHABETIC to G_UNICODE_BREAK_NUMERIC
-	       in Unicode 15.1.0.
-
-	       After the line break property is updated in glib,
-	       we will remove the following code. */
-	    if (wc == 0x06DD)
-	      WB_type = WB_Numeric;
-#endif
-
 	    if (WB_type == WB_Other)
 	      switch (wc >> 8)
 	        {
@@ -1141,10 +1126,8 @@ default_break (const char    *text,
 	  break_type == G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE ||
 	  break_type == G_UNICODE_BREAK_EMOJI_MODIFIER ||
 	  break_type == G_UNICODE_BREAK_REGIONAL_INDICATOR ||
-#if GLIB_CHECK_VERSION(2, 80, 0)
 	  break_type == G_UNICODE_BREAK_VIRAMA ||
 	  break_type == G_UNICODE_BREAK_VIRAMA_FINAL ||
-#endif
 	  FALSE)
 	{
 	  LineBreakType LB_type;
@@ -1235,7 +1218,6 @@ default_break (const char    *text,
 	       break_type == G_UNICODE_BREAK_HEBREW_LETTER))
 	    break_op = BREAK_PROHIBITED;
 
-#if GLIB_CHECK_VERSION(2, 80, 0)
 	  /* Rule LB28a */
 	  if (prev_break_type == G_UNICODE_BREAK_AKSARA_PRE_BASE &&
 	      (break_type == G_UNICODE_BREAK_AKSARA ||
@@ -1266,7 +1248,6 @@ default_break (const char    *text,
 	       break_type == G_UNICODE_BREAK_AKSARA_START) &&
 	      next_break_type == G_UNICODE_BREAK_VIRAMA_FINAL)
 	    break_op = BREAK_PROHIBITED;
-#endif
 
 	  /* Rule LB28 */
 	  if ((prev_break_type == G_UNICODE_BREAK_ALPHABETIC ||
