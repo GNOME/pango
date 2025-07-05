@@ -2198,7 +2198,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
       break;
     case PANGO_VARIANT_ALL_PETITE_CAPS:
       maybe_add_feature (pattern, features, "pcap=1");
-      maybe_add_feature (pattern, features, "c2sc=1");
+      maybe_add_feature (pattern, features, "c2pc=1");
       break;
     case PANGO_VARIANT_UNICASE:
       maybe_add_feature (pattern, features, "unic=1");
