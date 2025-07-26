@@ -77,6 +77,45 @@ static CairoViewerIface cairo_x_viewer_iface = {
 
 
 
+#ifdef HAVE_CAIRO_QUARTZ
+#include "viewer-cocoa.h"
+
+static cairo_surface_t *
+cairo_cocoa_view_iface_create_surface (gpointer instance,
+				       gpointer surface,
+				       int      width,
+				       int      height)
+{
+  return cairo_surface_reference (surface);
+}
+
+static void
+cairo_cocoa_view_iface_paint_background (gpointer  instance G_GNUC_UNUSED,
+				     cairo_t  *cr)
+{
+  cairo_set_source_rgb (cr, 1, 1, 1);
+  cairo_paint (cr);
+
+  if (opt_bg_set)
+    {
+      cairo_set_source_rgba (cr,
+			     opt_bg_color.red / 65535.,
+			     opt_bg_color.green / 65535.,
+			     opt_bg_color.blue / 65535.,
+			     opt_bg_alpha / 65535.);
+      cairo_paint (cr);
+    }
+}
+
+static CairoViewerIface cairo_cocoa_viewer_iface = {
+  &cocoa_viewer,
+  cairo_cocoa_view_iface_create_surface,
+  cairo_cocoa_view_iface_paint_background
+};
+#endif /* HAVE_CAIRO_QUARTZ */
+
+
+
 static cairo_surface_t *
 cairo_view_iface_create_surface (gpointer instance,
 				 gpointer surface,
@@ -347,15 +386,20 @@ cairo_viewer_iface_create (const CairoViewerIface **iface)
   if (ret)
     return ret;
 
-#ifdef HAVE_CAIRO_XLIB
-#ifdef HAVE_XFT
   if (opt_display)
     {
+#ifdef HAVE_CAIRO_QUARTZ
+      *iface = &cairo_cocoa_viewer_iface;
+      return (*iface)->backend_class->create ((*iface)->backend_class);
+#endif /* HAVE_CAIRO_QUARTZ */
+
+#ifdef HAVE_CAIRO_XLIB
+#ifdef HAVE_XFT
       *iface = &cairo_x_viewer_iface;
       return (*iface)->backend_class->create ((*iface)->backend_class);
-    }
 #endif /* HAVE_XFT */
 #endif /* HAVE_CAIRO_XLIB */
+    }
 
   *iface = &cairo_image_viewer_iface;
   return (*iface)->backend_class->create ((*iface)->backend_class);

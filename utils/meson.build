@@ -28,6 +28,15 @@ if cairo_dep.found()
     'viewer-pangocairo.c',
   ]
   pango_view_deps += libpangocairo_dep
+
+  if pango_conf.has('HAVE_CAIRO_QUARTZ')
+    viewer_cocoa_resources = import('gnome').compile_resources(
+      'viewer-cocoa-resources', 'viewer-cocoa.gresource.xml',
+      c_name : 'viewer_cocoa',
+    )
+    pango_view_sources += ['viewer-cocoa.m', viewer_cocoa_resources]
+    pango_view_deps += dependency('Cocoa')
+  endif
 endif
 
 pango_view = executable('pango-view', pango_view_sources,

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/gnome/pango/viewer-cocoa">
+    <file alias="icon">viewer-cocoa-icon.png</file>
+  </gresource>
+</gresources>

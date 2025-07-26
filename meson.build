@@ -341,6 +341,9 @@ endif
 
 has_core_text = false
 if host_system == 'darwin'
+  # for viewer-cocoa.m
+  add_languages('objc', native : false)
+
   has_core_text = cc.links('''#include <CoreText/CoreText.h>
                               int main (void) {
                                 CTGetCoreTextVersion ();
