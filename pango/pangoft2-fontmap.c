@@ -358,7 +358,7 @@ _pango_ft2_font_map_default_substitute (PangoFcFontMap *fcfontmap,
 
   if (FcPatternGet (pattern, FC_DPI, 0, &v) == FcResultNoMatch)
     FcPatternAddDouble (pattern, FC_DPI, ft2fontmap->dpi_y);
-  FcDefaultSubstitute (pattern);
+  FcConfigSetDefaultSubstitute (pango_fc_font_map_get_config (fcfontmap), pattern);
 }
 
 static double

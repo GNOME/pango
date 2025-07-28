@@ -213,7 +213,7 @@ gi_req         = '>= 1.83.2'
 fribidi_req    = '>= 1.0.6'
 libthai_req    = '>= 0.1.9'
 harfbuzz_req   = '>= 8.4.0'
-fontconfig_req = '>= 2.15.0'
+fontconfig_req = '>= 2.17.0'
 xft_req        = '>= 2.0.0'
 cairo_req      = '>= 1.18.0'
 
