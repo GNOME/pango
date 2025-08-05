@@ -111,7 +111,7 @@ pango_cairo_fc_font_map_fontset_key_substitute (PangoFcFontMap    *fcfontmap G_G
     cairo_ft_font_options_substitute (pango_fc_fontset_key_get_context_key (fontkey),
 				      pattern);
 
-  FcDefaultSubstitute (pattern);
+  FcConfigSetDefaultSubstitute (pango_fc_font_map_get_config (fcfontmap), pattern);
 }
 
 static double
