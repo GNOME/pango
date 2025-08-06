@@ -907,7 +907,7 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
   if (new_mask & PANGO_FONT_MASK_GRAVITY)
     desc->gravity = desc_to_merge->gravity;
   if (new_mask & PANGO_FONT_MASK_COLOR)
-    desc->gravity = desc_to_merge->color;
+    desc->color = desc_to_merge->color;
   if (new_mask & PANGO_FONT_MASK_VARIATIONS)
     pango_font_description_set_variations_static (desc, desc_to_merge->variations);
   if (new_mask & PANGO_FONT_MASK_FEATURES)
