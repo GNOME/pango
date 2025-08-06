@@ -1715,13 +1715,6 @@ G_DEFINE_TYPE (PangoCoreTextFontset,
                pango_core_text_fontset,
                PANGO_TYPE_FONTSET);
 
-#if !defined(MAC_OS_X_VERSION_10_8) || MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_8
-/* This symbol does exist in the CoreText library shipped with Snow
- * Leopard and Lion, however, it is not found in the public header files.
- */
-CFArrayRef CTFontCopyDefaultCascadeList (CTFontRef font_ref);
-#endif
-
 static PangoCoreTextFontset *
 pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
                              const PangoFontDescription *description)
@@ -1784,36 +1777,27 @@ pango_core_text_fontset_new (PangoCoreTextFontsetKey    *key,
   fontset->real_font_count = fontset->fonts->len;
 
   /* Add the cascade list for this language */
-#if defined(MAC_OS_X_VERSION_10_8) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_8
+  CFArrayRef language_pref_list = NULL;
+  CFStringRef languages[1];
+
+  if (key->language)
     {
-      CFArrayRef language_pref_list = NULL;
-      CFStringRef languages[1];
-
-      if (key->language)
-        {
-          languages[0] = CFStringCreateWithCString (NULL,
-                                                    pango_language_to_string (key->language),
-                                                    kCFStringEncodingASCII);
-          language_pref_list = CFArrayCreate (kCFAllocatorDefault,
-                                              (const void **) languages,
-                                              1,
-                                              &kCFTypeArrayCallBacks);
-        }
-
-      fontset->cascade_list = CTFontCopyDefaultCascadeListForLanguages (pango_core_text_font_get_ctfont (best_font), language_pref_list);
-
-      if (language_pref_list)
-        {
-          CFRelease (languages[0]);
-          CFRelease (language_pref_list);
-        }
+      languages[0] = CFStringCreateWithCString (NULL,
+                                                pango_language_to_string (key->language),
+                                                kCFStringEncodingASCII);
+      language_pref_list = CFArrayCreate (kCFAllocatorDefault,
+                                          (const void **) languages,
+                                          1,
+                                          &kCFTypeArrayCallBacks);
     }
-#else
-  /* There is unfortunately no public API to retrieve the cascade list
-   * on Mac OS X < 10.8, so we use the following undocumented public function.
-   */
-  fontset->cascade_list = CTFontCopyDefaultCascadeList (pango_core_text_font_get_ctfont (best_font));
-#endif
+
+  fontset->cascade_list = CTFontCopyDefaultCascadeListForLanguages (pango_core_text_font_get_ctfont (best_font), language_pref_list);
+
+  if (language_pref_list)
+    {
+      CFRelease (languages[0]);
+      CFRelease (language_pref_list);
+    }
 
   /* length of cascade list + real_font_count for the "real" fonts at the front */
   g_ptr_array_set_size (fontset->fonts, CFArrayGetCount (fontset->cascade_list) + fontset->real_font_count);
