@@ -41,6 +41,7 @@ struct _PangoFontDescription
   PangoWeight weight;
   PangoStretch stretch;
   PangoGravity gravity;
+  PangoFontColor color;
 
   char *variations;
   char *features;
@@ -66,6 +67,7 @@ static const PangoFontDescription pfd_defaults = {
   PANGO_WEIGHT_NORMAL,  /* weight */
   PANGO_STRETCH_NORMAL, /* stretch */
   PANGO_GRAVITY_SOUTH,  /* gravity */
+  PANGO_FONT_COLOR_DONT_CARE,  /* color */
   NULL,                 /* variations */
   NULL,                 /* features */
 
@@ -713,6 +715,51 @@ pango_font_description_get_features (const PangoFontDescription *desc)
 }
 
 /**
+ * pango_font_description_set_color:
+ * @desc: a `PangoFontDescription`.
+ * @color: the `PangoFontColor` value
+ *
+ * Sets the color field of a font description.
+ *
+ * This field determines whether the font description should
+ * match fonts that have color glyphs, or fonts that don't.
+ *
+ * Since: 1.57
+ */
+void
+pango_font_description_set_color (PangoFontDescription *desc,
+                                  PangoFontColor        color)
+
+{
+  g_return_if_fail (desc != NULL);
+
+  if (desc->color == color)
+    return;
+
+  desc->color = color;
+  desc->mask |= PANGO_FONT_MASK_COLOR;
+}
+
+/**
+ * pango_font_description_get_color:
+ * @desc: a `PangoFontDescription`
+ *
+ * Returns the color field of the font description.
+ *
+ * This field determines whether the font description should
+ * match fonts that have color glyphs, or fonts that don't.
+ *
+ * Since: 1.57
+ */
+PangoFontColor
+pango_font_description_get_color (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, PANGO_FONT_COLOR_DONT_CARE);
+
+  return desc->color;
+}
+
+/**
  * pango_font_description_get_set_fields:
  * @desc: a `PangoFontDescription`
  *
@@ -859,6 +906,8 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
     }
   if (new_mask & PANGO_FONT_MASK_GRAVITY)
     desc->gravity = desc_to_merge->gravity;
+  if (new_mask & PANGO_FONT_MASK_COLOR)
+    desc->gravity = desc_to_merge->color;
   if (new_mask & PANGO_FONT_MASK_VARIATIONS)
     pango_font_description_set_variations_static (desc, desc_to_merge->variations);
   if (new_mask & PANGO_FONT_MASK_FEATURES)
@@ -916,7 +965,9 @@ pango_font_description_better_match (const PangoFontDescription *desc,
 
   if (new_match->variant == desc->variant &&
       new_match->stretch == desc->stretch &&
-      new_match->gravity == desc->gravity)
+      new_match->gravity == desc->gravity &&
+      (desc->color == PANGO_FONT_COLOR_DONT_CARE ||
+       new_match->color == desc->color))
     {
       int old_distance = old_match ? compute_distance (desc, old_match) : G_MAXINT;
       int new_distance = compute_distance (desc, new_match);
@@ -1034,6 +1085,7 @@ pango_font_description_equal (const PangoFontDescription *desc1,
          desc1->size == desc2->size &&
          desc1->size_is_absolute == desc2->size_is_absolute &&
          desc1->gravity == desc2->gravity &&
+         desc1->color == desc2->color &&
          (desc1->family_name == desc2->family_name ||
           (desc1->family_name && desc2->family_name && g_ascii_strcasecmp (desc1->family_name, desc2->family_name) == 0)) &&
          (g_strcmp0 (desc1->variations, desc2->variations) == 0) &&
@@ -1089,6 +1141,7 @@ pango_font_description_hash (const PangoFontDescription *desc)
   hash ^= desc->weight << 16;
   hash ^= desc->stretch << 26;
   hash ^= desc->gravity << 28;
+  hash ^= desc->color << 29;
 
   return hash;
 }
@@ -1211,6 +1264,11 @@ static const FieldMap gravity_map[] = {
   { PANGO_GRAVITY_WEST,  "West" }
 };
 
+static const FieldMap color_map[] = {
+  { PANGO_FONT_COLOR_REQUIRED, "With-Color" },
+  { PANGO_FONT_COLOR_FORBIDDEN, "Without-Color" },
+};
+
 static gboolean
 field_matches (const gchar *s1,
                const gchar *s2,
@@ -1319,6 +1377,7 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
   FIELD (stretch, PANGO_FONT_MASK_STRETCH);
   FIELD (variant, PANGO_FONT_MASK_VARIANT);
   FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
+  FIELD (color,   PANGO_FONT_MASK_COLOR);
 
 #undef FIELD
 
@@ -1436,6 +1495,9 @@ parse_features (const char  *word,
  * The following words are understood as gravity values:
  * "Not-Rotated", "South", "Upside-Down", "North", "Rotated-Left",
  * "East", "Rotated-Right", "West".
+ *
+ * The following words are understood as color values:
+ * "With-Color", "Without-Color".
  *
  * VARIATIONS is a comma-separated list of font variations
  * of the form @‍axis1=value,axis2=value,...
@@ -1766,6 +1828,8 @@ pango_font_description_to_string (const PangoFontDescription *desc)
   FIELD (variant, PANGO_FONT_MASK_VARIANT);
   if (desc->mask & PANGO_FONT_MASK_GRAVITY)
     FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
+  if (desc->mask & PANGO_FONT_MASK_COLOR)
+    FIELD (color, PANGO_FONT_MASK_COLOR);
 
 #undef FIELD
 
