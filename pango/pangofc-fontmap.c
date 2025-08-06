@@ -2459,6 +2459,8 @@ pango_fc_font_map_get_patterns (PangoFontMap      *fontmap,
   PangoFcPatterns *patterns;
   FcPattern *pattern;
 
+  wait_for_fc_init ();
+
   pattern = pango_fc_fontset_key_make_pattern (key);
   pango_fc_default_substitute (fcfontmap, key, pattern);
 
