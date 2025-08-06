@@ -2120,6 +2120,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   double weight;
   PangoGravity gravity;
   PangoVariant variant;
+  PangoFontColor color;
   char **families;
   int i;
   int width;
@@ -2131,6 +2132,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 
   gravity = pango_font_description_get_gravity (description);
   variant = pango_font_description_get_variant (description);
+  color = pango_font_description_get_color (description);
 
   /* The reason for passing in FC_SIZE as well as FC_PIXEL_SIZE is
    * to work around a bug in libgnomeprint where it doesn't look
@@ -2157,6 +2159,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
 			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / 1024. / dpi),
 			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
                             FC_ORDER, FcTypeInteger, 1000,
+                            FC_COLOR, FcTypeBool, color,
 			    NULL);
 
   if (variations)
