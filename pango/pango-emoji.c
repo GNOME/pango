@@ -260,6 +260,7 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
 {
   unsigned int old_cursor, cursor;
   bool is_emoji;
+  bool has_vs;
 
   if (iter->end >= iter->text_end)
     return FALSE;
@@ -269,7 +270,8 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
   old_cursor = cursor = iter->cursor;
   cursor = scan_emoji_presentation (iter->types + cursor,
 				    iter->types + iter->n_chars,
-				    &is_emoji) - iter->types;
+				    &is_emoji,
+                                    &has_vs) - iter->types;
   do
   {
     iter->cursor = cursor;
@@ -280,7 +282,8 @@ _pango_emoji_iter_next (PangoEmojiIter *iter)
 
     cursor = scan_emoji_presentation (iter->types + cursor,
 				      iter->types + iter->n_chars,
-				      &is_emoji) - iter->types;
+				      &is_emoji,
+                                      &has_vs) - iter->types;
   }
   while (iter->is_emoji == is_emoji);
 

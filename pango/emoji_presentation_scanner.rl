@@ -1,11 +1,28 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+/* Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include <stdbool.h>
+
+#ifndef EMOJI_LINKAGE
+#define EMOJI_LINKAGE static
+#endif
 
 %%{
   machine emoji_presentation;
   alphtype unsigned char;
-  write data noerror nofinal noentry;
+  write data noerror nofinal;
 }%%
 
 %%{
@@ -64,26 +81,35 @@ emoji_presentation = EMOJI_EMOJI_PRESENTATION | TAG_BASE | EMOJI_MODIFIER_BASE |
 
 emoji_run = emoji_presentation;
 
-text_presentation_emoji = any_emoji VS15;
+text_emoji_keycap_sequence = KEYCAP_BASE VS15 COMBINING_ENCLOSING_KEYCAP;
+text_emoji_run_with_vs = any_emoji VS15 | text_emoji_keycap_sequence;
+
+emoji_run_with_vs = emoji_presentation_sequence | emoji_keycap_sequence;
+
 text_run = any;
 
 text_and_emoji_run := |*
 # In order to give the the VS15 sequences higher priority than detecting
 # emoji sequences they are listed first as scanner token here.
-text_presentation_emoji => { *is_emoji = false; return te; };
-emoji_run => { *is_emoji = true; return te; };
-text_run => { *is_emoji = false; return te; };
+text_emoji_run_with_vs => { *is_emoji = false; *has_vs = true; return te; };
+emoji_run_with_vs => { *is_emoji = true; *has_vs = true; return te; };
+emoji_run => { *is_emoji = true; *has_vs = false; return te; };
+text_run => { *is_emoji = false; *has_vs = false; return te; };
 *|;
 
 }%%
 
-static emoji_text_iter_t
+EMOJI_LINKAGE emoji_text_iter_t
 scan_emoji_presentation (emoji_text_iter_t p,
     const emoji_text_iter_t pe,
-    bool* is_emoji)
+    bool* is_emoji,
+    bool* has_vs)
 {
+  emoji_text_iter_t ts;
   emoji_text_iter_t te;
   const emoji_text_iter_t eof = pe;
+
+  (void)ts;
 
   unsigned act;
   int cs;
@@ -95,5 +121,7 @@ scan_emoji_presentation (emoji_text_iter_t p,
 
   /* Should not be reached. */
   *is_emoji = false;
-  return pe;
+  *has_vs = false;
+  return p;
 }
+
