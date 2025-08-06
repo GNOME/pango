@@ -322,6 +322,16 @@
  */
 #define PANGO_VERSION_1_56       (G_ENCODE_VERSION (1, 56))
 
+/**
+ * PANGO_VERSION_1_57:
+ *
+ * A macro that evaluates to the 1.57 version of Pango, in a format
+ * that can be used by the C pre-processor.
+ *
+ * Since: 1.57
+ */
+#define PANGO_VERSION_1_57       (G_ENCODE_VERSION (1, 57))
+
 /* evaluates to the current stable version; for development cycles,
  * this means the next stable target
  */
@@ -827,6 +837,22 @@
 #else
 # define PANGO_AVAILABLE_IN_1_56                _PANGO_EXTERN
 # define PANGO_AVAILABLE_ENUMERATOR_IN_1_56
+#endif
+
+#if PANGO_VERSION_MIN_REQUIRED >= PANGO_VERSION_1_57
+# define PANGO_DEPRECATED_IN_1_57               PANGO_DEPRECATED
+# define PANGO_DEPRECATED_IN_1_57_FOR(f)        PANGO_DEPRECATED_FOR(f)
+#else
+# define PANGO_DEPRECATED_IN_1_57               _PANGO_EXTERN
+# define PANGO_DEPRECATED_IN_1_57_FOR(f)        _PANGO_EXTERN
+#endif
+
+#if PANGO_VERSION_MAX_ALLOWED < PANGO_VERSION_1_57
+# define PANGO_AVAILABLE_IN_1_57                PANGO_UNAVAILABLE(1, 57)
+# define PANGO_AVAILABLE_ENUMERATOR_IN_1_57     PANGO_UNAVAILABLE (1, 57)
+#else
+# define PANGO_AVAILABLE_IN_1_57                _PANGO_EXTERN
+# define PANGO_AVAILABLE_ENUMERATOR_IN_1_57
 #endif
 
 #endif /* __PANGO_VERSION_H__ */

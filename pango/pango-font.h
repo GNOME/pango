@@ -202,6 +202,13 @@ typedef enum {
  *
  * Since: 1.56
  */
+/**
+ * PANGO_FONT_MASK_COLOR:
+ *
+ * Font color is specified.
+ *
+ * Since: 1.57
+ */
 typedef enum {
   PANGO_FONT_MASK_FAMILY  = 1 << 0,
   PANGO_FONT_MASK_STYLE   = 1 << 1,
@@ -212,6 +219,7 @@ typedef enum {
   PANGO_FONT_MASK_GRAVITY = 1 << 6,
   PANGO_FONT_MASK_VARIATIONS = 1 << 7,
   PANGO_FONT_MASK_FEATURES = 1 << 8,
+  PANGO_FONT_MASK_COLOR    = 1 << 9,
 } PangoFontMask;
 
 /* CSS scale factors (1.2 factor between each size) */
@@ -257,6 +265,22 @@ typedef enum {
 #define PANGO_SCALE_LARGE    ((double)1.2)
 #define PANGO_SCALE_X_LARGE  ((double)1.44)
 #define PANGO_SCALE_XX_LARGE ((double)1.728)
+
+/**
+ * PangoFontColor:
+ * @PANGO_FONT_COLOR_FORBIDDEN: The font should not have color glyphs
+ * @PANGO_FONT_COLOR_REQUIRED: The font should have color glyphs
+ * @PANGO_FONT_COLOR_DONT_CARE: The font may or may not use color
+ *
+ * Specifies whether a font should or should not have color glyphs.
+ *
+ * Since: 1.57
+ */
+typedef enum {
+  PANGO_FONT_COLOR_FORBIDDEN,
+  PANGO_FONT_COLOR_REQUIRED,
+  PANGO_FONT_COLOR_DONT_CARE,
+} PangoFontColor;
 
 /*
  * PangoFontDescription
@@ -344,6 +368,12 @@ void                 pango_font_description_set_features        (PangoFontDescri
                                                                  const char                 *features);
 PANGO_AVAILABLE_IN_1_42
 const char          *pango_font_description_get_features        (const PangoFontDescription *desc) G_GNUC_PURE;
+
+PANGO_AVAILABLE_IN_1_57
+void                 pango_font_description_set_color           (PangoFontDescription       *desc,
+                                                                 PangoFontColor              color);
+PANGO_AVAILABLE_IN_1_57
+PangoFontColor       pango_font_description_get_color           (const PangoFontDescription *desc);
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontMask pango_font_description_get_set_fields (const PangoFontDescription *desc) G_GNUC_PURE;
