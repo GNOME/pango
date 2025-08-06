@@ -309,6 +309,7 @@ struct _ItemizeState
   const char *attr_end;
   PangoFontDescription *font_desc;
   PangoFontDescription *emoji_font_desc;
+  PangoFontDescription *text_emoji_font_desc;
   PangoLanguage *lang;
   GSList *extra_attrs;
   gboolean copy_extra_attrs;
@@ -377,6 +378,12 @@ update_attr_iterator (ItemizeState *state)
     {
       pango_font_description_free (state->emoji_font_desc);
       state->emoji_font_desc = NULL;
+    }
+
+  if (state->text_emoji_font_desc)
+    {
+      pango_font_description_free (state->text_emoji_font_desc);
+      state->text_emoji_font_desc = NULL;
     }
 
   old_lang = state->lang;
@@ -487,6 +494,7 @@ itemize_state_init (ItemizeState               *state,
     }
 
   state->emoji_font_desc = NULL;
+  state->text_emoji_font_desc = NULL;
   if (state->attr_iter)
     {
       state->font_desc = NULL;
@@ -894,14 +902,22 @@ itemize_state_update_for_new_run (ItemizeState *state)
   if (!state->current_fonts)
     {
       gboolean is_emoji = state->emoji_iter.is_emoji;
+      gboolean has_vs = state->emoji_iter.has_vs;
       if (is_emoji && !state->emoji_font_desc)
         {
           state->emoji_font_desc = pango_font_description_copy_static (state->font_desc);
           pango_font_description_set_family_static (state->emoji_font_desc, "emoji");
+          pango_font_description_set_color (state->emoji_font_desc, has_vs ? PANGO_FONT_COLOR_REQUIRED : PANGO_FONT_COLOR_DONT_CARE);
+        }
+      if (!is_emoji && has_vs && !state->text_emoji_font_desc)
+        {
+          state->text_emoji_font_desc = pango_font_description_copy_static (state->font_desc);
+          pango_font_description_set_family_static (state->text_emoji_font_desc, "emoji");
+          pango_font_description_set_color (state->text_emoji_font_desc, PANGO_FONT_COLOR_FORBIDDEN);
         }
       state->current_fonts = pango_font_map_load_fontset (state->context->font_map,
                                                           state->context,
-                                                          is_emoji ? state->emoji_font_desc : state->font_desc,
+                                                          is_emoji ? state->emoji_font_desc : (has_vs ? state->text_emoji_font_desc : state->font_desc),
                                                           state->derived_lang);
       state->cache = get_font_cache (state->current_fonts);
     }
@@ -1034,6 +1050,7 @@ itemize_state_finish (ItemizeState *state)
   _pango_script_iter_fini (&state->script_iter);
   pango_font_description_free (state->font_desc);
   pango_font_description_free (state->emoji_font_desc);
+  pango_font_description_free (state->text_emoji_font_desc);
   width_iter_fini (&state->width_iter);
   _pango_emoji_iter_fini (&state->emoji_iter);
 
