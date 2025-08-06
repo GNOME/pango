@@ -657,6 +657,32 @@ test_roundtrip_small_caps (void)
   g_object_unref (font);
   pango_font_description_free (desc);
 
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
+static void
+test_roundtrip_all_small_caps (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc, *desc2;
+  PangoFont *font;
+  hb_feature_t features[32];
+  guint num = 0;
+
+  fontmap = pango_cairo_font_map_new ();
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0 ||
+      strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
+    {
+      g_test_incomplete_printf ("Small Caps support needs to be added to %s",
+                                G_OBJECT_TYPE_NAME (fontmap));
+      g_object_unref (fontmap);
+      return;
+    }
+
+  context = pango_font_map_create_context (fontmap);
+
   desc = pango_font_description_from_string ("Cantarell All-Small-Caps 11");
   g_assert_true (pango_font_description_get_variant (desc) == PANGO_VARIANT_ALL_SMALL_CAPS);
 
@@ -679,6 +705,32 @@ test_roundtrip_small_caps (void)
   pango_font_description_free (desc2);
   g_object_unref (font);
   pango_font_description_free (desc);
+
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
+static void
+test_roundtrip_unicase (void)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoFontDescription *desc, *desc2;
+  PangoFont *font;
+  hb_feature_t features[32];
+  guint num = 0;
+
+  fontmap = pango_cairo_font_map_new ();
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0 ||
+      strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
+    {
+      g_test_incomplete_printf ("Small Caps support needs to be added to %s",
+                                G_OBJECT_TYPE_NAME (fontmap));
+      g_object_unref (fontmap);
+      return;
+    }
+
+  context = pango_font_map_create_context (fontmap);
 
   desc = pango_font_description_from_string ("Cantarell Unicase 11");
   g_assert_true (pango_font_description_get_variant (desc) == PANGO_VARIANT_UNICASE);
@@ -1196,6 +1248,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/font/roundtrip/absolute", test_roundtrip_absolute);
   g_test_add_func ("/pango/font/roundtrip/variations", test_roundtrip_variations);
   g_test_add_func ("/pango/font/roundtrip/small-caps", test_roundtrip_small_caps);
+  g_test_add_func ("/pango/font/roundtrip/all-small-caps", test_roundtrip_all_small_caps);
+  g_test_add_func ("/pango/font/roundtrip/unicase", test_roundtrip_unicase);
   g_test_add_func ("/pango/font/roundtrip/emoji", test_roundtrip_emoji);
   g_test_add_func ("/pango/font/models", test_font_models);
   g_test_add_func ("/pango/font/glyph-extents", test_glyph_extents);
