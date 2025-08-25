@@ -90,6 +90,8 @@ static PangoFont *pango_win32_font_map_real_find_font (PangoWin32FontMap        
                                                        PangoWin32Face              *face,
                                                        const PangoFontDescription  *description);
 
+static void       pango_win32_fontmap_cache_clear    (PangoWin32FontMap            *win32fontmap);
+
 static PangoWin32Family *pango_win32_get_font_family (PangoWin32FontMap            *win32fontmap,
                                                       const char                   *family_name);
 
@@ -612,6 +614,7 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
                            g_object_unref);
 
   win32fontmap->font_cache = pango_win32_font_cache_new ();
+  win32fontmap->freed_fonts = g_queue_new ();
 
   pango_win32_dwrite_font_map_populate (win32fontmap);
 
@@ -630,6 +633,9 @@ pango_win32_font_map_init (PangoWin32FontMap *win32fontmap)
 static void
 pango_win32_font_map_fini (PangoWin32FontMap *win32fontmap)
 {
+  g_list_foreach (win32fontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
+  g_queue_free (win32fontmap->freed_fonts);
+
   pango_win32_font_cache_free (win32fontmap->font_cache);
 
   g_hash_table_destroy (win32fontmap->fonts);
@@ -765,7 +771,13 @@ pango_win32_font_map_for_display (void)
 void
 pango_win32_shutdown_display (void)
 {
-  g_clear_object (&default_fontmap);
+  if (default_fontmap)
+    {
+      pango_win32_fontmap_cache_clear (default_fontmap);
+      g_object_unref (default_fontmap);
+
+      default_fontmap = NULL;
+    }
 }
 
 static inline void
@@ -1074,6 +1086,8 @@ pango_win32_font_map_real_find_font (PangoWin32FontMap          *win32fontmap,
           PING (("size matches"));
 
           g_object_ref (win32font);
+          if (win32font->in_cache)
+            _pango_win32_fontmap_cache_remove (fontmap, win32font);
 
           return (PangoFont *)win32font;
         }
@@ -1451,6 +1465,28 @@ pango_win32_font_map_get_font_cache (PangoFontMap *font_map)
   g_return_val_if_fail (PANGO_WIN32_IS_FONT_MAP (font_map), NULL);
 
   return PANGO_WIN32_FONT_MAP (font_map)->font_cache;
+}
+
+void
+_pango_win32_fontmap_cache_remove (PangoFontMap   *fontmap,
+                                   PangoWin32Font *win32font)
+{
+  PangoWin32FontMap *win32fontmap = PANGO_WIN32_FONT_MAP (fontmap);
+  GList *link = g_queue_find (win32fontmap->freed_fonts, win32font);
+
+  if (link)
+    g_queue_delete_link (win32fontmap->freed_fonts, link);
+  win32font->in_cache = FALSE;
+
+  g_object_unref (win32font);
+}
+
+static void
+pango_win32_fontmap_cache_clear (PangoWin32FontMap *win32fontmap)
+{
+  g_list_foreach (win32fontmap->freed_fonts->head, (GFunc)g_object_unref, NULL);
+  g_queue_free (win32fontmap->freed_fonts);
+  win32fontmap->freed_fonts = g_queue_new ();
 }
 
 static PangoFontset *

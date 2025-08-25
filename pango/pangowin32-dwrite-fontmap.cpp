@@ -855,6 +855,7 @@ pango_win32_dwrite_add_font_file (PangoFontMap *font_map,
 
   if (succeeded)
     {
+      pango_win32_font_map_cache_clear (font_map);
       pango_font_map_changed (font_map);
 
 #if defined (HAVE_CAIRO_WIN32_DIRECTWRITE) && !defined (USE_HB_DWRITE)
