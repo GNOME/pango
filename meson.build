@@ -230,6 +230,7 @@ mathlib_dep = cc.find_library('m', required: false)
 glib_dep = dependency('glib-2.0', version: glib_req)
 gobject_dep = dependency('gobject-2.0', version: glib_req)
 gio_dep = dependency('gio-2.0', version: glib_req)
+gi_dep = dependency('gobject-introspection-1.0', version: gi_req, required: get_option('introspection').enabled())
 fribidi_dep = dependency('fribidi', version: fribidi_req, default_options: ['docs=false'])
 pango_deps += [mathlib_dep, glib_dep, gobject_dep, gio_dep, fribidi_dep]
 
@@ -526,15 +527,14 @@ if cairo_dwrite_dep.found()
 endif
 
 # introspection
-build_gir = get_option('introspection')
-gir = find_program('g-ir-scanner', required : get_option('introspection'), native: true)
-build_gir = build_gir.require(gir.found())
-if not meson.version().version_compare('>= 1.9.0')
-  build_gir = build_gir.require(dependency('gobject-introspection-1.0', version: gi_req, required: build_gir).found())
-endif
-build_gir = build_gir.enable_auto_if(get_option('documentation'))
+gir = find_program('g-ir-scanner', required : get_option('introspection'))
 
-build_gir = build_gir.enabled()
+if not gir.found() and get_option('introspection').enabled()
+  error('Introspection enabled, but g-ir-scanner not found.')
+endif
+
+build_gir = gi_dep.found() and gir.found() and (get_option('introspection').enabled() or
+                                               (get_option('introspection').allowed() and get_option('documentation')))
 
 # libsysprof-capture support
 libsysprof_capture_dep = dependency('sysprof-capture-4',
