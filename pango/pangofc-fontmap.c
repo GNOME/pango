@@ -2367,13 +2367,15 @@ pango_fc_font_map_get_face (PangoFontMap *fontmap,
   g_assert (res == FcResultMatch);
 
   family = (PangoFcFamily *) pango_fc_font_map_get_family (fontmap, s);
-
-  ensure_faces (family);
-
-  for (int i = 0; i < family->n_faces; i++)
+  if (family)
     {
-      if (compare_face_pattern (family->faces[i]->pattern, fcfont->font_pattern) == 0)
-        return PANGO_FONT_FACE (family->faces[i]);
+      ensure_faces (family);
+
+      for (int i = 0; i < family->n_faces; i++)
+        {
+          if (compare_face_pattern (family->faces[i]->pattern, fcfont->font_pattern) == 0)
+            return PANGO_FONT_FACE (family->faces[i]);
+        }
     }
 
   return NULL;
