@@ -631,6 +631,10 @@ default_break (const char    *text,
 	    if (WB_type == WB_Other)
 	      switch (wc >> 8)
 	        {
+		case 0x00:
+		  if (wc == 0x00b8)
+		    WB_type = WB_ALetter; /* For Unicode 17.0.0 */
+		  break;
 		case 0x30:
 		  if (wc == 0x3031 || wc == 0x3032 || wc == 0x3033 || wc == 0x3034 || wc == 0x3035 ||
 		      wc == 0x309b || wc == 0x309c || wc == 0x30a0 || wc == 0x30fc)
