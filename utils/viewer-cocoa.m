@@ -20,8 +20,8 @@
 #include "config.h"
 #import <Cocoa/Cocoa.h>
 
-#include <cairo/cairo.h>
-#include <cairo/cairo-quartz.h>
+#include <cairo.h>
+#include <cairo-quartz.h>
 #include <gio/gio.h>
 
 #include "viewer-render.h"
