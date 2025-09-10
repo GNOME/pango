@@ -73,6 +73,7 @@ static gboolean
 parse_line (gchar *line,
             AttrBits bits,
             gchar **str_return,
+            gint *num_chars,
             PangoLogAttr **attr_return,
             gint *num_attrs)
 {
@@ -133,6 +134,7 @@ parse_line (gchar *line,
 
       if (ch == 0x0023 || ch == 0x0000)
         {
+          *num_chars = gs->len;
           *str_return = g_string_free (gs, FALSE);
           return TRUE;
         }
@@ -225,6 +227,7 @@ do_test (const gchar *filename,
   gsize length, terminator_pos;
   GError *error;
   gchar *string;
+  gint num_chars = 0;
   PangoLogAttr *expected_attrs;
   gint num_attrs;
   gint i;
@@ -270,12 +273,12 @@ do_test (const gchar *filename,
         }
 
       if (g_test_verbose ()) g_test_message ("Parsing line: %s", line);
-      g_assert_true (parse_line (line, bits, &string, &expected_attrs, &num_attrs));
+      g_assert_true (parse_line (line, bits, &string, &num_chars, &expected_attrs, &num_attrs));
       
       if (num_attrs > 0)
         {
           PangoLogAttr *attrs = g_new0 (PangoLogAttr, num_attrs);
-          pango_get_log_attrs (string, -1, 0, pango_language_from_string ("C"), attrs, num_attrs);
+          pango_get_log_attrs (string, num_chars, 0, pango_language_from_string ("C"), attrs, num_attrs);
 
           if (! attrs_equal (attrs, expected_attrs, num_attrs, bits))
             {
