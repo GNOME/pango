@@ -197,13 +197,8 @@ default_break (const char    *text,
   gboolean met_Extended_Pictographic = FALSE;
 
   /* Rule GB9c */
-  typedef enum
-  {
-    InCB_None,
-    InCB_Consonant,
-    InCB_Consonant_Linker,
-  } Indic_Conjunct_Break;
-  Indic_Conjunct_Break InCB_state = InCB_None;
+  gboolean met_InCB_Consonant = FALSE;
+  gboolean met_InCB_Consonant_Linker = FALSE;
 
   /* See Word_Break Property Values table of UAX#29 */
   typedef enum
@@ -290,7 +285,7 @@ default_break (const char    *text,
   prev_jamo = NO_JAMO;
   prev_space_or_hyphen = FALSE;
 
-  if (length == 0 || *text == '\0')
+  if (length == 0 || (length == -1 && *text == '\0'))
     {
       next_wc = PARAGRAPH_SEPARATOR;
       almost_done = TRUE;
@@ -338,7 +333,7 @@ default_break (const char    *text,
 	{
 	  next = g_utf8_next_char (next);
 
-	  if ((length >= 0 && next >= text + length) || *next == '\0')
+	  if ((length >= 0 && next >= text + length) || (length == -1 && *next == '\0'))
 	    {
 	      /* This is how we fill in the last element (end position) of the
 	       * attr array - assume there's a paragraph separators off the end
@@ -353,7 +348,7 @@ default_break (const char    *text,
 	      next_wc = g_utf8_get_char (next);
 	      next_next = g_utf8_next_char (next);
 
-	      if ((length >= 0 && next_next >= text + length) || *next_next == '\0')
+	      if ((length >= 0 && next_next >= text + length) || (length == -1 && *next_next == '\0'))
 	        next_next_wc = PARAGRAPH_SEPARATOR;
 	      else
 	        next_next_wc = g_utf8_get_char (next_next);
@@ -474,7 +469,15 @@ default_break (const char    *text,
 	    break;
 
 	  case G_UNICODE_SPACING_MARK:
-	    GB_type = GB_SpacingMark; /* SpacingMark */
+	    if (!(wc == 0x102B || wc == 0x102C || wc == 0x1038||
+		  (wc >= 0x1062 && wc <= 0x1064) ||
+		  (wc >= 0x1067 && wc <= 0x106D) ||
+		  wc == 0x1083 || (wc >= 0x1087 && wc <= 0x108C) ||
+		  wc == 0x108F || (wc >= 0x109A && wc <= 0x109C) ||
+		  wc == 0x1A61 || wc == 0x1A63 || wc == 0x1A64 ||
+		  wc == 0xAA7B || wc == 0xAA7D ||
+		  wc == 0x11720 || wc == 0x11721))
+	      GB_type = GB_SpacingMark; /* SpacingMark */
 	    if (wc >= 0x0900)
 	      {
 		if (wc == 0x09BE || wc == 0x09D7 ||
@@ -540,19 +543,22 @@ default_break (const char    *text,
 	      is_grapheme_boundary = FALSE;
 	  }
 
-	if (InCB_state == InCB_Consonant ||
-	    InCB_state == InCB_Consonant_Linker)
+	if (met_InCB_Consonant || met_InCB_Consonant_Linker)
 	  { /* Rule GB9c */
-	    if (InCB_state == InCB_Consonant_Linker &&
+	    if (met_InCB_Consonant_Linker &&
 		_pango_is_Indic_Conjunct_Break_Consonant(wc))
 	      {
-		InCB_state = InCB_Consonant;
+	        met_InCB_Consonant = TRUE;
+		met_InCB_Consonant_Linker = FALSE;
 		is_grapheme_boundary = FALSE;
 	      }
 
-	    if (_pango_is_Indic_Conjunct_Break_Extend(wc) &&
-		!_pango_is_Indic_Conjunct_Break_Linker(next_wc))
-	      InCB_state = InCB_None;
+	    if (!(_pango_is_Indic_Conjunct_Break_Extend(wc) ||
+		  _pango_is_Indic_Conjunct_Break_Linker(wc)))
+	      {
+	        met_InCB_Consonant = FALSE;
+		met_InCB_Consonant_Linker = FALSE;
+	      }
 	  }
 
 	if (prev_GB_type == GB_Prepend)
@@ -578,14 +584,13 @@ default_break (const char    *text,
 	if (is_Extended_Pictographic)
 	  met_Extended_Pictographic = TRUE;
 
-	if (InCB_state == InCB_Consonant &&
-	    !_pango_is_Indic_Conjunct_Break_Extend(prev_wc) &&
+	if (met_InCB_Consonant && !met_InCB_Consonant_Linker &&
 	    _pango_is_Indic_Conjunct_Break_Linker(wc))
-	      InCB_state = InCB_Consonant_Linker; /* Rule GB9c */
+	      met_InCB_Consonant_Linker = TRUE; /* Rule GB9c */
 
-	if (InCB_state == InCB_None &&
+	if (!met_InCB_Consonant && !met_InCB_Consonant_Linker &&
 	    _pango_is_Indic_Conjunct_Break_Consonant(wc))
-	      InCB_state = InCB_Consonant; /* Rule GB9c */
+	      met_InCB_Consonant = TRUE; /* Rule GB9c */
 
 	attrs[i].is_cursor_position = is_grapheme_boundary;
 	/* If this is a grapheme boundary, we have to decide if backspace
