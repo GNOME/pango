@@ -15,7 +15,7 @@ stages:
 variables:
   COMMON_MESON_FLAGS: ""
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
-  FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v13
+  FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v14
 
 .only-default:
   only:
