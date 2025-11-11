@@ -47,6 +47,7 @@
 #include "pango-coverage-private.h"
 #include "pango-trace-private.h"
 #include <hb-ft.h>
+#include <fontconfig/fcfreetype.h>
 
 
 /* Overview:
