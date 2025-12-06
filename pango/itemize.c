@@ -311,6 +311,7 @@ struct _ItemizeState
   PangoFontDescription *emoji_font_desc;
   PangoFontDescription *text_emoji_font_desc;
   PangoLanguage *lang;
+  gboolean lang_is_explicit;
   GSList *extra_attrs;
   gboolean copy_extra_attrs;
 
@@ -365,6 +366,7 @@ static void
 update_attr_iterator (ItemizeState *state)
 {
   PangoLanguage *old_lang;
+  gboolean old_lang_was_explicit;
   PangoAttribute *attr;
   int end_index;
 
@@ -387,6 +389,7 @@ update_attr_iterator (ItemizeState *state)
     }
 
   old_lang = state->lang;
+  old_lang_was_explicit = state->lang_is_explicit;
   if (state->font_desc)
     pango_font_description_free (state->font_desc);
   state->font_desc = pango_font_description_copy_static (state->context->font_desc);
@@ -400,7 +403,14 @@ update_attr_iterator (ItemizeState *state)
   state->copy_extra_attrs = FALSE;
 
   if (!state->lang)
-    state->lang = state->context->language;
+    {
+      state->lang = state->context->language;
+      state->lang_is_explicit = FALSE;
+    }
+  else
+    {
+      state->lang_is_explicit = TRUE;
+    }
 
   attr = find_attribute (state->extra_attrs, PANGO_ATTR_FALLBACK);
   state->enable_fallback = (attr == NULL || ((PangoAttrInt *)attr)->value);
@@ -413,6 +423,8 @@ update_attr_iterator (ItemizeState *state)
 
   state->changed |= FONT_CHANGED;
   if (state->lang != old_lang)
+    state->changed |= LANG_CHANGED;
+  if (!state->lang_is_explicit != !old_lang_was_explicit)
     state->changed |= LANG_CHANGED;
 }
 
@@ -499,6 +511,7 @@ itemize_state_init (ItemizeState               *state,
     {
       state->font_desc = NULL;
       state->lang = NULL;
+      state->lang_is_explicit = FALSE;
 
       pango_attr_iterator_advance (state->attr_iter, start_index);
       update_attr_iterator (state);
@@ -507,6 +520,7 @@ itemize_state_init (ItemizeState               *state,
     {
       state->font_desc = pango_font_description_copy_static (desc ? desc : state->context->font_desc);
       state->lang = state->context->language;
+      state->lang_is_explicit = FALSE;
       state->extra_attrs = NULL;
       state->copy_extra_attrs = FALSE;
 
@@ -881,7 +895,10 @@ itemize_state_update_for_new_run (ItemizeState *state)
   if (state->changed & (SCRIPT_CHANGED | LANG_CHANGED))
     {
       PangoLanguage *old_derived_lang = state->derived_lang;
-      state->derived_lang = compute_derived_language (state->lang, state->script);
+      if (state->lang_is_explicit)
+        state->derived_lang = state->lang;
+      else
+        state->derived_lang = compute_derived_language (state->lang, state->script);
       if (old_derived_lang != state->derived_lang)
         state->changed |= DERIVED_LANG_CHANGED;
     }
