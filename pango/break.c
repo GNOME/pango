@@ -50,6 +50,22 @@ typedef enum
    */
 } BreakOpportunity;
 
+#if !GLIB_CHECK_VERSION(2, 87, 0)
+#define G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN (G_UNICODE_BREAK_VIRAMA + 1)
+
+#define FIX_BREAK_TYPE(bt, wc)                              \
+    do {                                                    \
+        if (wc == 0x058A || wc == 0x05BE || wc == 0x1400 || \
+            wc == 0x2010 || wc == 0x2012 || wc == 0x2013 || \
+            wc == 0x2E17 || wc == 0x2E40 || wc == 0x2E5D || \
+            wc == 0x10D6E || wc == 0x10EAD)                 \
+            bt = G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN;        \
+    } while (0)
+
+#else
+#define FIX_BREAK_TYPE(bt, wc) do { } while (0)
+#endif
+
 /* need to sync the break range to glib/gunicode.h . */
 #define LAST_BREAK_TYPE G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN
 #define BREAK_TYPE_SAFE(btype)            \
@@ -295,6 +311,7 @@ default_break (const char    *text,
     next_wc = g_utf8_get_char (next);
 
   next_break_type = g_unichar_break_type (next_wc);
+  FIX_BREAK_TYPE (next_break_type, next_wc);
   next_break_type = BREAK_TYPE_SAFE (next_break_type);
 
   for (i = 0; !done ; i++)
@@ -356,9 +373,11 @@ default_break (const char    *text,
 	    }
 
 	  next_break_type = g_unichar_break_type (next_wc);
+	  FIX_BREAK_TYPE (next_break_type, next_wc);
 	  next_break_type = BREAK_TYPE_SAFE (next_break_type);
 
 	  next_next_break_type = g_unichar_break_type (next_next_wc);
+	  FIX_BREAK_TYPE (next_next_break_type, next_next_wc);
 	  next_next_break_type = BREAK_TYPE_SAFE (next_next_break_type);
 	}
 
@@ -2029,6 +2048,7 @@ remove_breaks_from_range (const char   *text,
 
       ch = g_utf8_get_char (p);
       bt = g_unichar_break_type (ch);
+      FIX_BREAK_TYPE (bt, ch);
 
       /* Hyphens and visible word dividers */
       if (after_hyphen)
