@@ -29,6 +29,11 @@
 #include "pango-impl-utils.h"
 #include <string.h>
 
+/* In Unicode 17, there are some test cases which contain
+ *  the Unicode zero code point.
+ */
+/* #define ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE 1 */
+
 /* {{{ Unicode line breaking and segmentation */
 
 #define PARAGRAPH_SEPARATOR 0x2029
@@ -302,7 +307,11 @@ default_break (const char    *text,
   prev_jamo = NO_JAMO;
   prev_space_or_hyphen = FALSE;
 
+#ifdef ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE
   if (length == 0 || (length == -1 && *text == '\0'))
+#else
+  if (length == 0 || *text == '\0')
+#endif
     {
       next_wc = PARAGRAPH_SEPARATOR;
       almost_done = TRUE;
@@ -351,7 +360,11 @@ default_break (const char    *text,
 	{
 	  next = g_utf8_next_char (next);
 
+#ifdef ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE
 	  if ((length >= 0 && next >= text + length) || (length == -1 && *next == '\0'))
+#else
+	  if ((length >= 0 && next >= text + length) || *next == '\0')
+#endif
 	    {
 	      /* This is how we fill in the last element (end position) of the
 	       * attr array - assume there's a paragraph separators off the end
@@ -366,7 +379,11 @@ default_break (const char    *text,
 	      next_wc = g_utf8_get_char (next);
 	      next_next = g_utf8_next_char (next);
 
+#ifdef ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE
 	      if ((length >= 0 && next_next >= text + length) || (length == -1 && *next_next == '\0'))
+#else
+	      if ((length >= 0 && next_next >= text + length) || *next_next == '\0')
+#endif
 	        next_next_wc = PARAGRAPH_SEPARATOR;
 	      else
 	        next_next_wc = g_utf8_get_char (next_next);

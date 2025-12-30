@@ -26,6 +26,8 @@
 #include <string.h>
 #include <locale.h>
 
+/* #define ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE 1 */
+
 static gboolean failed = FALSE;
 
 /* PangoLogAttr has to be the same size as guint or this hack breaks */
@@ -145,6 +147,16 @@ parse_line (gchar *line,
           g_free (*attr_return);
           return FALSE;
         }
+
+#ifndef ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE
+      if (character == 0x0000)
+        {
+          *num_attrs = 0;
+          *num_chars = gs->len;
+          *str_return = g_string_free (gs, FALSE);
+          return TRUE;
+	}
+#endif
 
       p = q;
 
@@ -274,11 +286,15 @@ do_test (const gchar *filename,
 
       if (g_test_verbose ()) g_test_message ("Parsing line: %s", line);
       g_assert_true (parse_line (line, bits, &string, &num_chars, &expected_attrs, &num_attrs));
-      
+
       if (num_attrs > 0)
         {
           PangoLogAttr *attrs = g_new0 (PangoLogAttr, num_attrs);
+#ifdef ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE
           pango_get_log_attrs (string, num_chars, 0, pango_language_from_string ("C"), attrs, num_attrs);
+#else
+          pango_get_log_attrs (string, -1, 0, pango_language_from_string ("C"), attrs, num_attrs);
+#endif
 
           if (! attrs_equal (attrs, expected_attrs, num_attrs, bits))
             {
