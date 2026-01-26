@@ -162,7 +162,7 @@ endif
 
 libpango_dep = declare_dependency(
   link_with: libpango,
-  include_directories: pango_inc,
+  include_directories: root_inc,
   dependencies: pango_deps,
   sources: pango_dep_sources,
 )
@@ -301,7 +301,7 @@ if build_pangoft2
 
   libpangoft2_dep = declare_dependency(
     link_with: libpangoft2,
-    include_directories: pango_inc,
+    include_directories: root_inc,
     dependencies: pango_deps + [ libpango_dep ],
     sources: pangoft2_dep_sources,
   )
