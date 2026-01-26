@@ -18,7 +18,7 @@
  */
 
 #include <glib.h>
-#include <pango.h>
+#include <pango/pango.h>
 #include <pango/pangocairo.h>
 
 const char bad_layout[] =
