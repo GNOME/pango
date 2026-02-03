@@ -52,9 +52,12 @@ pango_osxversion = [osx_current, '@0@.@1@.0'.format(osx_current, pango_interface
 cc = meson.get_compiler('c')
 cpp = meson.get_compiler('cpp')
 host_system = host_machine.system()
+subsystem = ''
 
 if host_system == 'windows'
   add_project_arguments('-D_WIN32_WINNT=_WIN32_WINNT_WIN10', language: 'c')
+elif host_system == 'darwin'
+  subsystem = host_machine.subsystem()
 endif
 
 # Compiler and linker flags
@@ -340,7 +343,7 @@ if xft_dep.found() and fontconfig_dep.found() and freetype_dep.found()
 endif
 
 has_core_text = false
-if host_system == 'darwin'
+if host_system == 'darwin' and subsystem == 'macos'
   # for viewer-cocoa.m
   add_languages('objc', native : false)
 
