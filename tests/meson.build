@@ -8,7 +8,7 @@ endif
 
 if host_system == 'windows'
   test_cflags += '-DHAVE_WIN32'
-elif host_system == 'darwin'
+elif host_system == 'darwin' and subsystem == 'macos'
   test_cflags += '-DHAVE_CARBON'
 endif
 
