@@ -60,7 +60,8 @@ append_one (PangoFontset *fonts,
 static char *
 list_fonts (PangoFontMap *fontmap, const char *contents)
 {
-  char *p, *s;
+  const char *p;
+  char *s;
   PangoFontDescription *desc;
   PangoContext *context;
   PangoFontset *fonts;
