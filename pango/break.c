@@ -2420,7 +2420,7 @@ break_attrs (const char   *text,
   tailored |= handle_words (text, length, &words, offset,
                             log_attrs, log_attrs_len);
 
-  tailored |= handle_sentences (text, length, &words, offset,
+  tailored |= handle_sentences (text, length, &sentences, offset,
                                 log_attrs, log_attrs_len);
 
   tailored |= handle_hyphens (text, length, &hyphens, offset,
