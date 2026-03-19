@@ -495,7 +495,7 @@ pango_font_map_real_get_family (PangoFontMap *fontmap,
  *
  * Gets a font family by name.
  *
- * Returns: (transfer none): the `PangoFontFamily`
+ * Returns: (transfer none) (nullable): the `PangoFontFamily`
  *
  * Since: 1.46
  */
