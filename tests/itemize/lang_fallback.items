@@ -1,0 +1,4 @@
+# Test that lang fallback works by default but is disabled by explicit
+# lang attribute. The choice of language is intentional since English is
+# never written in Han script.
+<span font="Cantarell 11" fallback="false">English漢字English<span lang="en-us">漢字</span>English漢<span lang="en-us">漢字</span>字</span>

@@ -1,0 +1,9 @@
+<span font="Cantarell 11" fallback="false">English漢字English<span lang="en-us">漢字</span>English漢<span lang="en-us">漢字</span>字</span>
+
+Items:  English            |漢字             |English            |漢字             |English            |漢                |漢字             |字                
+Chars:  7(0)               |2(7)               |7(9)               |2(16)              |7(18)              |1(25)              |2(26)              |1(28)              
+Font:   Cantarell 11       |Cantarell 11       |Cantarell 11       |Cantarell 11       |Cantarell 11       |Cantarell 11       |Cantarell 11       |Cantarell 11       
+Script: latin              |han                |latin              |han                |latin              |han                |han                |han                
+Lang:   en-us              |xx                 |en-us              |en-us              |en-us              |xx                 |en-us              |xx                 
+Bidi:   0                  |0                  |0                  |0                  |0                  |0                  |0                  |0                  
+Attrs:  0 45 fallback false|0 45 fallback false|0 45 fallback false|0 45 fallback false|0 45 fallback false|0 45 fallback false|0 45 fallback false|0 45 fallback false
