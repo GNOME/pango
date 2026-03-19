@@ -29,6 +29,11 @@
 #include "pango-impl-utils.h"
 #include <string.h>
 
+/* In Unicode 17, there are some test cases which contain
+ *  the Unicode zero code point.
+ */
+/* #define ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE 1 */
+
 /* {{{ Unicode line breaking and segmentation */
 
 #define PARAGRAPH_SEPARATOR 0x2029
@@ -50,8 +55,24 @@ typedef enum
    */
 } BreakOpportunity;
 
+#if !GLIB_CHECK_VERSION(2, 87, 0)
+#define G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN (G_UNICODE_BREAK_VIRAMA + 1)
+
+#define FIX_BREAK_TYPE(bt, wc)                              \
+    do {                                                    \
+        if (wc == 0x058A || wc == 0x05BE || wc == 0x1400 || \
+            wc == 0x2010 || wc == 0x2012 || wc == 0x2013 || \
+            wc == 0x2E17 || wc == 0x2E40 || wc == 0x2E5D || \
+            wc == 0x10D6E || wc == 0x10EAD)                 \
+            bt = G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN;        \
+    } while (0)
+
+#else
+#define FIX_BREAK_TYPE(bt, wc) do { } while (0)
+#endif
+
 /* need to sync the break range to glib/gunicode.h . */
-#define LAST_BREAK_TYPE G_UNICODE_BREAK_VIRAMA
+#define LAST_BREAK_TYPE G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN
 #define BREAK_TYPE_SAFE(btype)            \
 	 ((btype) <= LAST_BREAK_TYPE ? (btype) : G_UNICODE_BREAK_UNKNOWN)
 
@@ -197,13 +218,8 @@ default_break (const char    *text,
   gboolean met_Extended_Pictographic = FALSE;
 
   /* Rule GB9c */
-  typedef enum
-  {
-    InCB_None,
-    InCB_Consonant,
-    InCB_Consonant_Linker,
-  } Indic_Conjunct_Break;
-  Indic_Conjunct_Break InCB_state = InCB_None;
+  gboolean met_InCB_Consonant = FALSE;
+  gboolean met_InCB_Consonant_Linker = FALSE;
 
   /* See Word_Break Property Values table of UAX#29 */
   typedef enum
@@ -263,6 +279,7 @@ default_break (const char    *text,
   LineBreakType prev_LB_type = LB_Other;
   gboolean met_LB15a = FALSE;
   gint prev_LB_i = -1;
+  gboolean met_Ext_Pict_Unassigned = FALSE;
 
   WordType current_word_type = WordNone;
   gunichar last_word_letter = 0;
@@ -290,7 +307,11 @@ default_break (const char    *text,
   prev_jamo = NO_JAMO;
   prev_space_or_hyphen = FALSE;
 
+#ifdef ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE
+  if (length == 0 || (length == -1 && *text == '\0'))
+#else
   if (length == 0 || *text == '\0')
+#endif
     {
       next_wc = PARAGRAPH_SEPARATOR;
       almost_done = TRUE;
@@ -299,6 +320,7 @@ default_break (const char    *text,
     next_wc = g_utf8_get_char (next);
 
   next_break_type = g_unichar_break_type (next_wc);
+  FIX_BREAK_TYPE (next_break_type, next_wc);
   next_break_type = BREAK_TYPE_SAFE (next_break_type);
 
   for (i = 0; !done ; i++)
@@ -338,7 +360,11 @@ default_break (const char    *text,
 	{
 	  next = g_utf8_next_char (next);
 
+#ifdef ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE
+	  if ((length >= 0 && next >= text + length) || (length == -1 && *next == '\0'))
+#else
 	  if ((length >= 0 && next >= text + length) || *next == '\0')
+#endif
 	    {
 	      /* This is how we fill in the last element (end position) of the
 	       * attr array - assume there's a paragraph separators off the end
@@ -353,16 +379,22 @@ default_break (const char    *text,
 	      next_wc = g_utf8_get_char (next);
 	      next_next = g_utf8_next_char (next);
 
+#ifdef ENABLE_UNICODE_ZERO_CODE_POINT_TEST_CASE
+	      if ((length >= 0 && next_next >= text + length) || (length == -1 && *next_next == '\0'))
+#else
 	      if ((length >= 0 && next_next >= text + length) || *next_next == '\0')
+#endif
 	        next_next_wc = PARAGRAPH_SEPARATOR;
 	      else
 	        next_next_wc = g_utf8_get_char (next_next);
 	    }
 
 	  next_break_type = g_unichar_break_type (next_wc);
+	  FIX_BREAK_TYPE (next_break_type, next_wc);
 	  next_break_type = BREAK_TYPE_SAFE (next_break_type);
 
 	  next_next_break_type = g_unichar_break_type (next_next_wc);
+	  FIX_BREAK_TYPE (next_next_break_type, next_next_wc);
 	  next_next_break_type = BREAK_TYPE_SAFE (next_next_break_type);
 	}
 
@@ -474,7 +506,15 @@ default_break (const char    *text,
 	    break;
 
 	  case G_UNICODE_SPACING_MARK:
-	    GB_type = GB_SpacingMark; /* SpacingMark */
+	    if (!(wc == 0x102B || wc == 0x102C || wc == 0x1038||
+		  (wc >= 0x1062 && wc <= 0x1064) ||
+		  (wc >= 0x1067 && wc <= 0x106D) ||
+		  wc == 0x1083 || (wc >= 0x1087 && wc <= 0x108C) ||
+		  wc == 0x108F || (wc >= 0x109A && wc <= 0x109C) ||
+		  wc == 0x1A61 || wc == 0x1A63 || wc == 0x1A64 ||
+		  wc == 0xAA7B || wc == 0xAA7D ||
+		  wc == 0x11720 || wc == 0x11721))
+	      GB_type = GB_SpacingMark; /* SpacingMark */
 	    if (wc >= 0x0900)
 	      {
 		if (wc == 0x09BE || wc == 0x09D7 ||
@@ -540,19 +580,22 @@ default_break (const char    *text,
 	      is_grapheme_boundary = FALSE;
 	  }
 
-	if (InCB_state == InCB_Consonant ||
-	    InCB_state == InCB_Consonant_Linker)
+	if (met_InCB_Consonant || met_InCB_Consonant_Linker)
 	  { /* Rule GB9c */
-	    if (InCB_state == InCB_Consonant_Linker &&
+	    if (met_InCB_Consonant_Linker &&
 		_pango_is_Indic_Conjunct_Break_Consonant(wc))
 	      {
-		InCB_state = InCB_Consonant;
+	        met_InCB_Consonant = TRUE;
+		met_InCB_Consonant_Linker = FALSE;
 		is_grapheme_boundary = FALSE;
 	      }
 
-	    if (_pango_is_Indic_Conjunct_Break_Extend(wc) &&
-		!_pango_is_Indic_Conjunct_Break_Linker(next_wc))
-	      InCB_state = InCB_None;
+	    if (!(_pango_is_Indic_Conjunct_Break_Extend(wc) ||
+		  _pango_is_Indic_Conjunct_Break_Linker(wc)))
+	      {
+	        met_InCB_Consonant = FALSE;
+		met_InCB_Consonant_Linker = FALSE;
+	      }
 	  }
 
 	if (prev_GB_type == GB_Prepend)
@@ -578,14 +621,13 @@ default_break (const char    *text,
 	if (is_Extended_Pictographic)
 	  met_Extended_Pictographic = TRUE;
 
-	if (InCB_state == InCB_Consonant &&
-	    !_pango_is_Indic_Conjunct_Break_Extend(prev_wc) &&
+	if (met_InCB_Consonant && !met_InCB_Consonant_Linker &&
 	    _pango_is_Indic_Conjunct_Break_Linker(wc))
-	      InCB_state = InCB_Consonant_Linker; /* Rule GB9c */
+	      met_InCB_Consonant_Linker = TRUE; /* Rule GB9c */
 
-	if (InCB_state == InCB_None &&
+	if (!met_InCB_Consonant && !met_InCB_Consonant_Linker &&
 	    _pango_is_Indic_Conjunct_Break_Consonant(wc))
-	      InCB_state = InCB_Consonant; /* Rule GB9c */
+	      met_InCB_Consonant = TRUE; /* Rule GB9c */
 
 	attrs[i].is_cursor_position = is_grapheme_boundary;
 	/* If this is a grapheme boundary, we have to decide if backspace
@@ -626,6 +668,10 @@ default_break (const char    *text,
 	    if (WB_type == WB_Other)
 	      switch (wc >> 8)
 	        {
+		case 0x00:
+		  if (wc == 0x00b8)
+		    WB_type = WB_ALetter; /* For Unicode 17.0.0 */
+		  break;
 		case 0x30:
 		  if (wc == 0x3031 || wc == 0x3032 || wc == 0x3033 || wc == 0x3034 || wc == 0x3035 ||
 		      wc == 0x309b || wc == 0x309c || wc == 0x30a0 || wc == 0x30fc)
@@ -1188,10 +1234,12 @@ default_break (const char    *text,
 	      break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
 	    break_op = BREAK_PROHIBITED;
 
-	  if ((_pango_Is_Emoji_Extended_Pictographic (prev_wc) &&
-	       g_unichar_type (prev_wc) == G_UNICODE_UNASSIGNED) &&
+	  if (met_Ext_Pict_Unassigned &&
 	      break_type == G_UNICODE_BREAK_EMOJI_MODIFIER)
-	    break_op = BREAK_PROHIBITED;
+	    {
+	      met_Ext_Pict_Unassigned = FALSE;
+	      break_op = BREAK_PROHIBITED;
+	    }
 
 	  /* Rule LB30a */
 	  if (prev_LB_type == LB_RI_Odd && LB_type == LB_RI_Even)
@@ -1410,12 +1458,12 @@ default_break (const char    *text,
 
 	  if (prev_prev_break_type == G_UNICODE_BREAK_HEBREW_LETTER &&
 	      (prev_break_type == G_UNICODE_BREAK_HYPHEN ||
-	       (prev_break_type == G_UNICODE_BREAK_AFTER &&
-		!_pango_is_EastAsianWide(prev_wc))) &&
+	       prev_break_type == G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN) &&
 	      break_type != G_UNICODE_BREAK_HEBREW_LETTER)
 	    break_op = BREAK_PROHIBITED; /* Rule LB21a */
 
 	  if (break_type == G_UNICODE_BREAK_AFTER ||
+	      break_type == G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN ||
 	      break_type == G_UNICODE_BREAK_HYPHEN ||
 	      break_type == G_UNICODE_BREAK_NON_STARTER ||
 	      prev_break_type == G_UNICODE_BREAK_BEFORE)
@@ -1432,8 +1480,9 @@ default_break (const char    *text,
 	       prev_prev_break_type == G_UNICODE_BREAK_CONTINGENT ||
 	       prev_prev_break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE) &&
 	      (prev_break_type == G_UNICODE_BREAK_HYPHEN ||
-	       prev_LB_type == LB_Hyphen) &&
-	       break_type == G_UNICODE_BREAK_ALPHABETIC)
+	       prev_break_type == G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN) &&
+	      (break_type == G_UNICODE_BREAK_ALPHABETIC ||
+	       break_type == G_UNICODE_BREAK_HEBREW_LETTER))
 	     break_op = BREAK_PROHIBITED;
 
 	  if (prev_break_type == G_UNICODE_BREAK_CONTINGENT ||
@@ -1550,7 +1599,8 @@ default_break (const char    *text,
 	  if (break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE &&
 	      (prev_break_type != G_UNICODE_BREAK_SPACE &&
 	       prev_break_type != G_UNICODE_BREAK_AFTER &&
-	       prev_break_type != G_UNICODE_BREAK_HYPHEN))
+	       prev_break_type != G_UNICODE_BREAK_HYPHEN &&
+	       prev_break_type != G_UNICODE_BREAK_UNAMBIGUOUS_HYPHEN))
 	    break_op = BREAK_PROHIBITED; /* Rule LB12a */
 
 	  if (prev_break_type == G_UNICODE_BREAK_NON_BREAKING_GLUE)
@@ -1574,6 +1624,12 @@ default_break (const char    *text,
 
 	      if (met_LB15a)
 		break_op = BREAK_PROHIBITED;
+	    }
+	  else
+	    {
+	      if (_pango_Is_Emoji_Extended_Pictographic (wc) &&
+		  g_unichar_type (wc) == G_UNICODE_UNASSIGNED)
+		met_Ext_Pict_Unassigned = TRUE;
 	    }
 
 	  if (prev_wc == 0x200D)
@@ -2009,6 +2065,7 @@ remove_breaks_from_range (const char   *text,
 
       ch = g_utf8_get_char (p);
       bt = g_unichar_break_type (ch);
+      FIX_BREAK_TYPE (bt, ch);
 
       /* Hyphens and visible word dividers */
       if (after_hyphen)
@@ -2017,7 +2074,7 @@ remove_breaks_from_range (const char   *text,
       after_hyphen = ch == 0x00ad || /* Soft Hyphen */
          ch == 0x05A0 || ch == 0x2010 || /* Breaking Hyphens */
          ch == 0x2012 || ch == 0x2013 ||
-         ch == 0x05BE || ch == 0x0F0B || /* Visible word dividers */
+         ch == 0x0F0B || /* Visible word dividers */
          ch == 0x1361 || ch == 0x17D8 ||
          ch == 0x17DA || ch == 0x2027 ||
          ch == 0x007C;
