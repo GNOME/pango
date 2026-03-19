@@ -325,6 +325,8 @@ gboolean         pango_script_iter_next      (PangoScriptIter     *iter);
 PANGO_AVAILABLE_IN_1_4
 void             pango_script_iter_free      (PangoScriptIter     *iter);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoScriptIter, pango_script_iter_free)
+
 #include <pango/pango-language.h>
 
 PANGO_AVAILABLE_IN_1_4
