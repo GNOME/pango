@@ -395,6 +395,92 @@ done:
   cairo_restore (crenderer->cr);
 }
 
+static gboolean
+pango_cairo_glyph_string_has_unknown_glyphs (PangoGlyphString *glyphs)
+{
+  int i;
+
+  for (i = 0; i < glyphs->num_glyphs; i++)
+    {
+      if (glyphs->glyphs[i].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+        return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
+pango_cairo_glyph_range_has_unknown_glyphs (PangoGlyphString *glyphs,
+                                            int               glyph_start,
+                                            int               glyph_end)
+{
+  int i;
+  int dir = glyph_start < glyph_end ? 1 : -1;
+
+  for (i = glyph_start; i != glyph_end; i += dir)
+    {
+      if (glyphs->glyphs[i].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+        return TRUE;
+    }
+
+  return FALSE;
+}
+
+static int
+pango_cairo_renderer_count_glyphs (PangoGlyphString *glyphs,
+                                   int               glyph_start,
+                                   int               glyph_end,
+                                   gboolean          use_hex_box_scaled_font)
+{
+  int count = 0;
+  int i;
+  int dir = glyph_start < glyph_end ? 1 : -1;
+
+  for (i = glyph_start; i != glyph_end; i += dir)
+    {
+      PangoGlyph glyph = glyphs->glyphs[i].glyph;
+
+      if (glyph == PANGO_GLYPH_EMPTY)
+        continue;
+
+      if (!use_hex_box_scaled_font && (glyph & PANGO_GLYPH_UNKNOWN_FLAG))
+        continue;
+
+      count++;
+    }
+
+  return count;
+}
+
+static void
+pango_cairo_renderer_get_glyph_range (int  glyph_start,
+                                      int  glyph_end,
+                                      int *range_start,
+                                      int *range_end)
+{
+  if (glyph_start < glyph_end)
+    {
+      *range_start = glyph_start;
+      *range_end = glyph_end;
+    }
+  else
+    {
+      *range_start = glyph_end + 1;
+      *range_end = glyph_start + 1;
+    }
+}
+
+static gboolean
+pango_cairo_renderer_has_hex_box_scaled_font (PangoCairoRenderer *crenderer,
+                                              PangoFont          *font,
+                                              PangoGlyphString   *glyphs)
+{
+  return !crenderer->do_path &&
+         crenderer->has_show_text_glyphs &&
+         pango_cairo_glyph_string_has_unknown_glyphs (glyphs) &&
+         _pango_cairo_font_get_hex_box_scaled_font ((PangoCairoFont *) font) != NULL;
+}
+
 #ifndef STACK_BUFFER_SIZE
 #define STACK_BUFFER_SIZE (512 * sizeof (int))
 #endif
@@ -402,16 +488,19 @@ done:
 #define STACK_ARRAY_LENGTH(T) (STACK_BUFFER_SIZE / sizeof(T))
 
 static void
-pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
-				       const char           *text,
-				       int                   text_len,
-				       PangoGlyphString     *glyphs,
-				       cairo_text_cluster_t *clusters,
-				       int                   num_clusters,
-				       gboolean              backward,
-				       PangoFont            *font,
-				       int                   x,
-				       int                   y)
+pango_cairo_renderer_show_text_glyphs_range (PangoRenderer        *renderer,
+					     const char           *text,
+					     int                   text_len,
+					     PangoGlyphString     *glyphs,
+					     int                   glyph_start,
+					     int                   glyph_end,
+					     cairo_text_cluster_t *clusters,
+					     int                   num_clusters,
+					     gboolean              backward,
+					     PangoFont            *font,
+					     int                   x,
+					     int                   y,
+					     gboolean              use_hex_box_scaled_font)
 {
   PangoCairoRenderer *crenderer = (PangoCairoRenderer *) (renderer);
 
@@ -426,9 +515,15 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
   if (!crenderer->do_path)
     set_color (crenderer, PANGO_RENDER_PART_FOREGROUND);
 
-  if (!_pango_cairo_font_install (font, crenderer->cr))
+  for (i = 0; i < glyph_start; i++)
+    x_position += glyphs->glyphs[i].geometry.width;
+
+  if (use_hex_box_scaled_font)
+    cairo_set_scaled_font (crenderer->cr,
+                           _pango_cairo_font_get_hex_box_scaled_font ((PangoCairoFont *) font));
+  else if (!_pango_cairo_font_install (font, crenderer->cr))
     {
-      for (i = 0; i < glyphs->num_glyphs; i++)
+      for (i = glyph_start; i < glyph_end; i++)
 	{
 	  PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
@@ -447,13 +542,13 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
       goto done;
     }
 
-  if (glyphs->num_glyphs > (int) G_N_ELEMENTS (stack_glyphs))
-    cairo_glyphs = g_new (cairo_glyph_t, glyphs->num_glyphs);
+  if (glyph_end - glyph_start > (int) G_N_ELEMENTS (stack_glyphs))
+    cairo_glyphs = g_new (cairo_glyph_t, glyph_end - glyph_start);
   else
     cairo_glyphs = stack_glyphs;
 
   count = 0;
-  for (i = 0; i < glyphs->num_glyphs; i++)
+  for (i = glyph_start; i < glyph_end; i++)
     {
       PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
@@ -466,10 +561,18 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
 
 	  if (gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
             {
-              if (gi->glyph == (0x20 | PANGO_GLYPH_UNKNOWN_FLAG))
+              if (use_hex_box_scaled_font)
+                {
+                  cairo_glyphs[count].index = _pango_cairo_font_encode_hex_box_glyph ((PangoCairoFont *) font,
+                                                                                       gi->glyph);
+                  cairo_glyphs[count].x = cx;
+                  cairo_glyphs[count].y = cy;
+                  count++;
+                }
+              else if (gi->glyph == (0x20 | PANGO_GLYPH_UNKNOWN_FLAG))
                 ; /* no hex boxes for space, please */
               else
-	        _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
+		        _pango_cairo_renderer_draw_unknown_glyph (crenderer, font, gi, cx, cy);
             }
 	  else
 	    {
@@ -499,6 +602,69 @@ pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
 
 done:
   cairo_restore (crenderer->cr);
+}
+
+static void
+pango_cairo_renderer_show_text_glyphs (PangoRenderer        *renderer,
+				       const char           *text,
+				       int                   text_len,
+				       PangoGlyphString     *glyphs,
+				       cairo_text_cluster_t *clusters,
+				       int                   num_clusters,
+				       gboolean              backward,
+				       PangoFont            *font,
+				       int                   x,
+				       int                   y)
+{
+  pango_cairo_renderer_show_text_glyphs_range (renderer,
+					       text,
+					       text_len,
+					       glyphs,
+					       0,
+					       glyphs->num_glyphs,
+					       clusters,
+					       num_clusters,
+					       backward,
+					       font,
+					       x,
+					       y,
+					       FALSE);
+}
+
+static void
+pango_cairo_renderer_show_text_glyphs_segment (PangoRenderer        *renderer,
+					       const char           *text,
+					       PangoGlyphString     *glyphs,
+					       int                   text_start,
+					       int                   text_end,
+					       int                   glyph_start,
+					       int                   glyph_end,
+					       cairo_text_cluster_t *clusters,
+					       int                   num_clusters,
+					       gboolean              backward,
+					       PangoFont            *font,
+					       int                   x,
+					       int                   y,
+					       gboolean              use_hex_box_scaled_font)
+{
+  int range_start, range_end;
+
+  pango_cairo_renderer_get_glyph_range (glyph_start, glyph_end,
+					&range_start, &range_end);
+
+  pango_cairo_renderer_show_text_glyphs_range (renderer,
+					       text + text_start,
+					       text_end - text_start,
+					       glyphs,
+					       range_start,
+					       range_end,
+					       clusters,
+					       num_clusters,
+					       backward,
+					       font,
+					       x,
+					       y,
+					       use_hex_box_scaled_font);
 }
 
 static void
@@ -533,6 +699,7 @@ pango_cairo_renderer_draw_glyph_item (PangoRenderer     *renderer,
   PangoGlyphItemIter   iter;
   cairo_text_cluster_t *cairo_clusters;
   cairo_text_cluster_t stack_clusters[STACK_ARRAY_LENGTH (cairo_text_cluster_t)];
+  gboolean              use_hex_box_scaled_font;
   int num_clusters;
 
   if (!crenderer->has_show_text_glyphs || crenderer->do_path)
@@ -547,50 +714,96 @@ pango_cairo_renderer_draw_glyph_item (PangoRenderer     *renderer,
       return;
     }
 
+  use_hex_box_scaled_font = pango_cairo_renderer_has_hex_box_scaled_font (crenderer,
+									  font,
+									  glyphs);
+
   if (glyphs->num_glyphs > (int) G_N_ELEMENTS (stack_clusters))
     cairo_clusters = g_new (cairo_text_cluster_t, glyphs->num_glyphs);
   else
     cairo_clusters = stack_clusters;
 
-  num_clusters = 0;
-  if (pango_glyph_item_iter_init_start (&iter, glyph_item, text))
-    {
-      do {
-        int num_bytes, num_glyphs, i;
+  {
+    gboolean have_segment = FALSE;
+    gboolean segment_use_hex_box = FALSE;
+    int segment_start_index = 0;
+    int segment_end_index = 0;
+    int segment_start_glyph = 0;
+    int segment_end_glyph = 0;
 
-        num_bytes  = iter.end_index - iter.start_index;
-        num_glyphs = backward ? iter.start_glyph - iter.end_glyph : iter.end_glyph - iter.start_glyph;
+    num_clusters = 0;
+    if (pango_glyph_item_iter_init_start (&iter, glyph_item, text))
+      {
+	do {
+	  gboolean cluster_use_hex_box;
+	  int num_bytes, num_glyphs;
 
-	if (num_bytes < 1)
-	  g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_bytes %d", num_bytes);
-	if (num_glyphs < 1)
-	  g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_glyphs %d", num_glyphs);
+	  num_bytes = iter.end_index - iter.start_index;
+	  cluster_use_hex_box = use_hex_box_scaled_font &&
+				pango_cairo_glyph_range_has_unknown_glyphs (glyphs,
+									    iter.start_glyph,
+									    iter.end_glyph);
+	  num_glyphs = pango_cairo_renderer_count_glyphs (glyphs,
+							   iter.start_glyph,
+							   iter.end_glyph,
+							   cluster_use_hex_box);
 
-	/* Discount empty and unknown glyphs */
-	for (i = MIN (iter.start_glyph, iter.end_glyph+1);
-	     i < MAX (iter.start_glyph+1, iter.end_glyph);
-	     i++)
-	  {
-	    PangoGlyphInfo *gi = &glyphs->glyphs[i];
+	  if (num_bytes < 1)
+	    g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_bytes %d", num_bytes);
+	  if (backward ? iter.start_glyph - iter.end_glyph < 1 : iter.end_glyph - iter.start_glyph < 1)
+	    g_warning ("pango_cairo_renderer_draw_glyph_item: bad cluster has num_glyphs %d",
+		       backward ? iter.start_glyph - iter.end_glyph : iter.end_glyph - iter.start_glyph);
 
-	    if (gi->glyph == PANGO_GLYPH_EMPTY ||
-		gi->glyph & PANGO_GLYPH_UNKNOWN_FLAG)
-	      num_glyphs--;
-	  }
+	  if (have_segment && cluster_use_hex_box != segment_use_hex_box)
+	    {
+	      pango_cairo_renderer_show_text_glyphs_segment (renderer,
+							     text,
+							     glyphs,
+							     segment_start_index,
+							     segment_end_index,
+							     segment_start_glyph,
+							     segment_end_glyph,
+							     cairo_clusters,
+							     num_clusters,
+							     backward,
+							     font,
+							     x, y,
+							     segment_use_hex_box);
+	      have_segment = FALSE;
+	      num_clusters = 0;
+	    }
 
-        cairo_clusters[num_clusters].num_bytes  = num_bytes;
-        cairo_clusters[num_clusters].num_glyphs = num_glyphs;
-        num_clusters++;
-      } while (pango_glyph_item_iter_next_cluster (&iter));
-    }
+	  if (!have_segment)
+	    {
+	      segment_use_hex_box = cluster_use_hex_box;
+	      segment_start_index = iter.start_index;
+	      segment_start_glyph = iter.start_glyph;
+	      have_segment = TRUE;
+	    }
 
-  pango_cairo_renderer_show_text_glyphs (renderer,
-					 text + item->offset, item->length,
-					 glyphs,
-					 cairo_clusters, num_clusters,
-					 backward,
-					 font,
-					 x, y);
+	  segment_end_index = iter.end_index;
+	  segment_end_glyph = iter.end_glyph;
+	  cairo_clusters[num_clusters].num_bytes = num_bytes;
+	  cairo_clusters[num_clusters].num_glyphs = num_glyphs;
+	  num_clusters++;
+	} while (pango_glyph_item_iter_next_cluster (&iter));
+      }
+
+    if (have_segment)
+      pango_cairo_renderer_show_text_glyphs_segment (renderer,
+						     text,
+						     glyphs,
+						     segment_start_index,
+						     segment_end_index,
+						     segment_start_glyph,
+						     segment_end_glyph,
+						     cairo_clusters,
+						     num_clusters,
+						     backward,
+						     font,
+						     x, y,
+						     segment_use_hex_box);
+  }
 
   if (cairo_clusters != stack_clusters)
     g_free (cairo_clusters);

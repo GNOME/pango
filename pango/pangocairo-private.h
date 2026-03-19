@@ -79,7 +79,11 @@ struct _PangoCairoFontPrivate
   PangoCairoFontPrivateScaledFontData *data;
 
   cairo_scaled_font_t *scaled_font;
+  cairo_scaled_font_t *hex_box_scaled_font;
   PangoCairoFontHexBoxInfo *hbi;
+  GHashTable *hex_box_glyphs;
+  GArray *hex_box_pango_glyphs;
+  unsigned int hex_box_glyph_base;
 
   gboolean is_hinted;
   PangoGravity gravity;
@@ -103,6 +107,9 @@ struct _PangoCairoFontIface
 
 gboolean _pango_cairo_font_install (PangoFont *font,
 				    cairo_t   *cr);
+cairo_scaled_font_t *_pango_cairo_font_get_hex_box_scaled_font (PangoCairoFont *cfont);
+unsigned long _pango_cairo_font_encode_hex_box_glyph (PangoCairoFont *cfont,
+						      PangoGlyph      glyph);
 PangoFontMetrics * _pango_cairo_font_get_metrics (PangoFont     *font,
 						  PangoLanguage *language);
 PangoCairoFontHexBoxInfo *_pango_cairo_font_get_hex_box_info (PangoCairoFont *cfont);
