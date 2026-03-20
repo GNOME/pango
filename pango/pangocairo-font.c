@@ -151,25 +151,46 @@ pango_cairo_hex_box_draw_frame (cairo_t  *cr,
                                 double    line_width,
                                 gboolean  invalid)
 {
-  cairo_rectangle (cr, x, y, width, height);
+  double half_line_width = 0.5 * line_width;
+
+  cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+  cairo_rectangle (cr,
+                   x - half_line_width,
+                   y - half_line_width,
+                   width + line_width,
+                   height + line_width);
+  cairo_rectangle (cr,
+                   x + half_line_width,
+                   y + half_line_width,
+                   MAX (width - line_width, 0),
+                   MAX (height - line_width, 0));
 
   if (invalid)
     {
-      cairo_new_sub_path (cr);
-      cairo_move_to (cr, x, y);
-      cairo_rel_line_to (cr, width, height);
+      double diagonal_length = hypot (width, height);
 
-      cairo_new_sub_path (cr);
-      cairo_move_to (cr, x + width, y);
-      cairo_rel_line_to (cr, -width, height);
+      if (diagonal_length > 0)
+        {
+          double dx = half_line_width * height / diagonal_length;
+          double dy = half_line_width * width / diagonal_length;
 
-      cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+          cairo_new_sub_path (cr);
+          cairo_move_to (cr, x - dx, y + dy);
+          cairo_line_to (cr, x + dx, y - dy);
+          cairo_line_to (cr, x + width + dx, y + height - dy);
+          cairo_line_to (cr, x + width - dx, y + height + dy);
+          cairo_close_path (cr);
+
+          cairo_new_sub_path (cr);
+          cairo_move_to (cr, x + width + dx, y + dy);
+          cairo_line_to (cr, x + width - dx, y - dy);
+          cairo_line_to (cr, x - dx, y + height - dy);
+          cairo_line_to (cr, x + dx, y + height + dy);
+          cairo_close_path (cr);
+        }
     }
 
-  cairo_set_line_width (cr, line_width);
-  cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
-  cairo_set_miter_limit (cr, 2.);
-  cairo_stroke (cr);
+  cairo_fill (cr);
 }
 
 static void
