@@ -176,7 +176,7 @@ static gboolean
 find_color(const char *name,
 	   PangoColor *color)
 {
-  ColorEntry *found;
+  const ColorEntry *found;
 
   found = bsearch (name, color_entries, G_N_ELEMENTS (color_entries),
 		   sizeof (ColorEntry),

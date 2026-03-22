@@ -2846,7 +2846,8 @@ pango_attr_list_from_string (const char *text)
   p = text + strspn (text, " \t\n");
   while (*p)
     {
-      char *endp;
+      const char *endp;
+      char *endtok;
       gint64 start_index;
       gint64 end_index;
       char *str;
@@ -2860,17 +2861,20 @@ pango_attr_list_from_string (const char *text)
 
       if g_ascii_isdigit (p[0])
         {
-          start_index = g_ascii_strtoll (p, &endp, 10);
-          if (*endp != ' ')
+          start_index = g_ascii_strtoll (p, &endtok, 10);
+          if (*endtok != ' ')
             goto fail;
+          endp = endtok;
 
           p = endp + strspn (endp, " ");
           if (!*p)
             goto fail;
+          endp = endtok;
 
-          end_index = g_ascii_strtoll (p, &endp, 10);
-          if (*endp != ' ')
+          end_index = g_ascii_strtoll (p, &endtok, 10);
+          if (*endtok != ' ')
             goto fail;
+          endp = endtok;
 
           p = endp + strspn (endp, " ");
         }
@@ -2889,19 +2893,22 @@ pango_attr_list_from_string (const char *text)
         goto fail;
 
 #define INT_ATTR(name) \
-          integer = g_ascii_strtoll (p, &endp, 10); \
-          if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ((int)integer);
+          integer = g_ascii_strtoll (p, &endtok, 10); \
+          if (!is_valid_end_char (*endtok)) goto fail; \
+          attr = pango_attr_##name##_new ((int)integer); \
+          endp = endtok;
 
 #define INT_ATTR_ABS(name) \
-          integer = g_ascii_strtoll (p, &endp, 10); \
-          if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new_absolute ((int)integer);
+          integer = g_ascii_strtoll (p, &endtok, 10); \
+          if (!is_valid_end_char (*endtok)) goto fail; \
+          attr = pango_attr_##name##_new_absolute ((int)integer); \
+          endp = endtok;
 
 #define MARK_ATTR(name) \
-          integer = g_ascii_strtoll (p, &endp, 10); \
-          if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ();
+          integer = g_ascii_strtoll (p, &endtok, 10); \
+          if (!is_valid_end_char (*endtok)) goto fail; \
+          attr = pango_attr_##name##_new (); \
+          endp = endtok;
 
 #define BOOLEAN_ATTR(name,type) \
           if (strncmp (p, "true", strlen ("true")) == 0) \
@@ -2915,9 +2922,10 @@ pango_attr_list_from_string (const char *text)
               endp = (char *)(p + strlen ("false")); \
             } \
           else \
-            integer = g_ascii_strtoll (p, &endp, 10); \
-          if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ((type)integer);
+            integer = g_ascii_strtoll (p, &endtok, 10); \
+          if (!is_valid_end_char (*endtok)) goto fail; \
+          attr = pango_attr_##name##_new ((type)integer); \
+          endp = endtok;
 
 #define ENUM_ATTR(name, type, min, max) \
           endp = (char *)p + strcspn (p, ",\n"); \
@@ -2928,14 +2936,16 @@ pango_attr_list_from_string (const char *text)
           attr = pango_attr_##name##_new ((type) CLAMP (integer, min, max));
 
 #define FLAGS_ATTR(name,type) \
-          integer = g_ascii_strtoll (p, &endp, 10); \
-          if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ((type)integer);
+          integer = g_ascii_strtoll (p, &endtok, 10); \
+          if (!is_valid_end_char (*endtok)) goto fail; \
+          attr = pango_attr_##name##_new ((type)integer); \
+          endp = endtok;
 
 #define FLOAT_ATTR(name) \
-          num = g_ascii_strtod (p, &endp); \
-          if (!is_valid_end_char (*endp)) goto fail; \
-          attr = pango_attr_##name##_new ((float)num);
+          num = g_ascii_strtod (p, &endtok); \
+          if (!is_valid_end_char (*endtok)) goto fail; \
+          attr = pango_attr_##name##_new ((float)num); \
+          endp = endtok;
 
 #define COLOR_ATTR(name) \
           endp = (char *)p + strcspn (p, ",\n"); \
