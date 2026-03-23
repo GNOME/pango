@@ -338,7 +338,7 @@ pango_context_load_fontset (PangoContext               *context,
 /**
  * pango_context_set_font_description:
  * @context: a `PangoContext`
- * @desc: (nullable): the new pango font description
+ * @desc: the new pango font description
  *
  * Set the default font description for the context
  */

@@ -9,6 +9,7 @@ builddir=$1
 # Ignore memory leaks lower in dependencies
 export LSAN_OPTIONS=suppressions=$srcdir/lsan.supp:print_suppressions=0:symbolize=1
 export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
+export FONTCONFIG_FILE=/etc/fonts/fonts.conf
 
 meson test -C ${builddir} \
         --timeout-multiplier "${MESON_TEST_TIMEOUT_MULTIPLIER}" \

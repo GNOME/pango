@@ -17,6 +17,7 @@ test_env.set('srcdir', meson.current_source_dir())
 test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
 test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
 test_env.set('LC_ALL', 'en_US.UTF-8')
+test_env.set('FONTCONFIG_FILE', '/etc/fonts/fonts.conf')
 
 tests = [
   [ 'test-coverage' ],
