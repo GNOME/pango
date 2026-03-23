@@ -2922,10 +2922,12 @@ pango_attr_list_from_string (const char *text)
               endp = (char *)(p + strlen ("false")); \
             } \
           else \
-            integer = g_ascii_strtoll (p, &endtok, 10); \
-          if (!is_valid_end_char (*endtok)) goto fail; \
-          attr = pango_attr_##name##_new ((type)integer); \
-          endp = endtok;
+            { \
+              integer = g_ascii_strtoll (p, &endtok, 10); \
+              endp = endtok; \
+            } \
+          if (!is_valid_end_char (*endp)) goto fail; \
+          attr = pango_attr_##name##_new ((type)integer);
 
 #define ENUM_ATTR(name, type, min, max) \
           endp = (char *)p + strcspn (p, ",\n"); \
