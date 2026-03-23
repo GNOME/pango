@@ -1,5 +1,30 @@
-Overview of changes in 1.57.1, xx-xx-xxxx
+Overview of changes in 1.57.1, 22-03-2026
 =========================================
+
+* Bugs fixed:
+  - #867 Bad font substitution causes application crashes
+  - #869 MacOS: subprojects/cairo/meson.build:1:0: ERROR: Value "gnu11,c11" (of
+    type "string") (sid)
+  - #870 MacOS: subprojects/pango/utils/viewer-cocoa.m:23:10: fatal error:
+    'cairo/cairo.h' file not found (sid)
+  - #871 gtk4-widget-factory crashes with pango error on macOS when an emoji is
+    entered into a text field
+  - #876 Inconsistency between documentation and code in
+    pango_context_set_font_description (Matthias Clasen)
+  - #882 The hex box characters generated in PDF can not be copied
+  - #885 warning: assignment discards 'const' qualifier from pointer target type
+    [-Wdiscarded-qualifiers]
+  - !884 Revert "meson: Rework introspection handling"
+  - !890 Update the code to support Unicode 17.0.0
+  - !892 Include fcfreetype.h where needed
+  - !893 meson: Update freetype2 wrap to fix ci warnings
+  - !894 Respect explicit language attribute when itemizing
+  - !895 Fix some subproject woes
+  - !896 meson: Add support for cross-compiling using Apple subsystems
+  - !897 (break.c) pass sentences to handle_sentences
+  - !898 add support for g_autoptr(PangoScriptIter)
+  - !900 fontmap: Mark get_family as nullable
+
 
 Overview of changes in 1.57.0, 25-08-2025
 =========================================
