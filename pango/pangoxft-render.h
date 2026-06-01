@@ -153,6 +153,8 @@ void pango_xft_render_layout      (XftDraw          *draw,
 				   int               x,
 				   int               y);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoXftRenderer, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGOXFT_RENDER_H__ */

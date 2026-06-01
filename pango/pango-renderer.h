@@ -284,6 +284,8 @@ PangoLayout       *pango_renderer_get_layout      (PangoRenderer     *renderer);
 PANGO_AVAILABLE_IN_1_20
 PangoLayoutLine   *pango_renderer_get_layout_line (PangoRenderer     *renderer);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoRenderer, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_RENDERER_H_ */

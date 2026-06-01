@@ -753,6 +753,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontFace, g_object_unref)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFont, g_object_unref)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(PangoFontDescription, pango_font_description_free)
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoFontMetrics, pango_font_metrics_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_FONT_H__ */

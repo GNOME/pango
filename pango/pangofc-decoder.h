@@ -116,6 +116,8 @@ PangoGlyph pango_fc_decoder_get_glyph   (PangoFcDecoder *decoder,
 					 PangoFcFont    *fcfont,
 					 guint32         wc);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoFcDecoder, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_DECODER_H_ */

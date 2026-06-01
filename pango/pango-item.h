@@ -162,6 +162,8 @@ GList *                 pango_itemize_with_base_dir  (PangoContext      *context
                                                       PangoAttrList     *attrs,
                                                       PangoAttrIterator *cached_iter);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoItem, pango_item_free)
+
 G_END_DECLS
 
 #endif /* __PANGO_ITEM_H__ */

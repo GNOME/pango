@@ -42,6 +42,8 @@ typedef struct _PangoCairoFcFontMap PangoCairoFcFontMap;
 PANGO_AVAILABLE_IN_ALL
 GType pango_cairo_fc_font_map_get_type (void) G_GNUC_CONST;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoCairoFcFontMap, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGOCAIRO_FC_H__ */

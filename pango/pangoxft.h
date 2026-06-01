@@ -154,6 +154,9 @@ PangoGlyph    pango_xft_font_get_unknown_glyph (PangoFont *font,
 						gunichar   wc);
 #endif /* PANGO_DISABLE_DEPRECATED */
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoXftFont, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoXftFontMap, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGOXFT_H__ */

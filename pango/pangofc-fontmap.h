@@ -245,6 +245,8 @@ void pango_fc_font_map_substitute_changed (PangoFcFontMap *fontmap);
  */
 #define PANGO_FC_FONT_VARIATIONS "fontvariations"
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoFcFontMap, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_FC_FONT_MAP_H__ */

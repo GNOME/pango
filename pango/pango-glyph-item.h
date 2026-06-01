@@ -170,6 +170,9 @@ gboolean pango_glyph_item_iter_next_cluster (PangoGlyphItemIter *iter);
 PANGO_AVAILABLE_IN_1_22
 gboolean pango_glyph_item_iter_prev_cluster (PangoGlyphItemIter *iter);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoGlyphItemIter, pango_glyph_item_iter_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoGlyphItem, pango_glyph_item_free)
+
 G_END_DECLS
 
 #endif /* __PANGO_GLYPH_ITEM_H__ */

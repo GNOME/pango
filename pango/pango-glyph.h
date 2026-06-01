@@ -264,6 +264,7 @@ void                    pango_shape_item                        (PangoItem      
                                                                  PangoGlyphString    *glyphs,
                                                                  PangoShapeFlags      flags);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoGlyphString, pango_glyph_string_free)
 
 G_END_DECLS
 
