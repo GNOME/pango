@@ -111,6 +111,8 @@ void                    pango_context_set_round_glyph_positions (PangoContext   
 PANGO_AVAILABLE_IN_1_44
 gboolean                pango_context_get_round_glyph_positions (PangoContext                 *context);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoContext, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_CONTEXT_H__ */

@@ -128,6 +128,7 @@ void                    pango_fontset_foreach           (PangoFontset           
                                                          PangoFontsetForeachFunc         func,
                                                          gpointer                        data);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoFontset, g_object_unref)
 
 G_END_DECLS
 

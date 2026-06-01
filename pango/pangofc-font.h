@@ -116,6 +116,7 @@ FT_Face    pango_fc_font_lock_face         (PangoFcFont      *font);
 PANGO_DEPRECATED_IN_1_44_FOR(pango_font_get_hb_font)
 void       pango_fc_font_unlock_face       (PangoFcFont      *font);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoFcFont, g_object_unref)
 
 G_END_DECLS
 #endif /* __PANGO_FC_FONT_H__ */

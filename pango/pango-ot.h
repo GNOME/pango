@@ -422,6 +422,11 @@ void            pango_ot_ruleset_description_free  (PangoOTRulesetDescription   
 
 #endif /* PANGO_DISABLE_DEPRECATED */
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoOTRulesetDescription, pango_ot_ruleset_description_free)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoOTBuffer, pango_ot_buffer_destroy)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoOTRuleset, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoOTInfo, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGO_OT_H__ */

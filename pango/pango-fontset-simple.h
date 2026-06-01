@@ -58,6 +58,7 @@ void                    pango_fontset_simple_append (PangoFontsetSimple *fontset
 PANGO_AVAILABLE_IN_ALL
 int                     pango_fontset_simple_size   (PangoFontsetSimple *fontset);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoFontsetSimple, g_object_unref)
 
 G_END_DECLS
 

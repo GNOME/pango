@@ -69,6 +69,7 @@ gboolean    pango_color_parse_with_alpha (PangoColor       *color,
 PANGO_AVAILABLE_IN_1_16
 char       *pango_color_to_string        (const PangoColor *color);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoColor, pango_color_free)
 
 G_END_DECLS
 

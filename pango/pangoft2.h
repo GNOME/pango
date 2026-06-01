@@ -153,6 +153,8 @@ PangoCoverage *pango_ft2_font_get_coverage (PangoFont       *font,
 					    PangoLanguage   *language);
 #endif /* PANGO_DISABLE_DEPRECATED */
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoFT2FontMap, g_object_unref)
+
 G_END_DECLS
 
 #endif /* __PANGOFT2_H__ */
