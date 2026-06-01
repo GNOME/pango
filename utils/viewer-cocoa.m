@@ -116,10 +116,11 @@ cocoa_view_destroy (gpointer instance)
 
 gpointer
 cocoa_view_create_surface (gpointer instance G_GNUC_UNUSED,
-			   int      width G_GNUC_UNUSED,
-			   int      height G_GNUC_UNUSED)
+			   int      width,
+			   int      height)
 {
-  return cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, NULL);
+  cairo_rectangle_t extents = { 0, 0, width, height };
+  return cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &extents);
 }
 
 void
