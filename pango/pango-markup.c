@@ -1207,6 +1207,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
   const char *weight = NULL;
   const char *variant = NULL;
   const char *stretch = NULL;
+  const char *width = NULL;
   const char *desc = NULL;
   const char *foreground = NULL;
   const char *background = NULL;
@@ -1284,6 +1285,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 	CHECK_ATTRIBUTE2(family, "font_family");
 	CHECK_ATTRIBUTE2(size, "font_size");
 	CHECK_ATTRIBUTE2(stretch, "font_stretch");
+	CHECK_ATTRIBUTE2(width, "font_width");
 	CHECK_ATTRIBUTE2(style, "font_style");
 	CHECK_ATTRIBUTE2(variant, "font_variant");
 	CHECK_ATTRIBUTE2(weight, "font_weight");
@@ -1335,6 +1337,7 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
         break;
       case 'w':
 	CHECK_ATTRIBUTE (weight);
+	CHECK_ATTRIBUTE (width);
 	break;
       default:;
       }
@@ -1489,6 +1492,25 @@ span_parse_func     (MarkupData            *md G_GNUC_UNUSED,
 		       stretch, line_number);
 	  goto error;
 	}
+    }
+
+  if (G_UNLIKELY (width))
+    {
+      PangoWidth pango_width;
+
+      if (pango_parse_width (width, &pango_width, FALSE))
+        add_attribute (tag, pango_attr_width_new (pango_width));
+      else
+        {
+          g_set_error (error,
+                       G_MARKUP_ERROR,
+                       G_MARKUP_ERROR_INVALID_CONTENT,
+                       _("'%s' is not a valid value for the 'width' "
+                         "attribute on <span> tag, line %d; valid "
+                         "values are for example 'ultra-condensed', 'semi-expanded' or a number"),
+                       width, line_number);
+          goto error;
+        }
     }
 
   if (G_UNLIKELY (foreground))

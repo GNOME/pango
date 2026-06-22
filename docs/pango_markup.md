@@ -108,6 +108,13 @@ stretch
   'condensed', 'semicondensed', 'normal', 'semiexpanded', 'expanded',
   'extraexpanded', 'ultraexpanded'.
 
+font_width
+width
+: One of 'ultracondensed', 'extracondensed',
+  'condensed', 'semicondensed', 'normal', 'semiexpanded', 'expanded',
+  'extraexpanded', 'ultraexpanded', or a numeric value.
+  Support for this attribute was added in Pango 1.58.
+
 font_features
 : A comma-separated list of OpenType font feature settings, in the same syntax as
   accepted by CSS. E.g: `font_features='dlig=1, -kern, afrc on'`.

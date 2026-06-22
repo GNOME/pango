@@ -948,6 +948,27 @@ test_match (void)
 }
 
 static void
+test_stretch_vs_width (void)
+{
+  PangoFontDescription *desc1;
+  PangoFontDescription *desc2;
+
+  desc1 = pango_font_description_from_string ("Futura Italic Semi-Expanded 14");
+  desc2 = pango_font_description_from_string ("Futura Bold width=1200 16");
+
+  g_assert_true (pango_font_description_get_set_fields (desc1) & PANGO_FONT_MASK_STRETCH);
+  g_assert_true (pango_font_description_get_stretch (desc1) == PANGO_STRETCH_SEMI_EXPANDED);
+  g_assert_true (pango_font_description_get_width (desc1) == PANGO_WIDTH_SEMI_EXPANDED);
+
+  g_assert_true (pango_font_description_get_set_fields (desc2) & PANGO_FONT_MASK_STRETCH);
+  g_assert_true (pango_font_description_get_stretch (desc2) == PANGO_STRETCH_EXPANDED);
+  g_assert_true (pango_font_description_get_width (desc2) == 1200);
+
+  pango_font_description_free (desc1);
+  pango_font_description_free (desc2);
+}
+
+static void
 test_font_scale (void)
 {
   PangoFontMap *fontmap;
@@ -1242,6 +1263,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/pango/fontdescription/to-filename", test_to_filename);
   g_test_add_func ("/pango/fontdescription/set-gravity", test_set_gravity);
   g_test_add_func ("/pango/fontdescription/match", test_match);
+  g_test_add_func ("/pango/fontdescription/stretch-vs-width", test_stretch_vs_width);
   g_test_add_func ("/pango/font/extents", test_extents);
   g_test_add_func ("/pango/font/enumerate", test_enumerate);
   g_test_add_func ("/pango/font/roundtrip/plain", test_roundtrip_plain);

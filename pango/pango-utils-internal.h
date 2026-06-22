@@ -43,6 +43,9 @@ gboolean pango_parse_flags              (GType       type,
 
 char    *_pango_trim_string             (const char *str);
 
+gboolean pango_parse_width (const char *str,
+                            PangoWidth *width,
+                            gboolean    warn);
 
 G_END_DECLS
 

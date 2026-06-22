@@ -162,6 +162,40 @@ get_weight_name (int weight)
   return NULL;
 }
 
+static const char *width_names[] = {
+  "ultracondensed",
+  "extracondensed",
+  "condensed",
+  "semicondensed",
+  "normal",
+  "semiexpanded",
+  "expanded",
+  "extraexpanded",
+  "ultraexpanded",
+};
+
+static int named_widths[] = {
+  500, 625, 750, 875, 1000, 1125, 1250, 1500, 2000
+};
+
+static int
+get_width (int pos)
+{
+  return named_widths[pos];
+}
+
+static const char *
+get_width_name (int width)
+{
+  for (int i = 0; i < G_N_ELEMENTS (named_widths); i++)
+    {
+      if (named_widths[i] == width)
+        return width_names[i];
+    }
+
+  return NULL;
+}
+
 static const char *attr_type_names[] = {
   "invalid",
   "language",
@@ -201,6 +235,7 @@ static const char *attr_type_names[] = {
   "sentence",
   "baseline-shift",
   "font-scale",
+  "width",
   NULL
 };
 
@@ -301,6 +336,16 @@ add_attribute (GtkJsonPrinter *printer,
 
     case PANGO_ATTR_STRETCH:
       gtk_json_printer_add_string (printer, "value", stretch_names[((PangoAttrInt*)attr)->value]);
+      break;
+
+    case PANGO_ATTR_WIDTH:
+      {
+        const char *name = get_width_name (((PangoAttrInt*)attr)->value);
+        if (name)
+          gtk_json_printer_add_string (printer, "value", name);
+        else
+          gtk_json_printer_add_integer (printer, "value", ((PangoAttrInt*)attr)->value);
+      }
       break;
 
     case PANGO_ATTR_UNDERLINE:
@@ -944,6 +989,13 @@ attr_for_type (GtkJsonParser *parser,
 
     case PANGO_ATTR_STRETCH:
       attr = pango_attr_stretch_new ((PangoStretch) parser_select_string (parser, stretch_names));
+      break;
+
+    case PANGO_ATTR_WIDTH:
+      if (gtk_json_parser_get_node (parser) == GTK_JSON_STRING)
+        attr = pango_attr_width_new (get_width (parser_select_string (parser, width_names)));
+      else
+        attr = pango_attr_width_new ((int) gtk_json_parser_get_int (parser));
       break;
 
     case PANGO_ATTR_SIZE:

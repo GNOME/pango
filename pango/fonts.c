@@ -31,6 +31,7 @@
 #include "pango-font-private.h"
 #include "pango-fontmap.h"
 #include "pango-impl-utils.h"
+#include "pango-utils-internal.h"
 
 struct _PangoFontDescription
 {
@@ -39,7 +40,7 @@ struct _PangoFontDescription
   PangoStyle style;
   PangoVariant variant;
   PangoWeight weight;
-  PangoStretch stretch;
+  PangoWidth width;
   PangoGravity gravity;
   PangoFontColor color;
 
@@ -65,7 +66,7 @@ static const PangoFontDescription pfd_defaults = {
   PANGO_STYLE_NORMAL,   /* style */
   PANGO_VARIANT_NORMAL, /* variant */
   PANGO_WEIGHT_NORMAL,  /* weight */
-  PANGO_STRETCH_NORMAL, /* stretch */
+  PANGO_WIDTH_NORMAL,   /* width */
   PANGO_GRAVITY_SOUTH,  /* gravity */
   PANGO_FONT_COLOR_DONT_CARE,  /* color */
   NULL,                 /* variations */
@@ -309,6 +310,49 @@ pango_font_description_get_weight (const PangoFontDescription *desc)
   return desc->weight;
 }
 
+static PangoWidth
+stretch_to_width (PangoStretch stretch)
+{
+  switch (stretch)
+    {
+    case PANGO_STRETCH_ULTRA_CONDENSED: return PANGO_WIDTH_ULTRA_CONDENSED;
+    case PANGO_STRETCH_EXTRA_CONDENSED: return PANGO_WIDTH_EXTRA_CONDENSED;
+    case PANGO_STRETCH_CONDENSED: return PANGO_WIDTH_CONDENSED;
+    case PANGO_STRETCH_SEMI_CONDENSED: return PANGO_WIDTH_SEMI_CONDENSED;
+    case PANGO_STRETCH_NORMAL: return PANGO_WIDTH_NORMAL;
+    case PANGO_STRETCH_SEMI_EXPANDED: return PANGO_WIDTH_SEMI_EXPANDED;
+    case PANGO_STRETCH_EXPANDED: return PANGO_WIDTH_EXPANDED;
+    case PANGO_STRETCH_EXTRA_EXPANDED: return PANGO_WIDTH_EXTRA_EXPANDED;
+    case PANGO_STRETCH_ULTRA_EXPANDED: return PANGO_WIDTH_ULTRA_EXPANDED;
+    default: g_assert_not_reached ();
+    }
+}
+
+static PangoStretch
+width_to_stretch (PangoWidth width)
+{
+  width *= 2;
+
+  if (width < PANGO_WIDTH_ULTRA_CONDENSED + PANGO_WIDTH_EXTRA_CONDENSED)
+    return PANGO_STRETCH_ULTRA_CONDENSED;
+  else if (width < PANGO_WIDTH_EXTRA_CONDENSED + PANGO_WIDTH_CONDENSED)
+    return PANGO_STRETCH_EXTRA_CONDENSED;
+  else if (width < PANGO_WIDTH_CONDENSED + PANGO_WIDTH_SEMI_CONDENSED)
+    return PANGO_STRETCH_CONDENSED;
+  else if (width < PANGO_WIDTH_SEMI_CONDENSED + PANGO_WIDTH_NORMAL)
+    return PANGO_STRETCH_SEMI_CONDENSED;
+  else if (width < PANGO_WIDTH_NORMAL + PANGO_WIDTH_SEMI_EXPANDED)
+    return PANGO_STRETCH_NORMAL;
+  else if (width < PANGO_WIDTH_SEMI_EXPANDED + PANGO_WIDTH_EXPANDED)
+    return PANGO_STRETCH_SEMI_EXPANDED;
+  else if (width < PANGO_WIDTH_EXPANDED + PANGO_WIDTH_EXTRA_EXPANDED)
+    return PANGO_STRETCH_EXPANDED;
+  else if (width < PANGO_WIDTH_EXTRA_EXPANDED + PANGO_WIDTH_ULTRA_EXPANDED)
+    return PANGO_STRETCH_EXTRA_EXPANDED;
+  else
+    return PANGO_STRETCH_ULTRA_EXPANDED;
+}
+
 /**
  * pango_font_description_set_stretch:
  * @desc: a `PangoFontDescription`
@@ -325,7 +369,7 @@ pango_font_description_set_stretch (PangoFontDescription *desc,
 {
   g_return_if_fail (desc != NULL);
 
-  desc->stretch = stretch;
+  desc->width = stretch_to_width (stretch);
   desc->mask |= PANGO_FONT_MASK_STRETCH;
 }
 
@@ -344,9 +388,55 @@ pango_font_description_set_stretch (PangoFontDescription *desc,
 PangoStretch
 pango_font_description_get_stretch (const PangoFontDescription *desc)
 {
-  g_return_val_if_fail (desc != NULL, pfd_defaults.stretch);
+  g_return_val_if_fail (desc != NULL, width_to_stretch (pfd_defaults.width));
 
-  return desc->stretch;
+  return width_to_stretch (desc->width);
+}
+
+/**
+ * pango_font_description_set_width:
+ * @desc: a `PangoFontDescription`
+ * @width: the width for the font description
+ *
+ * Sets the width field of a font description.
+ *
+ * The width field specifies how narrow or wide the
+ * font should be. In addition to the values of the
+ * [enum@Pango.Width] enumeration, other
+ * intermediate numeric values are possible.
+ *
+ * Since: 1.58
+ */
+void
+pango_font_description_set_width (PangoFontDescription *desc,
+                                  PangoWidth            width)
+{
+  g_return_if_fail (desc != NULL);
+
+  desc->width = width;
+  desc->mask |= PANGO_FONT_MASK_WIDTH;
+}
+
+/**
+ * pango_font_description_get_width:
+ * @desc: a `PangoFontDescription`.
+ *
+ * Gets the width field of a font description.
+ *
+ * See [method@Pango.FontDescription.set_width].
+ *
+ * Returns: the width field for the font description.
+ *   Use [method@Pango.FontDescription.get_set_fields] to find
+ *   out if the field was explicitly set or not.
+ *
+ * Since: 1.58
+ */
+PangoWidth
+pango_font_description_get_width (const PangoFontDescription *desc)
+{
+  g_return_val_if_fail (desc != NULL, pfd_defaults.width);
+
+  return desc->width;
 }
 
 /**
@@ -897,8 +987,8 @@ pango_font_description_merge_static (PangoFontDescription       *desc,
     desc->variant = desc_to_merge->variant;
   if (new_mask & PANGO_FONT_MASK_WEIGHT)
     desc->weight = desc_to_merge->weight;
-  if (new_mask & PANGO_FONT_MASK_STRETCH)
-    desc->stretch = desc_to_merge->stretch;
+  if (new_mask & PANGO_FONT_MASK_WIDTH)
+    desc->width = desc_to_merge->width;
   if (new_mask & PANGO_FONT_MASK_SIZE)
     {
       desc->size = desc_to_merge->size;
@@ -922,14 +1012,16 @@ compute_distance (const PangoFontDescription *a,
 {
   if (a->style == b->style)
     {
-      return abs((int)(a->weight) - (int)(b->weight));
+      return abs ((int) a->weight - (int) b->weight) +
+             abs ((int) a->width - (int) b->width);
     }
   else if (a->style != PANGO_STYLE_NORMAL &&
            b->style != PANGO_STYLE_NORMAL)
     {
       /* Equate oblique and italic, but with a big penalty
        */
-      return 1000000 + abs ((int)(a->weight) - (int)(b->weight));
+      return 1000000 + abs ((int) a->weight  - (int) b->weight) +
+                       abs ((int) a->width - (int) b->width);
     }
   else
     return G_MAXINT;
@@ -945,7 +1037,7 @@ compute_distance (const PangoFontDescription *a,
  * for @desc than those of @old_match are, or if @old_match is %NULL,
  * determines if @new_match is a match at all.
  *
- * Approximate matching is done for weight and style; other style attributes
+ * Approximate matching is done for weight, width and style; other style attributes
  * must match exactly. Style attributes are all attributes other than family
  * and size-related attributes. Approximate matching for style considers
  * %PANGO_STYLE_OBLIQUE and %PANGO_STYLE_ITALIC as matches, but not as good
@@ -964,7 +1056,6 @@ pango_font_description_better_match (const PangoFontDescription *desc,
   g_return_val_if_fail (new_match != NULL, G_MAXINT);
 
   if (new_match->variant == desc->variant &&
-      new_match->stretch == desc->stretch &&
       new_match->gravity == desc->gravity &&
       (desc->color == PANGO_FONT_COLOR_DONT_CARE ||
        new_match->color == desc->color))
@@ -1081,7 +1172,7 @@ pango_font_description_equal (const PangoFontDescription *desc1,
   return desc1->style == desc2->style &&
          desc1->variant == desc2->variant &&
          desc1->weight == desc2->weight &&
-         desc1->stretch == desc2->stretch &&
+         desc1->width == desc2->width &&
          desc1->size == desc2->size &&
          desc1->size_is_absolute == desc2->size_is_absolute &&
          desc1->gravity == desc2->gravity &&
@@ -1139,7 +1230,7 @@ pango_font_description_hash (const PangoFontDescription *desc)
   hash ^= desc->style << 16;
   hash ^= desc->variant << 18;
   hash ^= desc->weight << 16;
-  hash ^= desc->stretch << 26;
+  hash ^= desc->width << 22;
   hash ^= desc->gravity << 28;
   hash ^= desc->color << 29;
 
@@ -1241,16 +1332,16 @@ static const FieldMap weight_map[] = {
   { PANGO_WEIGHT_ULTRAHEAVY, "Extra-Black" }
 };
 
-static const FieldMap stretch_map[] = {
-  { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
-  { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
-  { PANGO_STRETCH_CONDENSED,       "Condensed" },
-  { PANGO_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
-  { PANGO_STRETCH_NORMAL,          "" },
-  { PANGO_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
-  { PANGO_STRETCH_EXPANDED,        "Expanded" },
-  { PANGO_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
-  { PANGO_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
+static const FieldMap width_map[] = {
+  { PANGO_WIDTH_ULTRA_CONDENSED, "Ultra-Condensed" },
+  { PANGO_WIDTH_EXTRA_CONDENSED, "Extra-Condensed" },
+  { PANGO_WIDTH_CONDENSED,       "Condensed" },
+  { PANGO_WIDTH_SEMI_CONDENSED,  "Semi-Condensed" },
+  { PANGO_WIDTH_NORMAL,          "" },
+  { PANGO_WIDTH_SEMI_EXPANDED,   "Semi-Expanded" },
+  { PANGO_WIDTH_EXPANDED,        "Expanded" },
+  { PANGO_WIDTH_EXTRA_EXPANDED,  "Extra-Expanded" },
+  { PANGO_WIDTH_ULTRA_EXPANDED,  "Ultra-Expanded" }
 };
 
 static const FieldMap gravity_map[] = {
@@ -1374,7 +1465,7 @@ find_field_any (const char *str, int len, PangoFontDescription *desc)
 
   FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
   FIELD (style,   PANGO_FONT_MASK_STYLE);
-  FIELD (stretch, PANGO_FONT_MASK_STRETCH);
+  FIELD (width,   PANGO_FONT_MASK_WIDTH);
   FIELD (variant, PANGO_FONT_MASK_VARIANT);
   FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
   FIELD (color,   PANGO_FONT_MASK_COLOR);
@@ -1532,7 +1623,7 @@ pango_font_description_from_string (const char *str)
   desc->mask = PANGO_FONT_MASK_STYLE |
                PANGO_FONT_MASK_WEIGHT |
                PANGO_FONT_MASK_VARIANT |
-               PANGO_FONT_MASK_STRETCH;
+               PANGO_FONT_MASK_WIDTH;
 
   len = strlen (str);
   last = str + len;
@@ -1813,7 +1904,7 @@ pango_font_description_to_string (const PangoFontDescription *desc)
            (parse_size (p, wordlen, NULL, NULL) &&
             desc->weight == PANGO_WEIGHT_NORMAL &&
             desc->style == PANGO_STYLE_NORMAL &&
-            desc->stretch == PANGO_STRETCH_NORMAL &&
+            desc->width == PANGO_WIDTH_NORMAL &&
             desc->variant == PANGO_VARIANT_NORMAL &&
             (desc->mask & (PANGO_FONT_MASK_GRAVITY | PANGO_FONT_MASK_SIZE)) == 0)))
         g_string_append_c (result, ',');
@@ -1824,7 +1915,7 @@ pango_font_description_to_string (const PangoFontDescription *desc)
 
   FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
   FIELD (style,   PANGO_FONT_MASK_STYLE);
-  FIELD (stretch, PANGO_FONT_MASK_STRETCH);
+  FIELD (width,   PANGO_FONT_MASK_WIDTH);
   FIELD (variant, PANGO_FONT_MASK_VARIANT);
   if (desc->mask & PANGO_FONT_MASK_GRAVITY)
     FIELD (gravity, PANGO_FONT_MASK_GRAVITY);
@@ -2030,6 +2121,14 @@ pango_parse_weight (const char  *str,
   return FIELD (weight,  PANGO_FONT_MASK_WEIGHT);
 }
 
+gboolean
+pango_parse_width (const char *str,
+                   PangoWidth *width,
+                   gboolean    warn)
+{
+  return FIELD (width, PANGO_FONT_MASK_WIDTH);
+}
+
 /**
  * pango_parse_stretch:
  * @str: a string to parse.
@@ -2051,9 +2150,13 @@ pango_parse_stretch (const char   *str,
                      PangoStretch *stretch,
                      gboolean      warn)
 {
-  return FIELD (stretch, PANGO_FONT_MASK_STRETCH);
-}
+  PangoWidth width;
+  gboolean ret;
 
+  ret = pango_parse_width (str, &width, warn);
+  *stretch = width_to_stretch (width);
+  return ret;
+}
 
 /*
  * PangoFont

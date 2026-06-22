@@ -4705,6 +4705,7 @@ affects_itemization (PangoAttribute *attr,
     case PANGO_ATTR_WEIGHT:
     case PANGO_ATTR_VARIANT:
     case PANGO_ATTR_STRETCH:
+    case PANGO_ATTR_WIDTH:
     case PANGO_ATTR_SIZE:
     case PANGO_ATTR_FONT_DESC:
     case PANGO_ATTR_SCALE:

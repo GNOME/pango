@@ -2061,32 +2061,10 @@ pango_fc_convert_slant_to_fc (PangoStyle pango_style)
     }
 }
 
-static int
-pango_fc_convert_width_to_fc (PangoStretch pango_stretch)
+static double
+pango_fc_convert_width_to_fc (PangoWidth pango_width)
 {
-  switch (pango_stretch)
-    {
-    case PANGO_STRETCH_NORMAL:
-      return FC_WIDTH_NORMAL;
-    case PANGO_STRETCH_ULTRA_CONDENSED:
-      return FC_WIDTH_ULTRACONDENSED;
-    case PANGO_STRETCH_EXTRA_CONDENSED:
-      return FC_WIDTH_EXTRACONDENSED;
-    case PANGO_STRETCH_CONDENSED:
-      return FC_WIDTH_CONDENSED;
-    case PANGO_STRETCH_SEMI_CONDENSED:
-      return FC_WIDTH_SEMICONDENSED;
-    case PANGO_STRETCH_SEMI_EXPANDED:
-      return FC_WIDTH_SEMIEXPANDED;
-    case PANGO_STRETCH_EXPANDED:
-      return FC_WIDTH_EXPANDED;
-    case PANGO_STRETCH_EXTRA_EXPANDED:
-      return FC_WIDTH_EXTRAEXPANDED;
-    case PANGO_STRETCH_ULTRA_EXPANDED:
-      return FC_WIDTH_ULTRAEXPANDED;
-    default:
-      return FC_WIDTH_NORMAL;
-    }
+  return (double) pango_width / 10.0;
 }
 
 static void
@@ -2124,12 +2102,12 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
   PangoFontColor color;
   char **families;
   int i;
-  int width;
+  double width;
 
   prgname = g_get_prgname ();
   slant = pango_fc_convert_slant_to_fc (pango_font_description_get_style (description));
   weight = pango_fc_convert_weight_to_fc (pango_font_description_get_weight (description));
-  width = pango_fc_convert_width_to_fc (pango_font_description_get_stretch (description));
+  width = pango_fc_convert_width_to_fc (pango_font_description_get_width (description));
 
   gravity = pango_font_description_get_gravity (description);
   variant = pango_font_description_get_variant (description);
@@ -2151,17 +2129,17 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
    * Do not pass FC_VERTICAL_LAYOUT true as HarfBuzz shaping assumes false.
    */
   pattern = FcPatternBuild (NULL,
-			    PANGO_FC_VERSION, FcTypeInteger, pango_version(),
-			    FC_WEIGHT, FcTypeDouble, weight,
-			    FC_SLANT,  FcTypeInteger, slant,
-			    FC_WIDTH,  FcTypeInteger, width,
-			    FC_VARIABLE,  FcTypeBool, FcDontCare,
-			    FC_DPI, FcTypeDouble, dpi,
-			    FC_SIZE,  FcTypeDouble,  pixel_size * (72. / 1024. / dpi),
-			    FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
+                            PANGO_FC_VERSION, FcTypeInteger, pango_version(),
+                            FC_WEIGHT, FcTypeDouble, weight,
+                            FC_SLANT,  FcTypeInteger, slant,
+                            FC_WIDTH,  FcTypeDouble, width,
+                            FC_VARIABLE,  FcTypeBool, FcDontCare,
+                            FC_DPI, FcTypeDouble, dpi,
+                            FC_SIZE,  FcTypeDouble,  pixel_size * (72. / 1024. / dpi),
+                            FC_PIXEL_SIZE,  FcTypeDouble,  pixel_size / 1024.,
                             FC_ORDER, FcTypeInteger, 1000,
                             FC_COLOR, FcTypeBool, color,
-			    NULL);
+                            NULL);
 
   if (variations)
     FcPatternAddString (pattern, FC_FONT_VARIATIONS, (FcChar8*) variations);
@@ -2171,7 +2149,7 @@ pango_fc_make_pattern (const  PangoFontDescription *description,
       families = g_strsplit (pango_font_description_get_family (description), ",", -1);
 
       for (i = 0; families[i]; i++)
-	FcPatternAddString (pattern, FC_FAMILY, (FcChar8*) families[i]);
+        FcPatternAddString (pattern, FC_FAMILY, (FcChar8*) families[i]);
 
       g_strfreev (families);
     }
