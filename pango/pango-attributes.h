@@ -81,6 +81,7 @@ typedef struct _PangoAttrFontFeatures PangoAttrFontFeatures;
  * @PANGO_ATTR_SENTENCE: override segmentation to classify the range of the attribute as a single sentence ([struct@Pango.AttrInt]). Since 1.50
  * @PANGO_ATTR_BASELINE_SHIFT: baseline displacement ([struct@Pango.AttrInt]). Since 1.50
  * @PANGO_ATTR_FONT_SCALE: font-relative size change ([struct@Pango.AttrInt]). Since 1.50
+ * @PANGO_ATTR_WIDTH: font width ([struct@Pango.AttrInt]). Since: 1.58
  *
  * The `PangoAttrType` distinguishes between different types of attributes.
  *
@@ -129,6 +130,7 @@ typedef enum
   PANGO_ATTR_SENTENCE,          /* PangoAttrInt */
   PANGO_ATTR_BASELINE_SHIFT,    /* PangoAttrSize */
   PANGO_ATTR_FONT_SCALE,        /* PangoAttrInt */
+  PANGO_ATTR_WIDTH,             /* PangoAttrInt */
 } PangoAttrType;
 
 /**
@@ -609,6 +611,8 @@ PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_line_height_new_absolute     (int                          height);
 PANGO_AVAILABLE_IN_1_50
 PangoAttribute *        pango_attr_text_transform_new           (PangoTextTransform transform);
+PANGO_AVAILABLE_IN_1_58
+PangoAttribute *        pango_attr_width_new                    (PangoWidth                  width);
 
 PANGO_AVAILABLE_IN_1_50
 PangoAttrString       * pango_attribute_as_string               (PangoAttribute              *attr);

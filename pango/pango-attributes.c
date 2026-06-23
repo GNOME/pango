@@ -1574,6 +1574,32 @@ pango_attr_text_transform_new (PangoTextTransform transform)
 
   return pango_attr_int_new (&klass, transform);
 }
+
+/**
+ * pango_attr_width_new:
+ * @width: the width
+ *
+ * Create a new font width attribute.
+ *
+ * Return value: (transfer full): the newly allocated
+ *   `PangoAttribute`, which should be freed with
+ *   [method@Pango.Attribute.destroy]
+ *
+ * Since: 1.58
+ */
+PangoAttribute *
+pango_attr_width_new (PangoWidth width)
+{
+  static const PangoAttrClass klass = {
+    PANGO_ATTR_WIDTH,
+    pango_attr_int_copy,
+    pango_attr_int_destroy,
+    pango_attr_int_equal
+  };
+
+  return pango_attr_int_new (&klass, (int) width);
+}
+
 /* }}} */
 /* {{{ Binding helpers */
 
@@ -1599,6 +1625,7 @@ pango_attribute_as_int (PangoAttribute *attr)
     case PANGO_ATTR_WEIGHT:
     case PANGO_ATTR_VARIANT:
     case PANGO_ATTR_STRETCH:
+    case PANGO_ATTR_WIDTH:
     case PANGO_ATTR_UNDERLINE:
     case PANGO_ATTR_STRIKETHROUGH:
     case PANGO_ATTR_RISE:
@@ -2597,6 +2624,7 @@ get_attr_value_type (PangoAttrType type)
     case PANGO_ATTR_WEIGHT: return PANGO_TYPE_WEIGHT;
     case PANGO_ATTR_VARIANT: return PANGO_TYPE_VARIANT;
     case PANGO_ATTR_STRETCH: return PANGO_TYPE_STRETCH;
+    case PANGO_ATTR_WIDTH: return PANGO_TYPE_WIDTH;
     case PANGO_ATTR_GRAVITY: return PANGO_TYPE_GRAVITY;
     case PANGO_ATTR_GRAVITY_HINT: return PANGO_TYPE_GRAVITY_HINT;
     case PANGO_ATTR_UNDERLINE: return PANGO_TYPE_UNDERLINE;
@@ -2647,6 +2675,7 @@ attr_print (GString        *str,
   if (attr->klass->type == PANGO_ATTR_WEIGHT ||
       attr->klass->type == PANGO_ATTR_STYLE ||
       attr->klass->type == PANGO_ATTR_STRETCH ||
+      attr->klass->type == PANGO_ATTR_WIDTH ||
       attr->klass->type == PANGO_ATTR_VARIANT ||
       attr->klass->type == PANGO_ATTR_GRAVITY ||
       attr->klass->type == PANGO_ATTR_GRAVITY_HINT ||
@@ -3025,6 +3054,10 @@ pango_attr_list_from_string (const char *text)
 
         case PANGO_ATTR_STRETCH:
           ENUM_ATTR(stretch, PangoStretch, PANGO_STRETCH_ULTRA_CONDENSED, PANGO_STRETCH_ULTRA_EXPANDED);
+          break;
+
+        case PANGO_ATTR_WIDTH:
+          ENUM_ATTR(width, PangoWidth, PANGO_WIDTH_ULTRA_CONDENSED, PANGO_WIDTH_ULTRA_EXPANDED);
           break;
 
         case PANGO_ATTR_SIZE:
@@ -3507,6 +3540,13 @@ pango_attr_iterator_get_font (PangoAttrIterator     *iterator,
             {
               mask |= PANGO_FONT_MASK_STRETCH;
               pango_font_description_set_stretch (desc, ((PangoAttrInt *)attr)->value);
+            }
+          break;
+        case PANGO_ATTR_WIDTH:
+          if (!(mask & PANGO_FONT_MASK_WIDTH))
+            {
+              mask |= PANGO_FONT_MASK_WIDTH;
+              pango_font_description_set_width (desc, ((PangoAttrInt *)attr)->value);
             }
           break;
         case PANGO_ATTR_SIZE:

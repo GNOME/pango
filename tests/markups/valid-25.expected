@@ -1,0 +1,24 @@
+wide wider narrow
+
+
+---
+
+range 0 4
+0 4 width 1100
+range 4 5
+range 5 10
+5 10 width extra-expanded
+range 10 11
+range 11 17
+11 17 width ultra-condensed
+range 17 2147483647
+
+
+---
+
+[0:4] (null) width=1100
+[4:5] (null) width=1100
+[5:10] (null) Extra-Expanded
+[10:11] (null) Extra-Expanded
+[11:17] (null) Ultra-Condensed
+[17:2147483647] (null) Ultra-Condensed

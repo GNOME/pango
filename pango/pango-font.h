@@ -170,12 +170,45 @@ typedef enum {
 } PangoStretch;
 
 /**
+ * PangoWidth:
+ * @PANGO_WIDTH_ULTRA_CONDENSED: ultra condensed width
+ * @PANGO_WIDTH_EXTRA_CONDENSED: extra condensed width
+ * @PANGO_WIDTH_CONDENSED: condensed width
+ * @PANGO_WIDTH_SEMI_CONDENSED: semi condensed width
+ * @PANGO_WIDTH_NORMAL: the normal width
+ * @PANGO_WIDTH_SEMI_EXPANDED: semi expanded width
+ * @PANGO_WIDTH_EXPANDED: expanded width
+ * @PANGO_WIDTH_EXTRA_EXPANDED: extra expanded width
+ * @PANGO_WIDTH_ULTRA_EXPANDED: ultra expanded width
+ *
+ * An enumeration specifying the width of the font relative to other designs
+ * within a family.
+ *
+ * The enumeration values match [enum@PangoStretch], but
+ * the numeric values are expanded to allow intermediate
+ * values.
+ *
+ * Since: 1.58
+ */
+typedef enum {
+  PANGO_WIDTH_ULTRA_CONDENSED = 500,
+  PANGO_WIDTH_EXTRA_CONDENSED = 625,
+  PANGO_WIDTH_CONDENSED = 750,
+  PANGO_WIDTH_SEMI_CONDENSED = 875,
+  PANGO_WIDTH_NORMAL = 1000,
+  PANGO_WIDTH_SEMI_EXPANDED = 1125,
+  PANGO_WIDTH_EXPANDED = 1250,
+  PANGO_WIDTH_EXTRA_EXPANDED = 1500,
+  PANGO_WIDTH_ULTRA_EXPANDED = 2000,
+} PangoWidth;
+
+/**
  * PangoFontMask:
  * @PANGO_FONT_MASK_FAMILY: the font family is specified.
  * @PANGO_FONT_MASK_STYLE: the font style is specified.
  * @PANGO_FONT_MASK_VARIANT: the font variant is specified.
  * @PANGO_FONT_MASK_WEIGHT: the font weight is specified.
- * @PANGO_FONT_MASK_STRETCH: the font stretch is specified.
+ * @PANGO_FONT_MASK_STRETCH: the font stretch/width is specified.
  * @PANGO_FONT_MASK_SIZE: the font size is specified.
  *
  * The bits in a `PangoFontMask` correspond to the set fields in a
@@ -209,11 +242,21 @@ typedef enum {
  *
  * Since: 1.57
  */
+/**
+ * PANGO_FONT_MASK_WIDTH:
+ *
+ * Font width is specified.
+ *
+ * This is an alias for [enum@Pango.FontMask.STRETCH].
+ *
+ * 1.58
+ */
 typedef enum {
   PANGO_FONT_MASK_FAMILY  = 1 << 0,
   PANGO_FONT_MASK_STYLE   = 1 << 1,
   PANGO_FONT_MASK_VARIANT = 1 << 2,
   PANGO_FONT_MASK_WEIGHT  = 1 << 3,
+  PANGO_FONT_MASK_WIDTH   = 1 << 4,
   PANGO_FONT_MASK_STRETCH = 1 << 4,
   PANGO_FONT_MASK_SIZE    = 1 << 5,
   PANGO_FONT_MASK_GRAVITY = 1 << 6,
@@ -335,6 +378,13 @@ void                 pango_font_description_set_stretch       (PangoFontDescript
                                                                PangoStretch          stretch);
 PANGO_AVAILABLE_IN_ALL
 PangoStretch         pango_font_description_get_stretch       (const PangoFontDescription *desc) G_GNUC_PURE;
+
+PANGO_AVAILABLE_IN_1_58
+void                 pango_font_description_set_width         (PangoFontDescription *desc,
+                                                               PangoWidth            width);
+PANGO_AVAILABLE_IN_1_58
+PangoWidth           pango_font_description_get_width         (const PangoFontDescription *desc);
+
 PANGO_AVAILABLE_IN_ALL
 void                 pango_font_description_set_size          (PangoFontDescription *desc,
                                                                gint                  size);
