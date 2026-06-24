@@ -63,6 +63,8 @@ struct _PangoRendererPrivate
   PangoLayoutLine *line;
   LineState *line_state;
   PangoOverline overline;
+
+  PangoRenderComponent components;
 };
 
 static void pango_renderer_finalize                     (GObject          *gobject);
@@ -133,6 +135,8 @@ pango_renderer_init (PangoRenderer *renderer)
 {
   renderer->priv = pango_renderer_get_instance_private (renderer);
   renderer->matrix = NULL;
+
+  renderer->priv->components = PANGO_RENDER_COMPONENT_ALL;
 }
 
 static void
@@ -640,8 +644,7 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
               logical = &logical_rect;
             }
           if (G_UNLIKELY (ink || logical))
-            pango_glyph_string_extents (run->glyphs, run->item->analysis.font,
-                                        ink, logical);
+            pango_glyph_string_extents (run->glyphs, run->item->analysis.font, ink, logical);
           if (logical)
             glyph_string_width = logical_rect.width;
           else
@@ -745,6 +748,34 @@ pango_renderer_draw_layout_line (PangoRenderer   *renderer,
   pango_renderer_deactivate (renderer);
 }
 
+static PangoRenderComponent
+part_to_component (PangoRenderPart part)
+{
+  switch (part)
+    {
+    case PANGO_RENDER_PART_FOREGROUND: return PANGO_RENDER_COMPONENT_PLAIN_GLYPH | PANGO_RENDER_COMPONENT_COLOR_GLYPH;
+    case PANGO_RENDER_PART_BACKGROUND: return PANGO_RENDER_COMPONENT_BACKGROUND;
+    case PANGO_RENDER_PART_UNDERLINE: return PANGO_RENDER_COMPONENT_UNDERLINE;
+    case PANGO_RENDER_PART_STRIKETHROUGH: return PANGO_RENDER_COMPONENT_STRIKETHROUGH;
+    case PANGO_RENDER_PART_OVERLINE: return PANGO_RENDER_COMPONENT_OVERLINE;
+    default: g_assert_not_reached ();
+    }
+}
+
+static gboolean
+should_draw_component (PangoRenderer        *renderer,
+                       PangoRenderComponent  components)
+{
+  return (renderer->priv->components & components) != 0;
+}
+
+static gboolean
+should_draw_part (PangoRenderer   *renderer,
+                  PangoRenderPart  part)
+{
+  return should_draw_component (renderer, part_to_component (part));
+}
+
 /**
  * pango_renderer_draw_glyphs:
  * @renderer: a `PangoRenderer`
@@ -770,7 +801,8 @@ pango_renderer_draw_glyphs (PangoRenderer    *renderer,
 
   pango_renderer_activate (renderer);
 
-  PANGO_RENDERER_GET_CLASS (renderer)->draw_glyphs (renderer, font, glyphs, x, y);
+  if (should_draw_part (renderer, PANGO_RENDER_PART_FOREGROUND))
+    PANGO_RENDERER_GET_CLASS (renderer)->draw_glyphs (renderer, font, glyphs, x, y);
 
   pango_renderer_deactivate (renderer);
 }
@@ -850,11 +882,12 @@ pango_renderer_draw_glyph_item (PangoRenderer  *renderer,
 
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
 
-  pango_renderer_activate (renderer);
-
-  PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph_item (renderer, text, glyph_item, x, y);
-
-  pango_renderer_deactivate (renderer);
+  if (should_draw_part (renderer, PANGO_RENDER_PART_FOREGROUND))
+    {
+      pango_renderer_activate (renderer);
+      PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph_item (renderer, text, glyph_item, x, y);
+      pango_renderer_deactivate (renderer);
+    }
 }
 
 static void
@@ -901,7 +934,8 @@ pango_renderer_draw_rectangle (PangoRenderer   *renderer,
   g_return_if_fail (IS_VALID_PART (part));
   g_return_if_fail (renderer->active_count > 0);
 
-  PANGO_RENDERER_GET_CLASS (renderer)->draw_rectangle (renderer, part, x, y, width, height);
+  if (should_draw_part (renderer, part))
+    PANGO_RENDERER_GET_CLASS (renderer)->draw_rectangle (renderer, part, x, y, width, height);
 }
 
 static int
@@ -1041,7 +1075,8 @@ pango_renderer_draw_error_underline (PangoRenderer *renderer,
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (renderer->active_count > 0);
 
-  PANGO_RENDERER_GET_CLASS (renderer)->draw_error_underline (renderer, x, y, width, height);
+  if (should_draw_part (renderer, PANGO_RENDER_PART_UNDERLINE))
+    PANGO_RENDERER_GET_CLASS (renderer)->draw_error_underline (renderer, x, y, width, height);
 }
 
 /* We are drawing an error underline that looks like one of:
@@ -1200,7 +1235,8 @@ pango_renderer_draw_trapezoid (PangoRenderer   *renderer,
   g_return_if_fail (PANGO_IS_RENDERER_FAST (renderer));
   g_return_if_fail (renderer->active_count > 0);
 
-  if (PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid)
+  if (should_draw_part (renderer, part) &&
+      PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid)
     PANGO_RENDERER_GET_CLASS (renderer)->draw_trapezoid (renderer, part,
                                                          y1_, x11, x21,
                                                          y2, x12, x22);
@@ -1231,7 +1267,8 @@ pango_renderer_draw_glyph (PangoRenderer *renderer,
   if (glyph == PANGO_GLYPH_EMPTY) /* glyph PANGO_GLYPH_EMPTY never renders */
     return;
 
-  if (PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph)
+  if (should_draw_part (renderer, PANGO_RENDER_PART_FOREGROUND) &&
+      PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph)
     PANGO_RENDERER_GET_CLASS (renderer)->draw_glyph (renderer, font, glyph, x, y);
 }
 
@@ -1643,4 +1680,36 @@ PangoLayoutLine *
 pango_renderer_get_layout_line (PangoRenderer *renderer)
 {
   return renderer->priv->line;
+}
+
+/**
+ * pango_renderer_set_components:
+ * @renderer: a `PangoRenderer`
+ * @components: the components to include
+ *
+ * Sets the components to include in the output of the renderer.
+ *
+ * Since: 1.58
+ */
+void
+pango_renderer_set_components (PangoRenderer        *renderer,
+                               PangoRenderComponent  components)
+{
+  renderer->priv->components = components;
+}
+
+/**
+ * pango_renderer_get_components:
+ * @renderer: a `PangoRenderer`
+ *
+ * Gets the components that are included in the output of the renderer.
+ *
+ * Returns: the components
+ *
+ * Since: 1.58
+ */
+PangoRenderComponent
+pango_renderer_get_components (PangoRenderer *renderer)
+{
+  return renderer->priv->components;
 }

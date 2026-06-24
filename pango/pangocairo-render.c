@@ -510,6 +510,7 @@ pango_cairo_renderer_show_text_glyphs_range (PangoRenderer        *renderer,
   cairo_glyph_t stack_glyphs[STACK_ARRAY_LENGTH (cairo_glyph_t)];
   double base_x = crenderer->x_offset + (double)x / PANGO_SCALE;
   double base_y = crenderer->y_offset + (double)y / PANGO_SCALE;
+  PangoRenderComponent components = pango_renderer_get_components (renderer);
 
   cairo_save (crenderer->cr);
   if (!crenderer->do_path)
@@ -552,7 +553,8 @@ pango_cairo_renderer_show_text_glyphs_range (PangoRenderer        *renderer,
     {
       PangoGlyphInfo *gi = &glyphs->glyphs[i];
 
-      if (gi->glyph != PANGO_GLYPH_EMPTY)
+      if ((components & (gi->attr.is_color ? PANGO_RENDER_COMPONENT_COLOR_GLYPH : PANGO_RENDER_COMPONENT_PLAIN_GLYPH)) != 0 &&
+          gi->glyph != PANGO_GLYPH_EMPTY)
 	{
 	  double cx = base_x + (double)(x_position + gi->geometry.x_offset) / PANGO_SCALE;
 	  double cy = gi->geometry.y_offset == 0 ?
@@ -1062,6 +1064,8 @@ acquire_renderer (void)
       renderer = g_object_new (PANGO_TYPE_CAIRO_RENDERER, NULL);
     }
 
+  pango_renderer_set_components (PANGO_RENDERER (renderer), PANGO_RENDER_COMPONENT_ALL);
+
   return renderer;
 }
 
@@ -1206,12 +1210,15 @@ _pango_cairo_do_layout_line (cairo_t          *cr,
 }
 
 static void
-_pango_cairo_do_layout (cairo_t     *cr,
-			PangoLayout *layout,
-			gboolean     do_path)
+_pango_cairo_do_layout (cairo_t              *cr,
+                        PangoLayout          *layout,
+                        gboolean              do_path,
+                        PangoRenderComponent  components)
 {
   PangoCairoRenderer *crenderer = acquire_renderer ();
   PangoRenderer *renderer = (PangoRenderer *) crenderer;
+
+  pango_renderer_set_components (renderer, components);
 
   crenderer->cr = cr;
   crenderer->do_path = do_path;
@@ -1349,7 +1356,7 @@ pango_cairo_show_layout (cairo_t     *cr,
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
-  _pango_cairo_do_layout (cr, layout, FALSE);
+  _pango_cairo_do_layout (cr, layout, FALSE, PANGO_RENDER_COMPONENT_ALL);
 }
 
 /**
@@ -1451,9 +1458,33 @@ pango_cairo_layout_path (cairo_t     *cr,
   g_return_if_fail (cr != NULL);
   g_return_if_fail (PANGO_IS_LAYOUT (layout));
 
-  _pango_cairo_do_layout (cr, layout, TRUE);
+  _pango_cairo_do_layout (cr, layout, TRUE, PANGO_RENDER_COMPONENT_ALL);
 }
 
+/**
+ * pango_cairo_layout_path_for_components:
+ * @cr: a Cairo context
+ * @layout: a Pango layout
+ * @components: the components to include
+ *
+ * Adds components of a `PangoLayout` to the current path
+ * in the specified cairo context.
+ *
+ * The top-left corner of the `PangoLayout` will be at the
+ * current point of the cairo context.
+ *
+ * Since: 1.58
+ */
+void
+pango_cairo_layout_path_for_components (cairo_t              *cr,
+                                        PangoLayout          *layout,
+                                        PangoRenderComponent  components)
+{
+  g_return_if_fail (cr != NULL);
+  g_return_if_fail (PANGO_IS_LAYOUT (layout));
+
+  _pango_cairo_do_layout (cr, layout, TRUE, components);
+}
 /**
  * pango_cairo_error_underline_path:
  * @cr: a Cairo context
