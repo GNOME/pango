@@ -56,7 +56,7 @@ typedef enum
   PANGO_RENDER_PART_BACKGROUND,
   PANGO_RENDER_PART_UNDERLINE,
   PANGO_RENDER_PART_STRIKETHROUGH,
-  PANGO_RENDER_PART_OVERLINE
+  PANGO_RENDER_PART_OVERLINE,
 } PangoRenderPart;
 
 /**
@@ -124,6 +124,12 @@ struct _PangoRenderer
  * The following vfuncs take device space coordinates as doubles
  * and must be implemented:
  * - draw_trapezoid
+ * - draw_glyph
+ *
+ * The following vfuncs should look at the components value and
+ * skip color or plain glyphs accordingly:
+ * - draw_glyphs
+ * - draw_glyph_item
  * - draw_glyph
  *
  * Since: 1.8
@@ -283,6 +289,51 @@ PANGO_AVAILABLE_IN_1_20
 PangoLayout       *pango_renderer_get_layout      (PangoRenderer     *renderer);
 PANGO_AVAILABLE_IN_1_20
 PangoLayoutLine   *pango_renderer_get_layout_line (PangoRenderer     *renderer);
+
+
+/**
+ * PangoRenderComponent:
+ * @PANGO_RENDER_COMPONENT_NONE: No components
+ * @PANGO_RENDER_COMPONENT_PLAIN_GLYPH: The plain glyphs of the layout
+ * @PANGO_RENDER_COMPONENT_COLOR_GLYPH: The color glyphs of the layout
+ * @PANGO_RENDER_COMPONENT_BACKGROUND: Background of the layout
+ * @PANGO_RENDER_COMPONENT_UNDERLINE: Underlines of the layout
+ * @PANGO_RENDER_COMPONENT_STRIKETHROUGH: Strikethrough lines of the layout
+ * @PANGO_RENDER_COMPONENT_OVERLINE: Overlines of the layout
+ *
+ * Flags that specify which components of a layout to include
+ * in renderer output.
+ *
+ * This is more or less parallel to the [enum@Pango.RenderPart] enum,
+ * but allows separating plain and color glyphs, and specifying more
+ * than one component.
+ *
+ * Since: 1.58
+ */
+typedef enum
+{
+  PANGO_RENDER_COMPONENT_NONE          = 0,
+  PANGO_RENDER_COMPONENT_PLAIN_GLYPH   = 1 << 1,
+  PANGO_RENDER_COMPONENT_COLOR_GLYPH   = 1 << 2,
+  PANGO_RENDER_COMPONENT_BACKGROUND    = 1 << 3,
+  PANGO_RENDER_COMPONENT_UNDERLINE     = 1 << 3,
+  PANGO_RENDER_COMPONENT_STRIKETHROUGH = 1 << 4,
+  PANGO_RENDER_COMPONENT_OVERLINE      = 1 << 5,
+} PangoRenderComponent;
+
+#define PANGO_RENDER_COMPONENT_ALL (PANGO_RENDER_COMPONENT_PLAIN_GLYPH | \
+                                    PANGO_RENDER_COMPONENT_COLOR_GLYPH | \
+                                    PANGO_RENDER_COMPONENT_BACKGROUND | \
+                                    PANGO_RENDER_COMPONENT_UNDERLINE | \
+                                    PANGO_RENDER_COMPONENT_STRIKETHROUGH | \
+                                    PANGO_RENDER_COMPONENT_OVERLINE)
+
+PANGO_AVAILABLE_IN_1_58
+void                  pango_renderer_set_components  (PangoRenderer        *renderer,
+                                                      PangoRenderComponent  components);
+PANGO_AVAILABLE_IN_1_58
+PangoRenderComponent  pango_renderer_get_components (PangoRenderer         *renderer);
+
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoRenderer, g_object_unref)
 
