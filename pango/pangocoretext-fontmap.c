@@ -56,6 +56,7 @@ struct _PangoCoreTextFamily
 
   PangoFontFace **faces;
   gint n_faces;
+  int is_variable;
 };
 
 struct _PangoCoreTextFamilyClass
@@ -767,6 +768,47 @@ pango_core_text_family_is_monospace (PangoFontFamily *family)
   return ctfamily->is_monospace;
 }
 
+static gboolean
+pango_core_text_family_is_variable (PangoFontFamily *family)
+{
+  PangoCoreTextFamily *ctfamily = PANGO_CORE_TEXT_FAMILY (family);
+
+  if (ctfamily->is_variable == -1)
+    {
+      pango_font_family_list_faces (family, NULL, NULL);
+
+      ctfamily->is_variable = 0;
+      for (int i = 0; i < ctfamily->n_faces && !ctfamily->is_variable; i++)
+        {
+          PangoCoreTextFace *face = (PangoCoreTextFace *) ctfamily->faces[i];
+          CFArrayRef axes;
+
+          if (face->synthetic_italic || face->synthetic_small_caps)
+            continue;
+
+          /* kCTFontVariationAxesAttribute is only accurate since macOS 13. */
+#if defined(__MAC_13_0) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_13_0
+          axes = CTFontDescriptorCopyAttribute (face->ctfontdescriptor, kCTFontVariationAxesAttribute);
+#else
+          {
+            CTFontRef ctfont = CTFontCreateWithFontDescriptor (face->ctfontdescriptor, 0.0, NULL);
+            axes = CTFontCopyVariationAxes (ctfont);
+            CFRelease (ctfont);
+          }
+#endif
+
+          if (axes)
+            {
+              if (CFArrayGetCount (axes) > 0)
+                ctfamily->is_variable = 1;
+              CFRelease (axes);
+            }
+        }
+    }
+
+  return ctfamily->is_variable;
+}
+
 G_DEFINE_TYPE (PangoCoreTextFamily, pango_core_text_family, PANGO_TYPE_FONT_FAMILY);
 
 static void
@@ -800,12 +842,14 @@ pango_core_text_family_class_init (PangoCoreTextFamilyClass *klass)
   pfclass->list_faces = pango_core_text_family_list_faces;
   pfclass->get_name = pango_core_text_family_get_name;
   pfclass->is_monospace = pango_core_text_family_is_monospace;
+  pfclass->is_variable = pango_core_text_family_is_variable;
 }
 
 static void
 pango_core_text_family_init (PangoCoreTextFamily *family)
 {
   family->n_faces = -1;
+  family->is_variable = -1;
 }
 
 
