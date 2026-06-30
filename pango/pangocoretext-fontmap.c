@@ -1054,6 +1054,7 @@ struct _PangoCoreTextFontKey
   gboolean synthetic_small_caps;
   gpointer context_key;
   char *variations;
+  char *features;
 };
 
 static void
@@ -1074,6 +1075,7 @@ pango_core_text_font_key_init (PangoCoreTextFontKey    *key,
   key->gravity = pango_core_text_fontset_key_get_gravity (fontset_key);
   key->context_key = pango_core_text_fontset_key_get_context_key (fontset_key);
   key->variations = (char *) pango_font_description_get_variations (fontset_key->desc);
+  key->features = (char *) pango_font_description_get_features (fontset_key->desc);
 }
 
 static void
@@ -1090,6 +1092,7 @@ pango_core_text_font_key_init_from_key (PangoCoreTextFontKey       *key,
   key->gravity = orig->gravity;
   key->context_key = orig->context_key;
   key->variations = orig->variations;
+  key->features = orig->features;
 }
 
 static PangoCoreTextFontKey *
@@ -1111,6 +1114,7 @@ pango_core_text_font_key_copy (const PangoCoreTextFontKey *old)
   else
     key->context_key = NULL;
   key->variations = g_strdup (old->variations);
+  key->features = g_strdup (old->features);
 
   return key;
 }
@@ -1125,6 +1129,7 @@ pango_core_text_font_key_free (PangoCoreTextFontKey *key)
     PANGO_CORE_TEXT_FONT_MAP_GET_CLASS (key->fontmap)->context_key_free (key->fontmap, key->context_key);
 
   g_free (key->variations);
+  g_free (key->features);
 
   g_slice_free (PangoCoreTextFontKey, key);
 }
@@ -1144,6 +1149,9 @@ pango_core_text_font_key_hash (const PangoCoreTextFontKey *key)
   if (key->variations)
     hash ^= g_str_hash (key->variations);
 
+  if (key->features)
+    hash ^= g_str_hash (key->features);
+
   return (hash ^ CFHash (key->ctfontdescriptor));
 }
 
@@ -1158,7 +1166,8 @@ pango_core_text_font_key_equal (const PangoCoreTextFontKey *key_a,
       key_a->resolution == key_b->resolution &&
       key_a->synthetic_italic == key_b->synthetic_italic &&
       key_a->synthetic_small_caps == key_b->synthetic_small_caps &&
-      g_strcmp0 (key_a->variations, key_b->variations) == 0)
+      g_strcmp0 (key_a->variations, key_b->variations) == 0 &&
+      g_strcmp0 (key_a->features, key_b->features) == 0)
     {
       if (key_a->context_key && key_b->context_key)
         return PANGO_CORE_TEXT_FONT_MAP_GET_CLASS (key_a->fontmap)->context_key_equal (key_a->fontmap,
@@ -1223,6 +1232,12 @@ const char *
 pango_core_text_font_key_get_variations (const PangoCoreTextFontKey *key)
 {
   return key->variations;
+}
+
+const char *
+pango_core_text_font_key_get_features (const PangoCoreTextFontKey *key)
+{
+  return key->features;
 }
 
 
