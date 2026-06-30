@@ -279,6 +279,108 @@ pango_parse_variations (const char            *variations,
     }
 }
 
+static inline void
+pango_maybe_add_feature (GString    *str,
+                         const char *features,
+                         const char *feature)
+{
+  char buf[8] = { 0, };
+
+  memcpy (buf, feature, 4);
+  if (features && strstr (features, buf))
+    return;
+
+  if (str->len > 0)
+    g_string_append_c (str, ',');
+  g_string_append (str, feature);
+}
+
+static inline char *
+pango_combine_features (PangoVariant  variant,
+                        const char   *features)
+{
+  GString *str = g_string_new (NULL);
+
+  switch (variant)
+    {
+    case PANGO_VARIANT_SMALL_CAPS:
+      pango_maybe_add_feature (str, features, "smcp=1");
+      break;
+    case PANGO_VARIANT_ALL_SMALL_CAPS:
+      pango_maybe_add_feature (str, features, "smcp=1");
+      pango_maybe_add_feature (str, features, "c2sc=1");
+      break;
+    case PANGO_VARIANT_PETITE_CAPS:
+      pango_maybe_add_feature (str, features, "pcap=1");
+      break;
+    case PANGO_VARIANT_ALL_PETITE_CAPS:
+      pango_maybe_add_feature (str, features, "pcap=1");
+      pango_maybe_add_feature (str, features, "c2pc=1");
+      break;
+    case PANGO_VARIANT_UNICASE:
+      pango_maybe_add_feature (str, features, "unic=1");
+      break;
+    case PANGO_VARIANT_TITLE_CAPS:
+      pango_maybe_add_feature (str, features, "titl=1");
+      break;
+    case PANGO_VARIANT_NORMAL:
+    default:
+      break;
+    }
+
+  if (features)
+    {
+      if (str->len > 0)
+        g_string_append_c (str, ',');
+      g_string_append (str, features);
+    }
+
+  return g_string_free (str, FALSE);
+}
+
+static inline PangoVariant
+pango_features_get_variant (const char *features)
+{
+  PangoVariant variant = PANGO_VARIANT_NORMAL;
+  gboolean all_caps = FALSE;
+  char **tokens;
+
+  if (!features || !*features)
+    return PANGO_VARIANT_NORMAL;
+
+  tokens = g_strsplit (features, ",", -1);
+  for (int i = 0; tokens[i]; i++)
+    {
+      const char *s = tokens[i];
+
+      if (strcmp (s, "smcp=1") == 0)
+        variant = all_caps ? PANGO_VARIANT_ALL_SMALL_CAPS : PANGO_VARIANT_SMALL_CAPS;
+      else if (strcmp (s, "c2sc=1") == 0)
+        {
+          if (variant == PANGO_VARIANT_SMALL_CAPS)
+            variant = PANGO_VARIANT_ALL_SMALL_CAPS;
+          else
+            all_caps = TRUE;
+        }
+      else if (strcmp (s, "pcap=1") == 0)
+        variant = all_caps ? PANGO_VARIANT_ALL_PETITE_CAPS : PANGO_VARIANT_PETITE_CAPS;
+      else if (strcmp (s, "c2pc=1") == 0)
+        {
+          if (variant == PANGO_VARIANT_PETITE_CAPS)
+            variant = PANGO_VARIANT_ALL_PETITE_CAPS;
+          else
+            all_caps = TRUE;
+        }
+      else if (strcmp (s, "unic=1") == 0)
+        variant = PANGO_VARIANT_UNICASE;
+      else if (strcmp (s, "titl=1") == 0)
+        variant = PANGO_VARIANT_TITLE_CAPS;
+    }
+  g_strfreev (tokens);
+
+  return variant;
+}
+
 G_END_DECLS
 
 #endif /* __PANGO_IMPL_UTILS_H__ */
