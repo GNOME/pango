@@ -23,7 +23,7 @@
 
 #include "config.h"
 
-#include <Carbon/Carbon.h>
+#include <CoreText/CoreText.h>
 
 #include "pango-impl-utils.h"
 #include "pangocoretext-private.h"

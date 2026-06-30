@@ -24,7 +24,7 @@
 #define __PANGOCORETEXT_H__
 
 #include <pango/pango.h>
-#include <Carbon/Carbon.h>
+#include <CoreText/CoreText.h>
 
 G_BEGIN_DECLS
 
