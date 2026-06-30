@@ -1693,7 +1693,7 @@ pango_core_text_font_map_reload_font (PangoFontMap *fontmap,
     }
 
   if (variations)
-    g_warning_once ("pango_core_text_font_map_reload_font: variations are ignored");
+    key.variations = (char *) variations;
 
   scaled = (PangoFont *)pango_core_text_font_map_new_font_from_key (ctfontmap, &key);
 
