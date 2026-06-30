@@ -28,7 +28,8 @@
 #include "pangocoretext-private.h"
 #include "pango-impl-utils.h"
 
-#include <Carbon/Carbon.h>
+#include <strings.h>
+#include <CoreText/CoreText.h>
 
 typedef struct _FontHashKey      FontHashKey;
 
