@@ -247,7 +247,7 @@ typedef enum {
  *
  * Font width is specified.
  *
- * This is an alias for [enum@Pango.FontMask.STRETCH].
+ * This is an alias for [flags@Pango.FontMask.STRETCH].
  *
  * 1.58
  */
