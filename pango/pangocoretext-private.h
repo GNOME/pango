@@ -153,6 +153,8 @@ _PANGO_EXTERN
 CTFontDescriptorRef   pango_core_text_font_key_get_ctfontdescriptor (const PangoCoreTextFontKey *key);
 _PANGO_EXTERN
 const char *          pango_core_text_font_key_get_variations       (const PangoCoreTextFontKey *key);
+_PANGO_EXTERN
+const char *          pango_core_text_font_key_get_features          (const PangoCoreTextFontKey *key);
 
 PangoCoreTextFace *   pango_core_text_font_map_find_face (PangoCoreTextFontMap       *map,
                                                           const PangoCoreTextFontKey *key);
