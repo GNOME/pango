@@ -47,14 +47,16 @@ linux-fedora:
       - "${CI_PROJECT_DIR}/_build/hello.png"
       - "${CI_PROJECT_DIR}/_build/fontlist.txt"
 
-asan-build:
+sanitizer-build:
   extends: .only-default
   image: $FEDORA_IMAGE
   tags: [ asan ]
   stage: analysis
   needs: []
   script:
-    - CC=clang meson setup --buildtype=debugoptimized -Db_sanitize=address -Db_lundef=false -Dintrospection=disabled _build
+    # ubsan's 'function' check fires on every GObject call through a generic
+    # prototype, and glib is built as a subproject here, so it is sanitized too
+    - CC=clang meson setup --buildtype=debugoptimized -Db_sanitize=address,undefined -Dc_args=-fno-sanitize=function -Db_lundef=false -Dintrospection=disabled _build
     - meson compile -C _build
     - .gitlab-ci/run-tests.sh _build
   artifacts:
