@@ -24,6 +24,7 @@
 #include "config.h"
 
 #include <Carbon/Carbon.h>
+#include <hb.h>
 
 #include "pango-impl-utils.h"
 #include "pangocoretext-private.h"
@@ -160,6 +161,90 @@ pango_cairo_core_text_font_init (PangoCairoCoreTextFont *cafont G_GNUC_UNUSED)
 {
 }
 
+static CFDictionaryRef
+create_ct_variations (CTFontRef   ctfont,
+                      double      point_size,
+                      const char *variations)
+{
+  CFArrayRef axes;
+  CFDictionaryRef instance;
+  CFMutableDictionaryRef result;
+  CFIndex n_axes;
+
+  axes = CTFontCopyVariationAxes (ctfont);
+  if (!axes)
+    return NULL;
+
+  n_axes = CFArrayGetCount (axes);
+  if (n_axes == 0)
+    {
+      CFRelease (axes);
+      return NULL;
+    }
+
+  instance = CTFontCopyVariation (ctfont);
+  result = CFDictionaryCreateMutable (kCFAllocatorDefault, n_axes,
+                                      &kCFTypeDictionaryKeyCallBacks,
+                                      &kCFTypeDictionaryValueCallBacks);
+
+  for (CFIndex i = 0; i < n_axes; i++)
+    {
+      CFDictionaryRef axis = CFArrayGetValueAtIndex (axes, i);
+      CFNumberRef identifier = CFDictionaryGetValue (axis, kCTFontVariationAxisIdentifierKey);
+      CFNumberRef number;
+      SInt32 tag = 0;
+      double value = 0;
+
+      CFNumberGetValue (identifier, kCFNumberSInt32Type, &tag);
+      CFNumberGetValue (CFDictionaryGetValue (axis, kCTFontVariationAxisDefaultValueKey),
+                        kCFNumberDoubleType, &value);
+
+      if (tag == HB_TAG ('o', 'p', 's', 'z'))
+        value = point_size;
+
+      if (instance)
+        {
+          CFNumberRef pinned = CFDictionaryGetValue (instance, identifier);
+          if (pinned)
+            CFNumberGetValue (pinned, kCFNumberDoubleType, &value);
+        }
+
+      number = CFNumberCreate (kCFAllocatorDefault, kCFNumberDoubleType, &value);
+      CFDictionarySetValue (result, identifier, number);
+      CFRelease (number);
+    }
+
+  if (variations)
+    {
+      char **tokens = g_strsplit (variations, ",", -1);
+
+      for (int i = 0; tokens[i]; i++)
+        {
+          hb_variation_t var;
+
+          if (hb_variation_from_string (tokens[i], -1, &var))
+            {
+              SInt32 tag = var.tag;
+              double value = var.value;
+              CFNumberRef identifier = CFNumberCreate (kCFAllocatorDefault, kCFNumberSInt32Type, &tag);
+              CFNumberRef number = CFNumberCreate (kCFAllocatorDefault, kCFNumberDoubleType, &value);
+
+              CFDictionarySetValue (result, identifier, number);
+              CFRelease (identifier);
+              CFRelease (number);
+            }
+        }
+
+      g_strfreev (tokens);
+    }
+
+  if (instance)
+    CFRelease (instance);
+  CFRelease (axes);
+
+  return result;
+}
+
 PangoCoreTextFont *
 _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap *cafontmap,
                                  PangoCoreTextFontKey      *key)
@@ -174,6 +259,7 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap *cafontmap,
   cairo_matrix_t font_matrix;
   cairo_font_options_t *options;
   const char *variations;
+  CFDictionaryRef variations_dict;
 
   size = pango_units_to_double (pango_core_text_font_key_get_size (key));
 
@@ -188,6 +274,31 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap *cafontmap,
   font_id = CTFontCopyGraphicsFont (font_ref, NULL);
   if (!font_id)
     return NULL;
+
+  variations = pango_core_text_font_key_get_variations (key);
+
+  variations_dict = create_ct_variations (font_ref, size, variations);
+  if (variations_dict)
+    {
+      const void *attr_keys[1] = { kCTFontVariationAttribute };
+      const void *attr_vals[1] = { variations_dict };
+      CFDictionaryRef attributes;
+      CTFontDescriptorRef var_descriptor;
+      CTFontRef varied;
+
+      attributes = CFDictionaryCreate (kCFAllocatorDefault, attr_keys, attr_vals, 1,
+                                       &kCFTypeDictionaryKeyCallBacks,
+                                       &kCFTypeDictionaryValueCallBacks);
+      var_descriptor = CTFontDescriptorCreateWithAttributes (attributes);
+      varied = CTFontCreateCopyWithAttributes (font_ref, 0.0, NULL, var_descriptor);
+
+      CFRelease (font_ref);
+      font_ref = varied;
+
+      CFRelease (var_descriptor);
+      CFRelease (attributes);
+      CFRelease (variations_dict);
+    }
 
   cafont = g_object_new (PANGO_TYPE_CAIRO_CORE_TEXT_FONT, NULL);
   cfont = PANGO_CORE_TEXT_FONT (cafont);
@@ -212,7 +323,6 @@ _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap *cafontmap,
   else
     options = cairo_font_options_create ();
 
-  variations = pango_core_text_font_key_get_variations (key);
   if (variations)
     cairo_font_options_set_variations (options, variations);
 
