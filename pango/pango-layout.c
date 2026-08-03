@@ -6786,7 +6786,13 @@ apply_baseline_shift (PangoLayoutLine *line,
 #endif
 
       if (item->analysis.font == NULL)
-        continue;
+        {
+          /* create_run() leaves these uninitialized */
+          run->y_offset = 0;
+          run->start_x_offset = 0;
+          run->end_x_offset = 0;
+          continue;
+        }
 
 #if HB_VERSION_ATLEAST(4,0,0)
       hb_font = pango_font_get_hb_font (item->analysis.font);
