@@ -839,7 +839,8 @@ font_set_copy (FcFontSet *fontset)
   copy = malloc (sizeof (FcFontSet));
   copy->sfont = copy->nfont = fontset->nfont;
   copy->fonts = malloc (sizeof (FcPattern *) * copy->nfont);
-  memcpy (copy->fonts, fontset->fonts, sizeof (FcPattern *) * copy->nfont);
+  if (copy->nfont > 0)
+    memcpy (copy->fonts, fontset->fonts, sizeof (FcPattern *) * copy->nfont);
   for (i = 0; i < copy->nfont; i++)
     FcPatternReference (copy->fonts[i]);
 
@@ -3705,7 +3706,8 @@ ensure_faces (PangoFcFamily *fcfamily)
 
 	  faces = g_renew (PangoFcFace *, faces, num);
 
-          qsort (faces, num, sizeof (PangoFcFace *), compare_face);
+          if (num > 0)
+            qsort (faces, num, sizeof (PangoFcFace *), compare_face);
 
 	  fcfamily->n_faces = num;
 	  fcfamily->faces = faces;

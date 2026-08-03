@@ -8,6 +8,8 @@ builddir=$1
 
 # Ignore memory leaks lower in dependencies
 export LSAN_OPTIONS=suppressions=$srcdir/lsan.supp:print_suppressions=0:symbolize=1
+# ubsan only warns by default
+export UBSAN_OPTIONS=halt_on_error=1:abort_on_error=1:print_stacktrace=1
 export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 export FONTCONFIG_FILE=/etc/fonts/fonts.conf
 
