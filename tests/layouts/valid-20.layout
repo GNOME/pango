@@ -139,7 +139,7 @@
               {
                 "glyph" : 244,
                 "width" : 18432,
-                "x-offset" : 14764,
+                "x-offset" : 12631,
                 "y-offset" : 3845,
                 "is-cluster-start" : true,
                 "log-cluster" : 0
@@ -147,7 +147,7 @@
               {
                 "glyph" : 272,
                 "width" : 18432,
-                "x-offset" : 14764,
+                "x-offset" : 14486,
                 "y-offset" : 4280,
                 "is-cluster-start" : true,
                 "log-cluster" : 1
@@ -155,7 +155,7 @@
               {
                 "glyph" : 273,
                 "width" : 18432,
-                "x-offset" : 14764,
+                "x-offset" : 12631,
                 "y-offset" : 3507,
                 "is-cluster-start" : true,
                 "log-cluster" : 2
