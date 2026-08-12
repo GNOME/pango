@@ -13,7 +13,7 @@ stages:
 
 # Common variables
 variables:
-  COMMON_MESON_FLAGS: ""
+  COMMON_MESON_FLAGS: "-Dfribidi:docs=false"
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
   FEDORA_IMAGE: registry.gitlab.gnome.org/gnome/pango/fedora:v13
 
