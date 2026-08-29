@@ -100,7 +100,7 @@ typedef void (* PangoCairoShapeRendererFunc) (cairo_t        *cr,
  * PangoCairoFontMap
  */
 PANGO_AVAILABLE_IN_1_10
-GType         pango_cairo_font_map_get_type          (void) G_GNUC_CONST;
+GType         pango_cairo_font_map_get_type          (void);
 
 PANGO_AVAILABLE_IN_1_10
 PangoFontMap *pango_cairo_font_map_new               (void);
@@ -127,7 +127,7 @@ PangoContext *pango_cairo_font_map_create_context (PangoCairoFontMap *fontmap);
  * PangoCairoFont
  */
 PANGO_AVAILABLE_IN_1_18
-GType         pango_cairo_font_get_type               (void) G_GNUC_CONST;
+GType         pango_cairo_font_get_type               (void);
 
 PANGO_AVAILABLE_IN_1_18
 cairo_scaled_font_t *pango_cairo_font_get_scaled_font (PangoCairoFont *font);

@@ -44,7 +44,7 @@ struct _PangoCairoCoreTextFontMap
 };
 
 _PANGO_EXTERN
-GType pango_cairo_core_text_font_map_get_type (void) G_GNUC_CONST;
+GType pango_cairo_core_text_font_map_get_type (void);
 
 PangoCoreTextFont *
 _pango_cairo_core_text_font_new (PangoCairoCoreTextFontMap  *cafontmap,

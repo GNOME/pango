@@ -33,6 +33,6 @@ typedef struct _PangoCairoCoreTextFont      PangoCairoCoreTextFont;
 typedef struct _PangoCairoCoreTextFontClass PangoCairoCoreTextFontClass;
 
 _PANGO_EXTERN
-GType pango_cairo_core_text_font_get_type (void) G_GNUC_CONST;
+GType pango_cairo_core_text_font_get_type (void);
 
 #endif /* __PANGOCAIRO_CORETEXTFONT_H__ */

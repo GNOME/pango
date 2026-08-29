@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 #define PANGO_TYPE_LANGUAGE (pango_language_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType                   pango_language_get_type                 (void) G_GNUC_CONST;
+GType                   pango_language_get_type                 (void);
 
 PANGO_AVAILABLE_IN_1_16
 PangoLanguage *         pango_language_get_default              (void) G_GNUC_CONST;

@@ -255,7 +255,7 @@ struct _PangoOTRulesetDescription {
 #endif
 
 PANGO_DEPRECATED
-GType pango_ot_info_get_type (void) G_GNUC_CONST;
+GType pango_ot_info_get_type (void);
 
 #ifdef __GI_SCANNER__
 #define PANGO_OT_TYPE_RULESET           (pango_ot_ruleset_get_type ())
@@ -268,7 +268,7 @@ GType pango_ot_info_get_type (void) G_GNUC_CONST;
 #endif
 
 PANGO_DEPRECATED
-GType pango_ot_ruleset_get_type (void) G_GNUC_CONST;
+GType pango_ot_ruleset_get_type (void);
 
 
 PANGO_DEPRECATED
@@ -317,7 +317,7 @@ PangoOTTag *pango_ot_info_list_features  (PangoOTInfo      *info,
 #endif
 
 PANGO_DEPRECATED
-GType          pango_ot_buffer_get_type   (void) G_GNUC_CONST;
+GType          pango_ot_buffer_get_type   (void);
 
 PANGO_DEPRECATED
 PangoOTBuffer *pango_ot_buffer_new        (PangoFcFont       *font);
@@ -404,7 +404,7 @@ PangoOTTag      pango_ot_tag_from_language (PangoLanguage *language) G_GNUC_CONS
 #endif
 
 PANGO_DEPRECATED
-GType           pango_ot_ruleset_description_get_type (void) G_GNUC_CONST;
+GType           pango_ot_ruleset_description_get_type (void);
 
 PANGO_DEPRECATED
 guint           pango_ot_ruleset_description_hash  (const PangoOTRulesetDescription *desc) G_GNUC_PURE;

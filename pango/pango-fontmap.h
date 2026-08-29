@@ -99,7 +99,7 @@ struct _PangoFontMapClass
 };
 
 PANGO_AVAILABLE_IN_ALL
-GType         pango_font_map_get_type       (void) G_GNUC_CONST;
+GType         pango_font_map_get_type       (void);
 PANGO_AVAILABLE_IN_1_22
 PangoContext * pango_font_map_create_context (PangoFontMap               *fontmap);
 PANGO_AVAILABLE_IN_ALL

@@ -310,7 +310,7 @@ PANGO_DEPRECATED_IN_1_44_FOR(g_unichar_get_script)
 PangoScript pango_script_for_unichar         (gunichar             ch) G_GNUC_CONST;
 
 PANGO_AVAILABLE_IN_1_44
-GType            pango_script_iter_get_type  (void) G_GNUC_CONST;
+GType            pango_script_iter_get_type  (void);
 
 PANGO_AVAILABLE_IN_1_4
 PangoScriptIter *pango_script_iter_new       (const char          *text,

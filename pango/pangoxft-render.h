@@ -105,7 +105,7 @@ struct _PangoXftRendererClass
 };
 
 PANGO_AVAILABLE_IN_1_8
-GType pango_xft_renderer_get_type    (void) G_GNUC_CONST;
+GType pango_xft_renderer_get_type    (void);
 
 PANGO_AVAILABLE_IN_1_8
 PangoRenderer *pango_xft_renderer_new                 (Display          *display,

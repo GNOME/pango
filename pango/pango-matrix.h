@@ -81,7 +81,7 @@ struct _PangoMatrix
 #include <pango/pango-types.h>
 
 PANGO_AVAILABLE_IN_1_6
-GType pango_matrix_get_type (void) G_GNUC_CONST;
+GType pango_matrix_get_type (void);
 
 PANGO_AVAILABLE_IN_1_6
 PangoMatrix *pango_matrix_copy   (const PangoMatrix *matrix);

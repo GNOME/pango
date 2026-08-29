@@ -105,7 +105,7 @@ struct _PangoFcDecoderClass
 };
 
 PANGO_AVAILABLE_IN_1_6
-GType      pango_fc_decoder_get_type    (void) G_GNUC_CONST;
+GType      pango_fc_decoder_get_type    (void);
 
 PANGO_AVAILABLE_IN_1_6
 FcCharSet *pango_fc_decoder_get_charset (PangoFcDecoder *decoder,

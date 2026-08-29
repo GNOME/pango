@@ -37,7 +37,7 @@ typedef struct _PangoCoreTextFontClass    PangoCoreTextFontClass;
 
 
 PANGO_AVAILABLE_IN_ALL
-GType      pango_core_text_font_get_type         (void) G_GNUC_CONST;
+GType      pango_core_text_font_get_type         (void);
 
 PANGO_AVAILABLE_IN_1_24
 CTFontRef  pango_core_text_font_get_ctfont  (PangoCoreTextFont *font);

@@ -118,7 +118,7 @@ struct _PangoItem
 #define PANGO_TYPE_ITEM (pango_item_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType                   pango_item_get_type          (void) G_GNUC_CONST;
+GType                   pango_item_get_type          (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoItem *             pango_item_new               (void);

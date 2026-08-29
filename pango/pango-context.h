@@ -41,7 +41,7 @@ typedef struct _PangoContextClass PangoContextClass;
 
 
 PANGO_AVAILABLE_IN_ALL
-GType                   pango_context_get_type                  (void) G_GNUC_CONST;
+GType                   pango_context_get_type                  (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoContext *          pango_context_new                       (void);

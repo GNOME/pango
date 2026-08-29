@@ -115,7 +115,7 @@ void pango_xft_substitute_changed     (Display                *display,
 #endif
 
 PANGO_AVAILABLE_IN_ALL
-GType pango_xft_font_map_get_type (void) G_GNUC_CONST;
+GType pango_xft_font_map_get_type (void);
 
 #ifdef __GI_SCANNER__
 #define PANGO_XFT_TYPE_FONT              (pango_xft_font_get_type ())
@@ -128,7 +128,7 @@ GType pango_xft_font_map_get_type (void) G_GNUC_CONST;
 #endif
 
 PANGO_AVAILABLE_IN_ALL
-GType      pango_xft_font_get_type (void) G_GNUC_CONST;
+GType      pango_xft_font_get_type (void);
 
 /* For shape engines
  */

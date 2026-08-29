@@ -138,7 +138,7 @@ void _pango_cairo_font_private_get_glyph_extents (PangoCairoFontPrivate *cf_priv
 typedef struct _PangoCairoRenderer PangoCairoRenderer;
 
 _PANGO_EXTERN
-GType pango_cairo_renderer_get_type    (void) G_GNUC_CONST;
+GType pango_cairo_renderer_get_type    (void);
 
 
 const cairo_font_options_t *_pango_cairo_context_get_merged_font_options (PangoContext *context);

@@ -117,7 +117,7 @@ struct _PangoCoreTextFontMapClass
 
 
 _PANGO_EXTERN
-GType                 pango_core_text_font_map_get_type          (void) G_GNUC_CONST;
+GType                 pango_core_text_font_map_get_type          (void);
 
 void                  _pango_core_text_font_set_font_map         (PangoCoreTextFont    *afont,
                                                                   PangoCoreTextFontMap *fontmap);

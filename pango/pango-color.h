@@ -49,7 +49,7 @@ struct _PangoColor
 #define PANGO_TYPE_COLOR (pango_color_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType       pango_color_get_type         (void) G_GNUC_CONST;
+GType       pango_color_get_type         (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoColor *pango_color_copy             (const PangoColor *src);
