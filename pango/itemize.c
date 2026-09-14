@@ -632,6 +632,8 @@ itemize_state_fill_font (ItemizeState *state,
     }
 }
 
+static PangoFont * get_base_font (ItemizeState *state);
+
 static void
 itemize_state_add_character (ItemizeState *state,
                              PangoFont    *font,
@@ -655,8 +657,33 @@ itemize_state_add_character (ItemizeState *state,
     {
       if (!state->item->analysis.font && font)
         {
-          itemize_state_fill_font (state, font);
-          state->font_position = font_position;
+          /* Spaces (and other consider_as_space chars) deferred font
+           * selection. If the following character needs a fallback font,
+           * keep those spaces on the base font instead of inheriting the
+           * fallback — otherwise ASCII spaces pick up CJK/proportional
+           * metrics and break monospace indentation (e.g. in Pluma).
+           */
+          if (font_position > 0)
+            {
+              PangoFont *base = get_base_font (state);
+
+              if (base && base != font)
+                {
+                  itemize_state_fill_font (state, base);
+                  state->font_position = 0;
+                  /* Fall through: fonts differ → new item for @font. */
+                }
+              else
+                {
+                  itemize_state_fill_font (state, font);
+                  state->font_position = font_position;
+                }
+            }
+          else
+            {
+              itemize_state_fill_font (state, font);
+              state->font_position = font_position;
+            }
         }
       else if (state->item->analysis.font && !font)
         {
