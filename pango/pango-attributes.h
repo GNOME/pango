@@ -641,7 +641,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
 #define PANGO_TYPE_ATTR_LIST pango_attr_list_get_type ()
 
 /**
- * PangoAttrIterator:
+ * PangoAttrIterator: (copy-func pango_attr_iterator_copy) (free-func pango_attr_iterator_destroy)
  *
  * A `PangoAttrIterator` is used to iterate through a `PangoAttrList`.
  *
