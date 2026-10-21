@@ -150,7 +150,7 @@ struct _PangoGlyphString {
 #define PANGO_TYPE_GLYPH_STRING (pango_glyph_string_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType                   pango_glyph_string_get_type             (void) G_GNUC_CONST;
+GType                   pango_glyph_string_get_type             (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoGlyphString *      pango_glyph_string_new                  (void);

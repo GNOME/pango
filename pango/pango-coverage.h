@@ -72,7 +72,7 @@ typedef enum {
 } PangoCoverageLevel;
 
 PANGO_AVAILABLE_IN_ALL
-GType pango_coverage_get_type (void) G_GNUC_CONST;
+GType pango_coverage_get_type (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoCoverage *    pango_coverage_new     (void);

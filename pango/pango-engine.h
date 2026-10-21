@@ -85,7 +85,7 @@ struct _PangoEngineClass
 };
 
 PANGO_DEPRECATED_IN_1_38
-GType pango_engine_get_type (void) G_GNUC_CONST;
+GType pango_engine_get_type (void);
 
 /**
  * PANGO_ENGINE_TYPE_LANG:
@@ -152,7 +152,7 @@ struct _PangoEngineLangClass
 };
 
 PANGO_DEPRECATED_IN_1_38
-GType pango_engine_lang_get_type (void) G_GNUC_CONST;
+GType pango_engine_lang_get_type (void);
 
 /**
  * PANGO_ENGINE_TYPE_SHAPE:
@@ -240,7 +240,7 @@ struct _PangoEngineShapeClass
 };
 
 PANGO_DEPRECATED_IN_1_38
-GType pango_engine_shape_get_type (void) G_GNUC_CONST;
+GType pango_engine_shape_get_type (void);
 
 typedef struct _PangoEngineInfo PangoEngineInfo;
 typedef struct _PangoEngineScriptInfo PangoEngineScriptInfo;

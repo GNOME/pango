@@ -88,7 +88,7 @@ struct _PangoFcFont
 #endif /* PANGO_DISABLE_DEPRECATED */
 
 PANGO_AVAILABLE_IN_ALL
-GType      pango_fc_font_get_type (void) G_GNUC_CONST;
+GType      pango_fc_font_get_type (void);
 
 PANGO_DEPRECATED_IN_1_44
 gboolean   pango_fc_font_has_char          (PangoFcFont      *font,

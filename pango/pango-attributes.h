@@ -500,7 +500,7 @@ struct _PangoAttrFontFeatures
 };
 
 PANGO_AVAILABLE_IN_ALL
-GType                   pango_attribute_get_type                (void) G_GNUC_CONST;
+GType                   pango_attribute_get_type                (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoAttrType           pango_attr_type_register                (const char                 *name);
@@ -669,7 +669,7 @@ typedef struct _PangoAttrIterator PangoAttrIterator;
  */
 
 PANGO_AVAILABLE_IN_ALL
-GType                   pango_attr_list_get_type        (void) G_GNUC_CONST;
+GType                   pango_attr_list_get_type        (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoAttrList *         pango_attr_list_new             (void);
@@ -717,7 +717,7 @@ PANGO_AVAILABLE_IN_1_50
 PangoAttrList *         pango_attr_list_from_string     (const char            *text);
 
 PANGO_AVAILABLE_IN_1_44
-GType                   pango_attr_iterator_get_type    (void) G_GNUC_CONST;
+GType                   pango_attr_iterator_get_type    (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoAttrIterator *     pango_attr_list_get_iterator    (PangoAttrList         *list);

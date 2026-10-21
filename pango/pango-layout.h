@@ -154,7 +154,7 @@ struct _PangoLayoutLine
  */
 
 PANGO_AVAILABLE_IN_ALL
-GType        pango_layout_get_type       (void) G_GNUC_CONST;
+GType        pango_layout_get_type       (void);
 PANGO_AVAILABLE_IN_ALL
 PangoLayout *pango_layout_new            (PangoContext   *context);
 PANGO_AVAILABLE_IN_ALL
@@ -439,7 +439,7 @@ PangoLayout *   pango_layout_deserialize           (PangoContext                
 #define PANGO_TYPE_LAYOUT_LINE (pango_layout_line_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType    pango_layout_line_get_type     (void) G_GNUC_CONST;
+GType    pango_layout_line_get_type     (void);
 
 PANGO_AVAILABLE_IN_1_10
 PangoLayoutLine *pango_layout_line_ref   (PangoLayoutLine *line);
@@ -489,7 +489,7 @@ typedef struct _PangoLayoutIter PangoLayoutIter;
 #define PANGO_TYPE_LAYOUT_ITER         (pango_layout_iter_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType            pango_layout_iter_get_type (void) G_GNUC_CONST;
+GType            pango_layout_iter_get_type (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoLayoutIter *pango_layout_get_iter  (PangoLayout     *layout);

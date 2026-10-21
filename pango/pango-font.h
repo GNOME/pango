@@ -332,7 +332,7 @@ typedef enum {
 #define PANGO_TYPE_FONT_DESCRIPTION (pango_font_description_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType                 pango_font_description_get_type    (void) G_GNUC_CONST;
+GType                 pango_font_description_get_type    (void);
 PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *pango_font_description_new         (void);
 PANGO_AVAILABLE_IN_ALL
@@ -475,7 +475,7 @@ struct _PangoFontMetrics
 };
 
 PANGO_AVAILABLE_IN_ALL
-GType             pango_font_metrics_get_type                    (void) G_GNUC_CONST;
+GType             pango_font_metrics_get_type                    (void);
 PANGO_AVAILABLE_IN_ALL
 PangoFontMetrics *pango_font_metrics_ref                         (PangoFontMetrics *metrics);
 PANGO_AVAILABLE_IN_ALL
@@ -557,7 +557,7 @@ struct _PangoFontFamilyClass
 #endif /* PANGO_DISABLE_DEPRECATED */
 
 PANGO_AVAILABLE_IN_ALL
-GType      pango_font_family_get_type       (void) G_GNUC_CONST;
+GType      pango_font_family_get_type       (void);
 
 PANGO_AVAILABLE_IN_ALL
 void                 pango_font_family_list_faces (PangoFontFamily  *family,
@@ -625,7 +625,7 @@ struct _PangoFontFaceClass
 #endif /* PANGO_DISABLE_DEPRECATED */
 
 PANGO_AVAILABLE_IN_ALL
-GType      pango_font_face_get_type       (void) G_GNUC_CONST;
+GType      pango_font_face_get_type       (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *pango_font_face_describe       (PangoFontFace  *face);
@@ -695,7 +695,7 @@ struct _PangoFontClass
 #endif /* PANGO_DISABLE_DEPRECATED */
 
 PANGO_AVAILABLE_IN_ALL
-GType                 pango_font_get_type          (void) G_GNUC_CONST;
+GType                 pango_font_get_type          (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontDescription *pango_font_describe          (PangoFont        *font);

@@ -187,7 +187,7 @@ struct _PangoWin32MetricsInfo
 };
 
 _PANGO_EXTERN
-GType           _pango_win32_font_get_type          (void) G_GNUC_CONST;
+GType           _pango_win32_font_get_type          (void);
 
 _PANGO_EXTERN
 void            _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
@@ -196,7 +196,7 @@ void            _pango_win32_make_matching_logfontw (PangoFontMap   *fontmap,
 						     LOGFONTW       *out);
 
 _PANGO_EXTERN
-GType           pango_win32_font_map_get_type      (void) G_GNUC_CONST;
+GType           pango_win32_font_map_get_type      (void);
 
 _PANGO_EXTERN
 void            _pango_win32_fontmap_cache_remove   (PangoFontMap   *fontmap,

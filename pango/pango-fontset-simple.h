@@ -48,7 +48,7 @@ typedef struct _PangoFontsetSimpleClass  PangoFontsetSimpleClass;
 
 
 PANGO_AVAILABLE_IN_ALL
-GType                   pango_fontset_simple_get_type (void) G_GNUC_CONST;
+GType                   pango_fontset_simple_get_type (void);
 
 PANGO_AVAILABLE_IN_ALL
 PangoFontsetSimple *    pango_fontset_simple_new    (PangoLanguage      *language);

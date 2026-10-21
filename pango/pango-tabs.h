@@ -62,7 +62,7 @@ PangoTabArray  *pango_tab_array_new_with_positions  (gint           size,
 						     gint           first_position,
 						     ...);
 PANGO_AVAILABLE_IN_ALL
-GType           pango_tab_array_get_type            (void) G_GNUC_CONST;
+GType           pango_tab_array_get_type            (void);
 PANGO_AVAILABLE_IN_ALL
 PangoTabArray  *pango_tab_array_copy                (PangoTabArray *src);
 PANGO_AVAILABLE_IN_ALL

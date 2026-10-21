@@ -61,7 +61,7 @@ struct _PangoGlyphItem
 #define PANGO_TYPE_GLYPH_ITEM (pango_glyph_item_get_type ())
 
 PANGO_AVAILABLE_IN_ALL
-GType pango_glyph_item_get_type (void) G_GNUC_CONST;
+GType pango_glyph_item_get_type (void);
 
 PANGO_AVAILABLE_IN_1_2
 PangoGlyphItem *pango_glyph_item_split        (PangoGlyphItem *orig,
@@ -151,7 +151,7 @@ struct _PangoGlyphItemIter
 #define PANGO_TYPE_GLYPH_ITEM_ITER (pango_glyph_item_iter_get_type ())
 
 PANGO_AVAILABLE_IN_1_22
-GType               pango_glyph_item_iter_get_type (void) G_GNUC_CONST;
+GType               pango_glyph_item_iter_get_type (void);
 PANGO_AVAILABLE_IN_1_22
 PangoGlyphItemIter *pango_glyph_item_iter_copy (PangoGlyphItemIter *orig);
 PANGO_AVAILABLE_IN_1_22

@@ -108,7 +108,7 @@ void pango_ft2_render_layout_subpixel      (FT_Bitmap        *bitmap,
 					    int               y);
 
 PANGO_AVAILABLE_IN_ALL
-GType pango_ft2_font_map_get_type (void) G_GNUC_CONST;
+GType pango_ft2_font_map_get_type (void);
 
 PANGO_AVAILABLE_IN_1_2
 PangoFontMap *pango_ft2_font_map_new                    (void);

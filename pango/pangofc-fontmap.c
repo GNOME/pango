@@ -2722,7 +2722,7 @@ typedef struct {
   PangoCoverageClass parent_class;
 } PangoFcCoverageClass;
 
-GType pango_fc_coverage_get_type (void) G_GNUC_CONST;
+GType pango_fc_coverage_get_type (void);
 
 G_DEFINE_TYPE (PangoFcCoverage, pango_fc_coverage, PANGO_TYPE_COVERAGE)
 

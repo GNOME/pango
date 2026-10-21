@@ -50,7 +50,7 @@ typedef struct _PangoFcFontMapClass   PangoFcFontMapClass;
 typedef struct _PangoFcFontMapPrivate PangoFcFontMapPrivate;
 
 PANGO_AVAILABLE_IN_ALL
-GType pango_fc_font_map_get_type (void) G_GNUC_CONST;
+GType pango_fc_font_map_get_type (void);
 
 PANGO_AVAILABLE_IN_1_4
 void           pango_fc_font_map_cache_clear    (PangoFcFontMap *fcfontmap);

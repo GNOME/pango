@@ -42,7 +42,7 @@ G_BEGIN_DECLS
 
 
 PANGO_AVAILABLE_IN_ALL
-GType pango_fontset_get_type (void) G_GNUC_CONST;
+GType pango_fontset_get_type (void);
 
 typedef struct _PangoFontset        PangoFontset;
 typedef struct _PangoFontsetClass   PangoFontsetClass;
