@@ -1509,8 +1509,8 @@ pango_renderer_default_prepare_run (PangoRenderer  *renderer,
   PangoColor *underline_color = NULL;
   PangoColor *overline_color = NULL;
   PangoColor *strikethrough_color = NULL;
-  guint16 fg_alpha = 65535;
-  guint16 bg_alpha = 65535;
+  guint16 fg_alpha = 0;
+  guint16 bg_alpha = 0;
   GSList *l;
 
   renderer->underline = PANGO_UNDERLINE_NONE;
