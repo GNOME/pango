@@ -3617,6 +3617,7 @@ struct _ParaBreakState
   ItemProperties properties;    /* Properties for the first item in state->items */
   int *log_widths;              /* Logical widths for first item in state->items.. */
   int num_log_widths;           /* Length of log_widths */
+  gint64 item_width;            /* Logical width of the remaining portion of the first item */
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
                                  * to the remaining portion of the first item */
 
@@ -4021,17 +4022,17 @@ process_item (PangoLayout     *layout,
 {
   PangoItem *item = state->items->data;
   gboolean shape_set = FALSE;
-  int width;
+  gint64 width;
   int extra_width;
   int orig_extra_width;
   int length;
   int i;
   int processing_new_item;
   int num_chars;
-  int orig_width;
+  gint64 orig_width;
   PangoWrapMode wrap;
   int break_num_chars;
-  int break_width;
+  gint64 break_width;
   int break_extra_width;
   PangoGlyphString *break_glyphs;
   PangoFontMetrics *metrics;
@@ -4057,6 +4058,9 @@ process_item (PangoLayout     *layout,
       pango_layout_get_item_properties (item, &state->properties);
       state->glyphs = shape_run (line, state, item);
       state->log_widths_offset = 0;
+      state->item_width = 0;
+      for (i = 0; i < state->glyphs->num_glyphs; i++)
+        state->item_width += state->glyphs->glyphs[i].geometry.width;
       processing_new_item = TRUE;
     }
   else
@@ -4084,16 +4088,11 @@ process_item (PangoLayout     *layout,
       return BREAK_ALL_FIT;
     }
 
-  if (processing_new_item)
-    {
-      width = pango_glyph_string_get_width (state->glyphs);
-    }
-  else
-    {
-      width = 0;
-      for (i = 0; i < item->num_chars; i++)
-        width += state->log_widths[state->log_widths_offset + i];
-    }
+  /* Keep the width of the unconsumed text instead of summing its logical
+   * widths again for every wrapped line. Large items can exceed the range
+   * of a Pango unit even when each resulting line fits comfortably in it.
+   */
+  width = state->item_width;
 
   if (layout->text[item->offset] == '\t')
     {
@@ -4130,13 +4129,22 @@ process_item (PangoLayout     *layout,
     {
       PangoGlyphString *glyphs;
 
-      DEBUG1 ("%d + %d <= %d", width, extra_width, state->remaining_width);
-      glyphs = shape_run (line, state, item);
+      DEBUG1 ("%" G_GINT64_FORMAT " + %d <= %d", width, extra_width, state->remaining_width);
+      /* The original item has already been shaped above. Only a suffix
+       * left over from wrapping needs to be shaped again.
+       */
+      if (state->log_widths_offset == 0)
+        glyphs = state->glyphs;
+      else
+        glyphs = shape_run (line, state, item);
 
       width = pango_glyph_string_get_width (glyphs) + tab_width_change (state);
 
       if (width + extra_width <= state->remaining_width || (item->num_chars == 1 && !line->runs))
         {
+          if (glyphs == state->glyphs)
+            state->glyphs = NULL;
+
           insert_run (line, state, item, glyphs, TRUE);
 
           state->remaining_width -= width;
@@ -4149,7 +4157,8 @@ process_item (PangoLayout     *layout,
         }
 
       /* if it doesn't fit after shaping, discard and proceed to break the item */
-      pango_glyph_string_free (glyphs);
+      if (glyphs != state->glyphs)
+        pango_glyph_string_free (glyphs);
     }
 
   /*** From here on, we look for a way to break item ***/
@@ -4196,7 +4205,7 @@ retry_break:
       if (MIN (width + extra_width, width) > state->remaining_width + safe_distance &&
           break_num_chars < item->num_chars)
         {
-          DEBUG1 ("at %d, MIN(%d, %d + %d) > %d + MARGIN, breaking at %d",
+          DEBUG1 ("at %d, MIN(%" G_GINT64_FORMAT ", %" G_GINT64_FORMAT " + %d) > %d + MARGIN, breaking at %d",
                   num_chars, width, extra_width, width, state->remaining_width, break_num_chars);
           break;
         }
@@ -4261,7 +4270,7 @@ retry_break:
                   new_break_width + extra_width <= state->remaining_width ||
                   new_break_width + extra_width < break_width + break_extra_width)
                 {
-                  DEBUG1 ("accept breakpoint %d: %d + %d <= %d + %d",
+                  DEBUG1 ("accept breakpoint %d: %d + %d <= %" G_GINT64_FORMAT " + %d",
                           num_chars, new_break_width, extra_width, break_width, break_extra_width);
                   DEBUG1 ("replace bp %d by %d", break_num_chars, num_chars);
                   break_num_chars = num_chars;
@@ -4301,8 +4310,7 @@ retry_break:
     {
       if (state->remaining_width >= 0)
         {
-          state->remaining_width -= break_width + break_extra_width;
-          state->remaining_width = MAX (state->remaining_width, 0);
+          state->remaining_width = MAX (state->remaining_width - break_width - break_extra_width, 0);
         }
 
       if (break_num_chars == item->num_chars)
@@ -4339,6 +4347,8 @@ retry_break:
 
           insert_run (line, state, new_item, break_glyphs, FALSE);
 
+          for (i = 0; i < break_num_chars; i++)
+            state->item_width -= state->log_widths[state->log_widths_offset + i];
           state->log_widths_offset += break_num_chars;
 
           /* Shaped items should never be broken */
