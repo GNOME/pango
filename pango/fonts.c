@@ -2150,11 +2150,12 @@ pango_parse_stretch (const char   *str,
                      PangoStretch *stretch,
                      gboolean      warn)
 {
-  PangoWidth width;
+  PangoWidth width = PANGO_WIDTH_NORMAL;
   gboolean ret;
 
   ret = pango_parse_width (str, &width, warn);
-  *stretch = width_to_stretch (width);
+  if (ret)
+    *stretch = width_to_stretch (width);
   return ret;
 }
 
