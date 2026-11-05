@@ -61,7 +61,7 @@ test_large_wrapped_item (void)
   PangoLayout *layout;
   PangoFontDescription *font;
   PangoAttrList *attrs;
-  GString *text;
+  char *text;
   GSList *lines;
   int char_width;
   int offset = 0;
@@ -82,11 +82,9 @@ test_large_wrapped_item (void)
   pango_layout_get_size (layout, &char_width, NULL);
   g_assert_cmpint ((gint64) char_width * n_chars, >, G_MAXINT);
 
-  text = g_string_sized_new (n_chars);
-  for (int i = 0; i < n_chars; i++)
-    g_string_append_c (text, 'a');
+  text = g_strnfill (n_chars, 'a');
 
-  pango_layout_set_text (layout, text->str, text->len);
+  pango_layout_set_text (layout, text, n_chars);
   pango_layout_set_wrap (layout, PANGO_WRAP_CHAR);
   pango_layout_set_width (layout, chars_per_line * char_width);
   g_assert_cmpint (pango_layout_get_line_count (layout), ==, n_chars / chars_per_line);
@@ -105,7 +103,7 @@ test_large_wrapped_item (void)
     }
   g_assert_cmpint (offset, ==, n_chars);
 
-  g_string_free (text, TRUE);
+  g_free (text);
   g_object_unref (layout);
   g_object_unref (context);
 }
