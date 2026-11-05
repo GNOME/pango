@@ -3616,7 +3616,7 @@ struct _ParaBreakState
   ItemProperties properties;    /* Properties for the first item in state->items */
   int *log_widths;              /* Logical widths for first item in state->items.. */
   int num_log_widths;           /* Length of log_widths */
-  gint64 item_width;            /* Logical width of the remaining portion of the first item */
+  gint64 item_width;
   int log_widths_offset;        /* Offset into log_widths to the point corresponding
                                  * to the remaining portion of the first item */
 
@@ -4087,10 +4087,6 @@ process_item (PangoLayout     *layout,
       return BREAK_ALL_FIT;
     }
 
-  /* Keep the width of the unconsumed text instead of summing its logical
-   * widths again for every wrapped line. Large items can exceed the range
-   * of a Pango unit even when each resulting line fits comfortably in it.
-   */
   width = state->item_width;
 
   if (layout->text[item->offset] == '\t')
@@ -4129,9 +4125,6 @@ process_item (PangoLayout     *layout,
       PangoGlyphString *glyphs;
 
       DEBUG1 ("%" G_GINT64_FORMAT " + %d <= %d", width, extra_width, state->remaining_width);
-      /* The original item has already been shaped above. Only a suffix
-       * left over from wrapping needs to be shaped again.
-       */
       if (state->log_widths_offset == 0)
         glyphs = state->glyphs;
       else
