@@ -148,6 +148,7 @@ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang'
     '-Werror=empty-body',
     '-Werror=write-strings',
     '-Werror=unused-but-set-variable',
+    '-Wno-error=unused-but-set-global',
     '-Wundef', # FIXME: https://bugzilla.gnome.org/show_bug.cgi?id=792481
   ]
 
