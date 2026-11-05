@@ -588,7 +588,8 @@ summary('Cairo', cairo_dep.found(), section: 'Features')
 summary('Thai', thai_dep.found(), section: 'Features')
 summary('Sysprof', libsysprof_capture_dep.found(), section: 'Features')
 
-summary('Compiler', cc.get_id(), section: 'Toolchain')
+summary('C Compiler', cc.get_id(), section: 'Toolchain')
+summary('C++ Compiler', cpp.get_id(), section: 'Toolchain')
 summary('Linker', cc.get_linker_id(), section: 'Toolchain')
 
 summary('Debugging', get_option('debug'), section: 'Build')
