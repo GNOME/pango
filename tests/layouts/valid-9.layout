@@ -22,6 +22,18 @@
       "end" : 30,
       "type" : "letter-spacing",
       "value" : 8888
+    },
+    {
+      "start" : 6,
+      "end" : 8,
+      "type" : "foreground",
+      "value" : "#ffff00000000"
+    },
+    {
+      "start" : 8,
+      "end" : 14,
+      "type" : "foreground",
+      "value" : "#00000000ffff"
     }
   ],
   "font" : "Cantarell 11",
@@ -257,9 +269,9 @@
         "direction" : "ltr",
         "runs" : [
           {
-            "offset" : 6,
-            "length" : 8,
-            "text" : "שלום",
+            "offset" : 8,
+            "length" : 6,
+            "text" : "לום",
             "bidi-level" : 1,
             "gravity" : "south",
             "language" : "he",
@@ -282,6 +294,12 @@
                 "end" : 30,
                 "type" : "letter-spacing",
                 "value" : 8888
+              },
+              {
+                "start" : 8,
+                "end" : 14,
+                "type" : "foreground",
+                "value" : "#00000000ffff"
               }
             ],
             "y-offset" : 0,
@@ -292,22 +310,62 @@
                 "glyph" : 1332,
                 "width" : 14684,
                 "is-cluster-start" : true,
-                "log-cluster" : 6
+                "log-cluster" : 4
               },
               {
                 "glyph" : 1324,
                 "width" : 12984,
                 "x-offset" : 4444,
                 "is-cluster-start" : true,
-                "log-cluster" : 4
+                "log-cluster" : 2
               },
               {
                 "glyph" : 1331,
                 "width" : 17080,
                 "x-offset" : 4444,
                 "is-cluster-start" : true,
-                "log-cluster" : 2
+                "log-cluster" : 0
+              }
+            ]
+          },
+          {
+            "offset" : 6,
+            "length" : 2,
+            "text" : "ש",
+            "bidi-level" : 1,
+            "gravity" : "south",
+            "language" : "he",
+            "script" : "hebrew",
+            "font" : {
+              "description" : "DejaVu Sans 11",
+              "checksum" : "69ccd07023a72ceb27a5e5c22f728627353b60a198170f5e58dd7014221abf01",
+              "matrix" : [
+                1,
+                -0,
+                -0,
+                1,
+                0,
+                0
+              ]
+            },
+            "flags" : 0,
+            "extra-attributes" : [
+              {
+                "end" : 30,
+                "type" : "letter-spacing",
+                "value" : 8888
               },
+              {
+                "start" : 6,
+                "end" : 8,
+                "type" : "foreground",
+                "value" : "#ffff00000000"
+              }
+            ],
+            "y-offset" : 0,
+            "start-x-offset" : 0,
+            "end-x-offset" : 0,
+            "glyphs" : [
               {
                 "glyph" : 1344,
                 "width" : 19128,

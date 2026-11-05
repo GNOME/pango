@@ -22,6 +22,18 @@
       "end" : 31,
       "type" : "font-features",
       "value" : "tnum=1"
+    },
+    {
+      "start" : 74,
+      "end" : 117,
+      "type" : "foreground",
+      "value" : "#ffff00000000"
+    },
+    {
+      "start" : 117,
+      "end" : 124,
+      "type" : "foreground",
+      "value" : "#00000000ffff"
     }
   ],
   "font" : "Cantarell 11",
@@ -1407,6 +1419,12 @@
                 "end" : 31,
                 "type" : "font-features",
                 "value" : "tnum=1"
+              },
+              {
+                "start" : 74,
+                "end" : 117,
+                "type" : "foreground",
+                "value" : "#ffff00000000"
               }
             ],
             "y-offset" : 0,
@@ -1545,6 +1563,14 @@
               ]
             },
             "flags" : 0,
+            "extra-attributes" : [
+              {
+                "start" : 74,
+                "end" : 117,
+                "type" : "foreground",
+                "value" : "#ffff00000000"
+              }
+            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
@@ -1738,6 +1764,14 @@
               ]
             },
             "flags" : 0,
+            "extra-attributes" : [
+              {
+                "start" : 117,
+                "end" : 124,
+                "type" : "foreground",
+                "value" : "#00000000ffff"
+              }
+            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
