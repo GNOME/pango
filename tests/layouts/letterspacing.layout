@@ -110,6 +110,7 @@
                 "glyph" : 73,
                 "width" : 20480,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               },
               {
@@ -117,6 +118,7 @@
                 "width" : 25600,
                 "x-offset" : 5120,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               },
               {
@@ -124,6 +126,7 @@
                 "width" : 17408,
                 "x-offset" : 5120,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 2
               }
             ]

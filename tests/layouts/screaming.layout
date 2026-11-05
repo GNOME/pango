@@ -136,11 +136,13 @@
                 "glyph" : 70,
                 "width" : 9216,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               },
               {
                 "glyph" : 2803,
                 "width" : 6144,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               }
             ]
@@ -188,11 +190,15 @@
                 "glyph" : 72,
                 "width" : 10240,
                 "is-cluster-start" : true,
+                "unsafe-to-break" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               },
               {
                 "glyph" : 2803,
                 "width" : 6144,
+                "unsafe-to-break" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               }
             ]
@@ -234,11 +240,13 @@
                 "glyph" : 68,
                 "width" : 10240,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 2803,
                 "width" : 6144,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               }
             ]
@@ -280,11 +288,13 @@
                 "glyph" : 80,
                 "width" : 16384,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 2803,
                 "width" : 6144,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               }
             ]
@@ -326,18 +336,21 @@
                 "glyph" : 76,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 81,
                 "width" : 10240,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               },
               {
                 "glyph" : 74,
                 "width" : 10240,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 2
               }
             ]

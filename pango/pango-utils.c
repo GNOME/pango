@@ -1101,7 +1101,7 @@ _pango_shape_shape (const char       *text,
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = shape_logical->width;
-      glyphs->glyphs[i].attr.is_cluster_start = 1;
+      glyphs->glyphs[i].attr = (PangoGlyphVisAttr) { .is_cluster_start = 1 };
 
       glyphs->log_clusters[i] = p - text;
     }

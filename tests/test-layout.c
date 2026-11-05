@@ -64,9 +64,30 @@ generate_font_map (void)
   return map;
 }
 
+static GBytes *
+strip_shape_flags (GBytes *bytes)
+{
+  GRegex *regex;
+  const char *data;
+  gsize size;
+  char *filtered;
+
+  g_assert (bytes != NULL);
+
+  regex = g_regex_new ("^ *\"unsafe-to-(break|concat)\" : true,\n",
+                       G_REGEX_MULTILINE, 0, NULL);
+  data = g_bytes_get_data (bytes, &size);
+  filtered = g_regex_replace_literal (regex, data, size, 0, "", 0, NULL);
+  g_regex_unref (regex);
+
+  return g_bytes_new_take (filtered, strlen (filtered));
+}
+
 static void
 test_layout (gconstpointer d)
 {
+  GBytes *filtered_orig;
+  GBytes *filtered_bytes;
   const char *filename = d;
   PangoFontMap *fontmap;
   GError *error = NULL;
@@ -112,9 +133,13 @@ test_layout (gconstpointer d)
   g_object_unref (context);
   g_object_unref (fontmap);
 
-  diff = diff_bytes (orig, bytes, &error);
+  filtered_orig = strip_shape_flags (orig);
+  filtered_bytes = strip_shape_flags (bytes);
+  diff = diff_bytes (filtered_orig, filtered_bytes, &error);
   g_assert_no_error (error);
 
+  g_bytes_unref (filtered_bytes);
+  g_bytes_unref (filtered_orig);
   g_bytes_unref (bytes);
   g_bytes_unref (orig);
 

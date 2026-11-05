@@ -741,6 +741,12 @@ add_run (GtkJsonPrinter *printer,
       if (run->glyphs->glyphs[i].attr.is_color)
         gtk_json_printer_add_boolean (printer, "is-color", TRUE);
 
+      if (run->glyphs->glyphs[i].attr.unsafe_to_break)
+        gtk_json_printer_add_boolean (printer, "unsafe-to-break", TRUE);
+
+      if (run->glyphs->glyphs[i].attr.unsafe_to_concat)
+        gtk_json_printer_add_boolean (printer, "unsafe-to-concat", TRUE);
+
       gtk_json_printer_add_integer (printer, "log-cluster", run->glyphs->log_clusters[i]);
 
       gtk_json_printer_end (printer);

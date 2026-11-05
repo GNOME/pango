@@ -399,6 +399,7 @@
                 "width" : 5278,
                 "x-offset" : 158,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               }
             ]

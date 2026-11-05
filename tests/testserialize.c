@@ -465,6 +465,37 @@ test_serialize_layout_invalid (void)
   g_object_unref (fontmap);
 }
 
+static void
+test_serialize_shape_flags (void)
+{
+  const char *text = "سلامسلام";
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  PangoLayout *layout;
+  PangoFontDescription *font;
+  GBytes *bytes;
+  const char *data;
+  gsize size;
+
+  fontmap = generate_font_map ();
+  context = pango_font_map_create_context (fontmap);
+  layout = pango_layout_new (context);
+  font = pango_font_description_from_string ("DejaVu Sans 12");
+
+  pango_layout_set_font_description (layout, font);
+  pango_layout_set_text (layout, text, -1);
+  bytes = pango_layout_serialize (layout, PANGO_LAYOUT_SERIALIZE_OUTPUT);
+  data = g_bytes_get_data (bytes, &size);
+  g_assert_nonnull (g_strstr_len (data, size, "\"unsafe-to-break\" : true"));
+  g_assert_nonnull (g_strstr_len (data, size, "\"unsafe-to-concat\" : true"));
+
+  g_bytes_unref (bytes);
+  pango_font_description_free (font);
+  g_object_unref (layout);
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
 static PangoFontMap *
 generate_font_map (void)
 {
@@ -511,6 +542,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/serialize/layout/valid", test_serialize_layout_valid);
   g_test_add_func ("/serialize/layout/context", test_serialize_layout_context);
   g_test_add_func ("/serialize/layout/invalid", test_serialize_layout_invalid);
+  g_test_add_func ("/serialize/layout/shape-flags", test_serialize_shape_flags);
 
   return g_test_run ();
 }

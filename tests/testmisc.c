@@ -466,12 +466,23 @@ test_fallback_shape (void)
       g_clear_object (&item->analysis.font);
 
       glyphs = pango_glyph_string_new ();
+      pango_glyph_string_set_size (glyphs, item->num_chars);
+      for (int i = 0; i < glyphs->num_glyphs; i++)
+        glyphs->glyphs[i].attr = (PangoGlyphVisAttr) {
+          .is_color = 1,
+          .unsafe_to_break = 1,
+          .unsafe_to_concat = 1,
+        };
+
       pango_shape_full (text + item->offset, item->length, NULL, 0, &item->analysis, glyphs);
 
       for (int i = 0; i < glyphs->num_glyphs; i++)
         {
           PangoGlyph glyph = glyphs->glyphs[i].glyph;
           g_assert_true (glyph == PANGO_GLYPH_EMPTY || (glyph & PANGO_GLYPH_UNKNOWN_FLAG));
+          g_assert_false (glyphs->glyphs[i].attr.is_color);
+          g_assert_false (glyphs->glyphs[i].attr.unsafe_to_break);
+          g_assert_false (glyphs->glyphs[i].attr.unsafe_to_concat);
         }
 
       pango_glyph_string_free (glyphs);
@@ -879,6 +890,82 @@ test_small_caps_crash (void)
   g_object_unref (fontmap);
 }
 
+static void
+test_shape_fragment_flags (void)
+{
+  const char *texts[] = { "سلامسلام", "\u0301" };
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  gboolean saw_break = FALSE;
+  gboolean saw_concat = FALSE;
+
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
+
+  for (guint t = 0; t < G_N_ELEMENTS (texts); t++)
+    {
+      const char *text = texts[t];
+      GList *items = pango_itemize (context, text, 0, strlen (text), NULL, NULL);
+      PangoItem *item = items->data;
+      PangoGlyphString *glyphs = pango_glyph_string_new ();
+      hb_buffer_t *buffer = hb_buffer_create ();
+
+      g_assert_null (items->next);
+      for (guint flags = 0; flags < 4; flags++)
+        {
+          PangoShapeFlags shape_flags = PANGO_SHAPE_NONE;
+          hb_buffer_flags_t buffer_flags = HB_BUFFER_FLAG_PRODUCE_UNSAFE_TO_CONCAT;
+          hb_glyph_info_t *infos;
+          hb_glyph_position_t *positions;
+          guint n_glyphs;
+
+          if (flags & 1)
+            shape_flags |= PANGO_SHAPE_NOT_START_OF_PARAGRAPH;
+          else
+            buffer_flags |= HB_BUFFER_FLAG_BOT;
+          if (flags & 2)
+            shape_flags |= PANGO_SHAPE_NOT_END_OF_PARAGRAPH;
+          else
+            buffer_flags |= HB_BUFFER_FLAG_EOT;
+
+          hb_buffer_clear_contents (buffer);
+          hb_buffer_set_flags (buffer, buffer_flags);
+          hb_buffer_set_cluster_level (buffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_CHARACTERS);
+          hb_buffer_add_utf8 (buffer, text, -1, 0, -1);
+          hb_buffer_guess_segment_properties (buffer);
+          hb_shape (pango_font_get_hb_font (item->analysis.font), buffer, NULL, 0);
+          infos = hb_buffer_get_glyph_infos (buffer, &n_glyphs);
+          positions = hb_buffer_get_glyph_positions (buffer, NULL);
+
+          pango_shape_with_flags (text, strlen (text), text, strlen (text),
+                                  &item->analysis, glyphs, shape_flags);
+          g_assert_cmpint (glyphs->num_glyphs, ==, n_glyphs);
+          for (guint i = 0; i < n_glyphs; i++)
+            {
+              hb_glyph_flags_t expected = hb_glyph_info_get_glyph_flags (&infos[i]);
+              PangoGlyphInfo *glyph = &glyphs->glyphs[i];
+
+              g_assert_cmpuint (glyph->glyph, ==, infos[i].codepoint);
+              g_assert_cmpint (glyph->geometry.width, ==, positions[i].x_advance);
+              g_assert_cmpint (glyphs->log_clusters[i], ==, infos[i].cluster);
+              g_assert_cmpint (glyph->attr.unsafe_to_break, ==, !!(expected & HB_GLYPH_FLAG_UNSAFE_TO_BREAK));
+              g_assert_cmpint (glyph->attr.unsafe_to_concat, ==, !!(expected & HB_GLYPH_FLAG_UNSAFE_TO_CONCAT));
+              saw_break |= glyph->attr.unsafe_to_break;
+              saw_concat |= glyph->attr.unsafe_to_concat;
+            }
+        }
+      pango_glyph_string_free (glyphs);
+      hb_buffer_destroy (buffer);
+      g_list_free_full (items, (GDestroyNotify) pango_item_free);
+    }
+
+  g_assert_true (saw_break);
+  g_assert_true (saw_concat);
+
+  g_object_unref (context);
+  g_object_unref (fontmap);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -914,6 +1001,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/layout/wrap-char", test_wrap_char);
   g_test_add_func ("/matrix/transform-rectangle", test_transform_rectangle);
   g_test_add_func ("/itemize/small-caps-crash", test_small_caps_crash);
+  g_test_add_func ("/shape/fragment-flags", test_shape_fragment_flags);
 
   return g_test_run ();
 }
