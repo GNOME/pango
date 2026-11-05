@@ -167,6 +167,43 @@ pango_hb_font_get_nominal_glyph (hb_font_t      *font,
   return FALSE;
 }
 
+static unsigned int
+pango_hb_font_get_nominal_glyphs (hb_font_t            *font,
+                                  void                 *font_data,
+                                  unsigned int          count,
+                                  const hb_codepoint_t *first_unicode,
+                                  unsigned int          unicode_stride,
+                                  hb_codepoint_t       *first_glyph,
+                                  unsigned int          glyph_stride,
+                                  void                 *user_data)
+{
+  PangoHbShapeContext *context = font_data;
+  unsigned int done = 0;
+
+  while (done < count)
+    {
+      unsigned int n = 0;
+
+      if (context->show_flags == 0)
+        n = hb_font_get_nominal_glyphs (context->parent, count - done,
+                                        first_unicode, unicode_stride,
+                                        first_glyph, glyph_stride);
+      done += n;
+      first_unicode = (const hb_codepoint_t *) ((const char *) first_unicode + n * unicode_stride);
+      first_glyph = (hb_codepoint_t *) ((char *) first_glyph + n * glyph_stride);
+
+      if (done == count ||
+          !pango_hb_font_get_nominal_glyph (font, font_data, *first_unicode, first_glyph, user_data))
+        break;
+
+      done++;
+      first_unicode = (const hb_codepoint_t *) ((const char *) first_unicode + unicode_stride);
+      first_glyph = (hb_codepoint_t *) ((char *) first_glyph + glyph_stride);
+    }
+
+  return done;
+}
+
 static hb_position_t
 pango_hb_font_get_glyph_h_advance (hb_font_t      *font,
                                    void           *font_data,
@@ -184,6 +221,44 @@ pango_hb_font_get_glyph_h_advance (hb_font_t      *font,
     }
 
   return hb_font_get_glyph_h_advance (context->parent, glyph);
+}
+
+static void
+pango_hb_font_get_glyph_h_advances (hb_font_t            *font,
+                                    void                 *font_data,
+                                    unsigned int          count,
+                                    const hb_codepoint_t *first_glyph,
+                                    unsigned int          glyph_stride,
+                                    hb_position_t        *first_advance,
+                                    unsigned int          advance_stride,
+                                    void                 *user_data)
+{
+  PangoHbShapeContext *context = font_data;
+
+  while (count > 0)
+    {
+      const hb_codepoint_t *glyph = first_glyph;
+      unsigned int n = 0;
+
+      while (n < count && !(*glyph & PANGO_GLYPH_UNKNOWN_FLAG))
+        {
+          n++;
+          glyph = (const hb_codepoint_t *) ((const char *) glyph + glyph_stride);
+        }
+
+      if (n > 0)
+        hb_font_get_glyph_h_advances (context->parent, n, first_glyph, glyph_stride,
+                                      first_advance, advance_stride);
+      else
+        {
+          *first_advance = pango_hb_font_get_glyph_h_advance (font, font_data, *glyph, user_data);
+          n = 1;
+        }
+
+      first_glyph = (const hb_codepoint_t *) ((const char *) first_glyph + n * glyph_stride);
+      first_advance = (hb_position_t *) ((char *) first_advance + n * advance_stride);
+      count -= n;
+    }
 }
 
 static hb_position_t
@@ -245,7 +320,9 @@ pango_font_get_hb_font_for_context (PangoFont           *font,
       hb_font_funcs_t *f = hb_font_funcs_create ();
 
       hb_font_funcs_set_nominal_glyph_func (f, pango_hb_font_get_nominal_glyph, NULL, NULL);
+      hb_font_funcs_set_nominal_glyphs_func (f, pango_hb_font_get_nominal_glyphs, NULL, NULL);
       hb_font_funcs_set_glyph_h_advance_func (f, pango_hb_font_get_glyph_h_advance, NULL, NULL);
+      hb_font_funcs_set_glyph_h_advances_func (f, pango_hb_font_get_glyph_h_advances, NULL, NULL);
       hb_font_funcs_set_glyph_v_advance_func (f, pango_hb_font_get_glyph_v_advance, NULL, NULL);
       hb_font_funcs_set_glyph_extents_func (f, pango_hb_font_get_glyph_extents, NULL, NULL);
 
