@@ -6822,8 +6822,13 @@ apply_baseline_shift (PangoLayoutLine *line,
         {
           if (item->analysis.flags & PANGO_ANALYSIS_FLAG_CENTERED_BASELINE)
             baseline_tag = HB_OT_LAYOUT_BASELINE_TAG_IDEO_EMBOX_CENTRAL;
+          /*
+           * TODO: Design and expose a dominant-baseline setting API for users.
+           * Use the Roman baseline as the stable default for horizontal
+           * layouts instead of deriving it from the first run's script.
+           */
           else
-            baseline_tag = hb_ot_layout_get_horizontal_baseline_tag_for_script (script);
+            baseline_tag = HB_OT_LAYOUT_BASELINE_TAG_ROMAN;
           hb_ot_layout_get_baseline_with_fallback (hb_font,
                                                    baseline_tag,
                                                    direction,
