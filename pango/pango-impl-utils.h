@@ -49,6 +49,10 @@ void _pango_shape_get_extents (gint              n_chars,
 			       PangoRectangle   *logical_rect);
 
 
+GSList *_pango_glyph_item_apply_attrs (PangoGlyphItem    *glyph_item,
+                                       const char        *text,
+                                       PangoAttrIterator *iter);
+
 /* We define these functions static here because we don't want to add public API
  * for them (if anything, it belongs to glib, but glib found it trivial enough
  * not to add API for).  At some point metrics calculations will be

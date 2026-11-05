@@ -4771,34 +4771,70 @@ apply_attributes_to_items (GList         *items,
   _pango_attr_iterator_destroy (&iter);
 }
 
+static int
+compare_run_offset (gconstpointer a,
+                    gconstpointer b)
+{
+  const GSList *a_link = *(GSList * const *)a;
+  const GSList *b_link = *(GSList * const *)b;
+  const PangoGlyphItem *a_run = a_link->data;
+  const PangoGlyphItem *b_run = b_link->data;
+
+  return (a_run->item->offset > b_run->item->offset) -
+         (a_run->item->offset < b_run->item->offset);
+}
+
 static void
 apply_attributes_to_runs (PangoLayout   *layout,
                           PangoAttrList *attrs)
 {
+  PangoAttrIterator iter;
+  GPtrArray *runs;
   GSList *ll;
 
-  if (!attrs)
+  if (!attrs || !_pango_attr_list_has_attributes (attrs))
     return;
+
+  runs = g_ptr_array_new ();
+  for (ll = layout->lines; ll; ll = ll->next)
+    {
+      PangoLayoutLine *line = ll->data;
+
+      for (GSList *rl = line->runs; rl; rl = rl->next)
+        g_ptr_array_add (runs, rl);
+    }
+  g_ptr_array_sort (runs, compare_run_offset);
+
+  _pango_attr_list_get_iterator (attrs, &iter);
+  for (guint i = 0; i < runs->len; i++)
+    {
+      GSList *link = g_ptr_array_index (runs, i);
+      PangoGlyphItem *glyph_item = link->data;
+
+      if ((guint) glyph_item->item->offset < iter.start_index)
+        {
+          _pango_attr_iterator_destroy (&iter);
+          _pango_attr_list_get_iterator (attrs, &iter);
+        }
+
+      link->data = _pango_glyph_item_apply_attrs (glyph_item, layout->text, &iter);
+    }
+  _pango_attr_iterator_destroy (&iter);
+  g_ptr_array_unref (runs);
 
   for (ll = layout->lines; ll; ll = ll->next)
     {
       PangoLayoutLine *line = ll->data;
-      GSList *old_runs = g_slist_reverse (line->runs);
-      GSList *rl;
+      GSList *old_runs = line->runs;
+      GSList **tail = &line->runs;
 
-      line->runs = NULL;
-      for (rl = old_runs; rl; rl = rl->next)
+      for (GSList *rl = old_runs; rl; rl = rl->next)
         {
-          PangoGlyphItem *glyph_item = rl->data;
-          GSList *new_runs;
-
-          new_runs = pango_glyph_item_apply_attrs (glyph_item,
-                                                   layout->text,
-                                                   attrs);
-
-          line->runs = g_slist_concat (new_runs, line->runs);
+          *tail = rl->data;
+          while (*tail)
+            tail = &(*tail)->next;
         }
-
+      *tail = NULL;
       g_slist_free (old_runs);
     }
 }
