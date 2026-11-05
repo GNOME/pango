@@ -3931,6 +3931,185 @@ copy_glyph_range (PangoGlyphString *source,
   return glyphs;
 }
 
+static gboolean
+find_concat_boundary (PangoGlyphString *glyphs,
+                      int               byte_offset,
+                      gboolean          rtl,
+                      int              *glyph_index)
+{
+  gboolean found = FALSE;
+
+  for (int i = 0; i < glyphs->num_glyphs; i++)
+    {
+      if (glyphs->log_clusters[i] != byte_offset)
+        continue;
+
+      if (glyphs->glyphs[i].attr.unsafe_to_concat)
+        return FALSE;
+
+      if (!found || rtl)
+        *glyph_index = rtl ? i + 1 : i;
+      found = TRUE;
+    }
+
+  return found;
+}
+
+static PangoGlyphString *
+shape_repair (PangoLayoutLine *line,
+              ParaBreakState  *state,
+              PangoItem       *item,
+              int              start,
+              int              end,
+              int              start_char,
+              int              end_char)
+{
+  PangoLayout *layout = line->layout;
+  PangoItem repair = *item;
+  PangoGlyphString *glyphs = pango_glyph_string_new ();
+  PangoShapeFlags flags = PANGO_SHAPE_NONE;
+
+  repair.offset = state->glyph_offset + start;
+  repair.length = end - start;
+  repair.num_chars = end_char - start_char;
+  repair.analysis.flags &= ~PANGO_ANALYSIS_FLAG_HAS_CHAR_OFFSET;
+  if (repair.offset != item->offset)
+    flags |= PANGO_SHAPE_NOT_START_OF_PARAGRAPH;
+  if (repair.offset + repair.length != item->offset + item->length)
+    {
+      flags |= PANGO_SHAPE_NOT_END_OF_PARAGRAPH;
+      repair.analysis.flags &= ~PANGO_ANALYSIS_FLAG_NEED_HYPHEN;
+    }
+  if (pango_context_get_round_glyph_positions (layout->context))
+    flags |= PANGO_SHAPE_ROUND_POSITIONS;
+
+
+  pango_shape_item (&repair, layout->text, layout->length,
+                    layout->log_attrs + state->glyph_start_offset + start_char,
+                    glyphs, flags);
+
+  return glyphs;
+}
+
+static void
+append_glyph_range (PangoGlyphString *dest,
+                    PangoGlyphString *source,
+                    int               first,
+                    int               last,
+                    int               cluster_delta)
+{
+  int offset = dest->num_glyphs;
+
+  pango_glyph_string_set_size (dest, offset + last - first);
+  memcpy (dest->glyphs + offset, source->glyphs + first,
+          (last - first) * sizeof (PangoGlyphInfo));
+  for (int i = first; i < last; i++)
+    dest->log_clusters[offset + i - first] = source->log_clusters[i] + cluster_delta;
+}
+
+static PangoGlyphString *
+repair_run_fragment (PangoLayoutLine *line,
+                     ParaBreakState  *state,
+                     PangoItem       *item,
+                     int              a,
+                     int              b,
+                     gboolean         repair_start,
+                     gboolean         repair_end)
+{
+  int start = item->offset - state->glyph_offset;
+  int end = start + item->length;
+  int start_char = state->start_offset - state->glyph_start_offset;
+  int end_char = start_char + item->num_chars;
+  int left = a;
+  int right = b;
+  int left_step = 1;
+  int right_step = 1;
+  gboolean rtl = item->analysis.level & 1;
+  PangoGlyphString *prefix = NULL;
+  PangoGlyphString *suffix = NULL;
+  PangoGlyphString *result = NULL;
+  int prefix_end = 0;
+
+  while (TRUE)
+    {
+      if (repair_start && !prefix)
+        {
+          left = MIN (left + left_step, b);
+          while (left < b && state->boundaries[left].unsafe_to_concat)
+            left++;
+          left_step = MIN (left_step, (b - a) / 2) * 2;
+          left_step = MAX (left_step, 1);
+        }
+      if (repair_end && !suffix)
+        {
+          right = MAX (right - right_step, a);
+          while (right > a && state->boundaries[right].unsafe_to_concat)
+            right--;
+          right_step = MIN (right_step, (b - a) / 2) * 2;
+          right_step = MAX (right_step, 1);
+        }
+
+      if (left >= right ||
+          (repair_start && left + 1 >= right) ||
+          state->boundaries[left].byte_offset < start ||
+          state->boundaries[right].byte_offset > end)
+        break;
+
+      if (repair_start && !prefix)
+        {
+          int probe_end = state->boundaries[left + 1].byte_offset;
+          int probe_chars = state->boundaries[left + 1].char_offset;
+          PangoGlyphString *probe;
+
+          probe = shape_repair (line, state, item, start, probe_end, start_char, probe_chars);
+          if (find_concat_boundary (probe, state->boundaries[left].byte_offset - start,
+                                    rtl, &prefix_end))
+            prefix = probe;
+          else
+            pango_glyph_string_free (probe);
+        }
+      if (repair_end && !suffix)
+        {
+          PangoGlyphString *probe;
+          int edge;
+
+          probe = shape_repair (line, state, item,
+                                state->boundaries[right].byte_offset, end,
+                                state->boundaries[right].char_offset, end_char);
+          if (find_concat_boundary (probe, 0, rtl, &edge) &&
+              edge == (rtl ? probe->num_glyphs : 0))
+            suffix = probe;
+          else
+            pango_glyph_string_free (probe);
+        }
+
+      if ((!repair_start || prefix) && (!repair_end || suffix))
+        {
+          int first = state->boundaries[left].glyph_index;
+          int last = state->boundaries[right].glyph_index;
+
+          result = pango_glyph_string_new ();
+          if (rtl && suffix)
+            append_glyph_range (result, suffix, 0, suffix->num_glyphs,
+                                state->boundaries[right].byte_offset - start);
+          if (!rtl && prefix)
+            append_glyph_range (result, prefix, 0, prefix_end, 0);
+          append_glyph_range (result, state->glyphs, MIN (first, last), MAX (first, last), -start);
+          if (rtl && prefix)
+            append_glyph_range (result, prefix, prefix_end, prefix->num_glyphs, 0);
+          if (!rtl && suffix)
+            append_glyph_range (result, suffix, 0, suffix->num_glyphs,
+                                state->boundaries[right].byte_offset - start);
+          break;
+        }
+    }
+
+  g_clear_pointer (&prefix, pango_glyph_string_free);
+  g_clear_pointer (&suffix, pango_glyph_string_free);
+
+  return result;
+}
+
 static PangoGlyphString *
 shape_run_fragment (PangoLayoutLine *line,
                     ParaBreakState  *state,
@@ -3939,26 +4118,33 @@ shape_run_fragment (PangoLayoutLine *line,
   PangoGlyphString *glyphs = NULL;
 
   if (!state->disable_reuse && state->glyphs && state->can_reuse &&
-      !(item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN) &&
       !(state->last_tab.glyphs && state->last_tab.align != PANGO_TAB_LEFT))
     {
       int start = item->offset - state->glyph_offset;
       int end = start + item->length;
       int a, b;
+      gboolean safe_start, safe_end;
 
       g_assert (start >= 0 && end <= state->glyph_length);
       ensure_glyph_boundaries (line->layout, state, item->analysis.level & 1);
       a = find_glyph_boundary (state, start);
       b = find_glyph_boundary (state, end);
 
-      if (boundary_is_safe (state, a, start) && boundary_is_safe (state, b, end))
+      safe_start = boundary_is_safe (state, a, start);
+      safe_end = boundary_is_safe (state, b, end) &&
+                 !(item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN);
+
+      if (safe_start && safe_end)
         {
           int first = state->boundaries[a].glyph_index;
           int last = state->boundaries[b].glyph_index;
 
           glyphs = copy_glyph_range (state->glyphs, MIN (first, last), MAX (first, last), start);
         }
+      else
+        glyphs = repair_run_fragment (line, state, item, a, b, !safe_start, !safe_end);
     }
+
 
 #ifdef PANGO_LAYOUT_VERIFY_REUSE
   if (glyphs)
