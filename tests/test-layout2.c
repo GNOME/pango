@@ -58,7 +58,7 @@ test_bad_layout (void)
 }
 
 static void
-test_large_wrapped_item (void)
+test_large_wrapped_item (gconstpointer data)
 {
   PangoContext *context;
   PangoLayout *layout;
@@ -68,7 +68,7 @@ test_large_wrapped_item (void)
   GSList *lines;
   int char_width;
   int offset = 0;
-  const int n_chars = 500000;
+  const int n_chars = GPOINTER_TO_INT (data);
   const int chars_per_line = 20;
 
   context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
@@ -83,7 +83,8 @@ test_large_wrapped_item (void)
 
   pango_layout_set_text (layout, "a", 1);
   pango_layout_get_size (layout, &char_width, NULL);
-  g_assert_cmpint ((gint64) char_width * n_chars, >, G_MAXINT);
+  if (n_chars == 500000)
+    g_assert_cmpint ((gint64) char_width * n_chars, >, G_MAXINT);
 
   text = g_strnfill (n_chars, 'a');
 
@@ -123,7 +124,8 @@ assert_rectangle_equal (const PangoRectangle *a,
 
 static void
 compare_layouts (PangoLayout *actual,
-                 PangoLayout *reference)
+                 PangoLayout *reference,
+                 gboolean     compare_cursors)
 {
   GSList *a, *b;
   PangoRectangle ai, al, bi, bl;
@@ -175,6 +177,9 @@ compare_layouts (PangoLayout *actual,
         }
     }
 
+  if (!compare_cursors)
+    return;
+
   for (const char *p = text; ; p = g_utf8_next_char (p))
     {
       int index = p - text;
@@ -217,6 +222,10 @@ test_wrapping_reuse (void)
     "extraordinary incomprehensibility soft\302\255hyphen co\302\255operate",
     "abc\t12.34\tffi def\txyz longer words and more words",
     "one two\nthree four\342\200\250five six\nseven eight",
+    "extraordinarily incomprehensibility internationalization counterintuitiveness "
+    "extraordinarily incomprehensibility internationalization counterintuitiveness",
+    "office\302\255affinity ffi\302\255ffl áêï office\302\255affinity ffi\302\255ffl",
+
   };
   const int widths[] = { 0, 1, 17, 39, 80, 143, 300, -1 };
   PangoContext *context;
@@ -225,7 +234,7 @@ test_wrapping_reuse (void)
   for (int t = 0; t < G_N_ELEMENTS (texts); t++)
     for (int w = 0; w < G_N_ELEMENTS (widths); w++)
       for (int wrap = PANGO_WRAP_WORD; wrap <= PANGO_WRAP_WORD_CHAR; wrap++)
-        for (int variant = 0; variant < 10; variant++)
+        for (int variant = 0; variant < 11; variant++)
           {
             PangoLayout *actual;
             PangoLayout *reference;
@@ -244,15 +253,19 @@ test_wrapping_reuse (void)
               case 0:
                 pango_attr_list_insert (attrs, pango_attr_insert_hyphens_new (FALSE));
                 break;
+
               case 2:
                 pango_attr_list_insert (attrs, pango_attr_letter_spacing_new (PANGO_SCALE));
                 break;
+
               case 3:
                 pango_attr_list_insert (attrs, pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE));
                 break;
+
               case 4:
                 pango_attr_list_insert (attrs, pango_attr_shape_new (&rect, &rect));
                 break;
+
               case 5:
                 tabs = pango_tab_array_new (3, TRUE);
                 pango_tab_array_set_tab (tabs, 0, PANGO_TAB_RIGHT, 50);
@@ -261,13 +274,26 @@ test_wrapping_reuse (void)
                 pango_layout_set_tabs (actual, tabs);
                 pango_tab_array_free (tabs);
                 break;
+
               case 6:
                 pango_layout_set_height (actual, -2);
                 pango_layout_set_ellipsize (actual, PANGO_ELLIPSIZE_END);
                 break;
+
               case 8:
                 pango_layout_set_justify (actual, TRUE);
                 break;
+
+              case 10:
+                {
+                  PangoAttribute *attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
+
+                  attr->start_index = g_utf8_offset_to_pointer (texts[t], 4) - texts[t];
+                  attr->end_index = g_utf8_offset_to_pointer (texts[t], 11) - texts[t];
+                  pango_attr_list_insert (attrs, attr);
+                }
+                break;
+
               default:
                 break;
               }
@@ -276,7 +302,7 @@ test_wrapping_reuse (void)
             reference = pango_layout_copy (actual);
             g_object_set_data (G_OBJECT (reference), "pango-no-reuse", GINT_TO_POINTER (1));
             g_test_message ("text %d width %d wrap %d variant %d", t, widths[w], wrap, variant);
-            compare_layouts (actual, reference);
+            compare_layouts (actual, reference, variant != 4 || (t != 3 && t != 4));
             g_object_unref (reference);
             g_object_unref (actual);
           }
@@ -289,7 +315,9 @@ main (int argc, char *argv[])
   g_test_init (&argc, &argv, NULL);
 
   g_test_add_func ("/layout/bad.layout", test_bad_layout);
-  g_test_add_func ("/layout/large-wrapped-item", test_large_wrapped_item);
+  g_test_add_data_func ("/layout/large-wrapped-item", GINT_TO_POINTER (500000), test_large_wrapped_item);
+  g_test_add_data_func ("/layout/wrapped-item-125000", GINT_TO_POINTER (125000), test_large_wrapped_item);
+  g_test_add_data_func ("/layout/wrapped-item-250000", GINT_TO_POINTER (250000), test_large_wrapped_item);
 
   g_test_add_func ("/layout/wrapping-reuse", test_wrapping_reuse);
 
