@@ -3599,6 +3599,15 @@ typedef enum
   BREAK_LINE_SEPARATOR
 } BreakResult;
 
+typedef struct
+{
+  int byte_offset;
+  int char_offset;
+  int glyph_index;
+  guint unsafe_to_break : 1;
+  guint unsafe_to_concat : 1;
+} GlyphBoundary;
+
 struct _ParaBreakState
 {
   /* maintained per layout */
@@ -3612,6 +3621,14 @@ struct _ParaBreakState
   int line_of_par;              /* Line of the paragraph, starting at 1 for first line */
 
   PangoGlyphString *glyphs;     /* Glyphs for the first item in state->items */
+  GlyphBoundary *boundaries;
+  int n_boundaries;
+  int glyph_offset;
+  int glyph_start_offset;
+  int glyph_length;
+  int glyph_num_chars;
+  gboolean can_reuse;
+  gboolean disable_reuse;
   int start_offset;             /* Character offset of first item in state->items in layout->text */
   ItemProperties properties;    /* Properties for the first item in state->items */
   int *log_widths;              /* Logical widths for first item in state->items.. */
@@ -3778,6 +3795,203 @@ shape_run (PangoLayoutLine *line,
 }
 
 static void
+clear_glyph_cache (ParaBreakState *state)
+{
+  g_clear_pointer (&state->glyphs, pango_glyph_string_free);
+  g_clear_pointer (&state->boundaries, g_free);
+  state->n_boundaries = 0;
+}
+
+static PangoGlyphString *
+steal_glyph_cache (ParaBreakState *state)
+{
+  PangoGlyphString *glyphs = g_steal_pointer (&state->glyphs);
+
+  g_clear_pointer (&state->boundaries, g_free);
+  state->n_boundaries = 0;
+
+  return glyphs;
+}
+
+static gboolean
+can_reuse_glyphs (PangoLayout    *layout,
+                  ParaBreakState *state,
+                  PangoItem      *item)
+{
+  if (state->properties.shape_set ||
+      state->properties.letter_spacing ||
+      item->analysis.gravity != PANGO_GRAVITY_SOUTH ||
+      (item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN) ||
+      layout->text[item->offset] == '\t' ||
+      layout->ellipsize != PANGO_ELLIPSIZE_NONE ||
+      (state->last_tab.glyphs && state->last_tab.align != PANGO_TAB_LEFT))
+    return FALSE;
+
+  for (GSList *l = item->analysis.extra_attrs; l; l = l->next)
+    {
+      PangoAttribute *attr = l->data;
+
+      if (attr->klass->type == PANGO_ATTR_TEXT_TRANSFORM &&
+          ((PangoAttrInt *) attr)->value != PANGO_TEXT_TRANSFORM_NONE)
+        return FALSE;
+    }
+
+  return TRUE;
+}
+
+static void
+ensure_glyph_boundaries (PangoLayout    *layout,
+                         ParaBreakState *state,
+                         gboolean        rtl)
+{
+  PangoGlyphString *glyphs = state->glyphs;
+  const char *text = layout->text + state->glyph_offset;
+  int byte_offset = 0;
+  int char_offset = 0;
+  int i = rtl ? glyphs->num_glyphs - 1 : 0;
+  int step = rtl ? -1 : 1;
+
+  if (state->boundaries)
+    return;
+
+  state->boundaries = g_new (GlyphBoundary, glyphs->num_glyphs + 1);
+  state->n_boundaries = 0;
+
+  while (i >= 0 && i < glyphs->num_glyphs)
+    {
+      GlyphBoundary *boundary = &state->boundaries[state->n_boundaries++];
+      int cluster = glyphs->log_clusters[i];
+
+      while (byte_offset < cluster)
+        {
+          byte_offset = g_utf8_next_char (text + byte_offset) - text;
+          char_offset++;
+        }
+
+      *boundary = (GlyphBoundary) { cluster, char_offset, rtl ? i + 1 : i, FALSE, FALSE };
+      do
+        {
+          boundary->unsafe_to_break |= glyphs->glyphs[i].attr.unsafe_to_break;
+          boundary->unsafe_to_concat |= glyphs->glyphs[i].attr.unsafe_to_concat;
+          i += step;
+        }
+      while (i >= 0 && i < glyphs->num_glyphs && glyphs->log_clusters[i] == cluster);
+    }
+
+  state->boundaries[state->n_boundaries++] = (GlyphBoundary) {
+    state->glyph_length, state->glyph_num_chars, rtl ? 0 : glyphs->num_glyphs, FALSE, FALSE
+  };
+}
+
+static int
+find_glyph_boundary (ParaBreakState *state,
+                     int             byte_offset)
+{
+  int left = 0;
+  int right = state->n_boundaries;
+
+  while (left < right)
+    {
+      int mid = left + (right - left) / 2;
+
+      if (state->boundaries[mid].byte_offset < byte_offset)
+        left = mid + 1;
+      else
+        right = mid;
+    }
+
+  return left;
+}
+
+static gboolean
+boundary_is_safe (ParaBreakState *state,
+                  int             boundary,
+                  int             byte_offset)
+{
+  return boundary < state->n_boundaries &&
+         state->boundaries[boundary].byte_offset == byte_offset &&
+         (byte_offset == 0 || byte_offset == state->glyph_length ||
+          !state->boundaries[boundary].unsafe_to_break);
+}
+
+static PangoGlyphString *
+copy_glyph_range (PangoGlyphString *source,
+                  int               first,
+                  int               last,
+                  int               byte_offset)
+{
+  PangoGlyphString *glyphs = pango_glyph_string_new ();
+
+  pango_glyph_string_set_size (glyphs, last - first);
+  memcpy (glyphs->glyphs, source->glyphs + first,
+          (last - first) * sizeof (PangoGlyphInfo));
+  for (int i = first; i < last; i++)
+    glyphs->log_clusters[i - first] = source->log_clusters[i] - byte_offset;
+
+  return glyphs;
+}
+
+static PangoGlyphString *
+shape_run_fragment (PangoLayoutLine *line,
+                    ParaBreakState  *state,
+                    PangoItem       *item)
+{
+  PangoGlyphString *glyphs = NULL;
+
+  if (!state->disable_reuse && state->glyphs && state->can_reuse &&
+      !(item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN) &&
+      !(state->last_tab.glyphs && state->last_tab.align != PANGO_TAB_LEFT))
+    {
+      int start = item->offset - state->glyph_offset;
+      int end = start + item->length;
+      int a, b;
+
+      g_assert (start >= 0 && end <= state->glyph_length);
+      ensure_glyph_boundaries (line->layout, state, item->analysis.level & 1);
+      a = find_glyph_boundary (state, start);
+      b = find_glyph_boundary (state, end);
+
+      if (boundary_is_safe (state, a, start) && boundary_is_safe (state, b, end))
+        {
+          int first = state->boundaries[a].glyph_index;
+          int last = state->boundaries[b].glyph_index;
+
+          glyphs = copy_glyph_range (state->glyphs, MIN (first, last), MAX (first, last), start);
+        }
+    }
+
+#ifdef PANGO_LAYOUT_VERIFY_REUSE
+  if (glyphs)
+    {
+      PangoGlyphString *reference = shape_run (line, state, item);
+
+      g_assert_cmpint (glyphs->num_glyphs, ==, reference->num_glyphs);
+      for (int i = 0; i < glyphs->num_glyphs; i++)
+        {
+          PangoGlyphInfo *a = &glyphs->glyphs[i];
+          PangoGlyphInfo *b = &reference->glyphs[i];
+
+          g_assert_cmpuint (a->glyph, ==, b->glyph);
+          g_assert_cmpint (glyphs->log_clusters[i], ==, reference->log_clusters[i]);
+          g_assert_cmpint (a->geometry.width, ==, b->geometry.width);
+          g_assert_cmpint (a->geometry.x_offset, ==, b->geometry.x_offset);
+          g_assert_cmpint (a->geometry.y_offset, ==, b->geometry.y_offset);
+          g_assert_cmpint (a->attr.is_cluster_start, ==, b->attr.is_cluster_start);
+          g_assert_cmpint (a->attr.is_color, ==, b->attr.is_color);
+          g_assert (a->attr.unsafe_to_break || !b->attr.unsafe_to_break);
+          g_assert (a->attr.unsafe_to_concat || !b->attr.unsafe_to_concat);
+        }
+      pango_glyph_string_free (reference);
+    }
+#endif
+
+  if (!glyphs)
+    glyphs = shape_run (line, state, item);
+
+  return glyphs;
+}
+
+static void
 insert_run (PangoLayoutLine  *line,
             ParaBreakState   *state,
             PangoItem        *run_item,
@@ -3794,17 +4008,13 @@ insert_run (PangoLayoutLine  *line,
            state->glyphs &&
            !(run_item->analysis.flags & PANGO_ANALYSIS_FLAG_NEED_HYPHEN))
     {
-      run->glyphs = state->glyphs;
-      state->glyphs = NULL;
+      run->glyphs = steal_glyph_cache (state);
     }
   else
-    run->glyphs = shape_run (line, state, run_item);
+    run->glyphs = shape_run_fragment (line, state, run_item);
 
   if (last_run && state->glyphs)
-    {
-      pango_glyph_string_free (state->glyphs);
-      state->glyphs = NULL;
-    }
+    clear_glyph_cache (state);
 
   line->runs = g_slist_prepend (line->runs, run);
   line->length += run_item->length;
@@ -4055,6 +4265,11 @@ process_item (PangoLayout     *layout,
   if (!state->glyphs)
     {
       pango_layout_get_item_properties (item, &state->properties);
+      state->glyph_offset = item->offset;
+      state->glyph_start_offset = state->start_offset;
+      state->glyph_length = item->length;
+      state->glyph_num_chars = item->num_chars;
+      state->can_reuse = can_reuse_glyphs (layout, state, item);
       state->glyphs = shape_run (line, state, item);
       state->log_widths_offset = 0;
       state->item_width = 0;
@@ -4128,14 +4343,14 @@ process_item (PangoLayout     *layout,
       if (state->log_widths_offset == 0)
         glyphs = state->glyphs;
       else
-        glyphs = shape_run (line, state, item);
+        glyphs = shape_run_fragment (line, state, item);
 
       width = pango_glyph_string_get_width (glyphs) + tab_width_change (state);
 
       if (width + extra_width <= state->remaining_width || (item->num_chars == 1 && !line->runs))
         {
           if (glyphs == state->glyphs)
-            state->glyphs = NULL;
+            glyphs = steal_glyph_cache (state);
 
           insert_run (line, state, item, glyphs, TRUE);
 
@@ -4236,7 +4451,7 @@ retry_break:
               else
                 new_item = item;
 
-              glyphs = shape_run (line, state, new_item);
+              glyphs = shape_run_fragment (line, state, new_item);
 
               new_break_width = pango_glyph_string_get_width (glyphs) + tab_width_change (state);
 
@@ -4354,8 +4569,7 @@ retry_break:
     }
   else
     {
-      pango_glyph_string_free (state->glyphs);
-      state->glyphs = NULL;
+      clear_glyph_cache (state);
 
       if (break_glyphs)
         pango_glyph_string_free (break_glyphs);
@@ -4917,6 +5131,10 @@ pango_layout_check_lines (PangoLayout *layout)
       state.line_height = layout->line_spacing == 0.0 ? logical.height : layout->line_spacing * height;
     }
 
+  state.disable_reuse = FALSE;
+#ifdef PANGO_LAYOUT_VERIFY_REUSE
+  state.disable_reuse = g_object_get_data (G_OBJECT (layout), "pango-no-reuse") != NULL;
+#endif
   state.log_widths = NULL;
   state.num_log_widths = 0;
   state.baseline_shifts = NULL;
@@ -4999,6 +5217,8 @@ pango_layout_check_lines (PangoLayout *layout)
       state.line_start_index = start - layout->text;
 
       state.glyphs = NULL;
+      state.boundaries = NULL;
+      state.n_boundaries = 0;
 
       /* for deterministic bug hunting's sake set everything! */
       state.line_width = -1;
@@ -5023,6 +5243,8 @@ pango_layout_check_lines (PangoLayout *layout)
 
           add_line (empty_line, &state);
         }
+
+      clear_glyph_cache (&state);
 
       if (layout->height >= 0 && state.remaining_height < state.line_height)
         done = TRUE;

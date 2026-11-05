@@ -17,6 +17,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "config.h"
+
+#include <string.h>
 #include <glib.h>
 #include <pango/pango.h>
 #include <pango/pangocairo.h>
@@ -108,6 +111,178 @@ test_large_wrapped_item (void)
   g_object_unref (context);
 }
 
+static void
+assert_rectangle_equal (const PangoRectangle *a,
+                        const PangoRectangle *b)
+{
+  g_assert_cmpint (a->x, ==, b->x);
+  g_assert_cmpint (a->y, ==, b->y);
+  g_assert_cmpint (a->width, ==, b->width);
+  g_assert_cmpint (a->height, ==, b->height);
+}
+
+static void
+compare_layouts (PangoLayout *actual,
+                 PangoLayout *reference)
+{
+  GSList *a, *b;
+  PangoRectangle ai, al, bi, bl;
+  const char *text = pango_layout_get_text (actual);
+
+  pango_layout_get_extents (actual, &ai, &al);
+  pango_layout_get_extents (reference, &bi, &bl);
+  assert_rectangle_equal (&ai, &bi);
+  assert_rectangle_equal (&al, &bl);
+  g_assert_cmpint (pango_layout_get_line_count (actual), ==,
+                   pango_layout_get_line_count (reference));
+
+  for (a = pango_layout_get_lines_readonly (actual),
+       b = pango_layout_get_lines_readonly (reference); a; a = a->next, b = b->next)
+    {
+      PangoLayoutLine *la = a->data;
+      PangoLayoutLine *lb = b->data;
+      GSList *ra, *rb;
+
+      g_assert_cmpint (la->start_index, ==, lb->start_index);
+      g_assert_cmpint (la->length, ==, lb->length);
+      g_assert_cmpint (la->resolved_dir, ==, lb->resolved_dir);
+      pango_layout_line_get_extents (la, &ai, &al);
+      pango_layout_line_get_extents (lb, &bi, &bl);
+      assert_rectangle_equal (&ai, &bi);
+      assert_rectangle_equal (&al, &bl);
+      g_assert_cmpint (g_slist_length (la->runs), ==, g_slist_length (lb->runs));
+      for (ra = la->runs, rb = lb->runs; ra; ra = ra->next, rb = rb->next)
+        {
+          PangoGlyphItem *ga = ra->data;
+          PangoGlyphItem *gb = rb->data;
+
+          g_assert_cmpint (ga->item->offset, ==, gb->item->offset);
+          g_assert_cmpint (ga->item->length, ==, gb->item->length);
+          g_assert_cmpint (ga->glyphs->num_glyphs, ==, gb->glyphs->num_glyphs);
+          for (int i = 0; i < ga->glyphs->num_glyphs; i++)
+            {
+              PangoGlyphInfo *ia = &ga->glyphs->glyphs[i];
+              PangoGlyphInfo *ib = &gb->glyphs->glyphs[i];
+
+              g_assert_cmpuint (ia->glyph, ==, ib->glyph);
+              g_assert_cmpint (ga->glyphs->log_clusters[i], ==, gb->glyphs->log_clusters[i]);
+              g_assert_cmpint (ia->geometry.width, ==, ib->geometry.width);
+              g_assert_cmpint (ia->geometry.x_offset, ==, ib->geometry.x_offset);
+              g_assert_cmpint (ia->geometry.y_offset, ==, ib->geometry.y_offset);
+              g_assert (ia->attr.unsafe_to_break || !ib->attr.unsafe_to_break);
+              g_assert (ia->attr.unsafe_to_concat || !ib->attr.unsafe_to_concat);
+            }
+        }
+    }
+
+  for (const char *p = text; ; p = g_utf8_next_char (p))
+    {
+      int index = p - text;
+      int ax, bx, aline, bline, aindex, bindex, atrailing, btrailing;
+      gboolean ar, br;
+
+      pango_layout_get_cursor_pos (actual, index, &ai, &al);
+      pango_layout_get_cursor_pos (reference, index, &bi, &bl);
+      assert_rectangle_equal (&ai, &bi);
+      assert_rectangle_equal (&al, &bl);
+      pango_layout_index_to_pos (actual, index, &ai);
+      pango_layout_index_to_pos (reference, index, &bi);
+      assert_rectangle_equal (&ai, &bi);
+      for (int trailing = 0; trailing <= 1; trailing++)
+        {
+          pango_layout_index_to_line_x (actual, index, trailing, &aline, &ax);
+          pango_layout_index_to_line_x (reference, index, trailing, &bline, &bx);
+          g_assert_cmpint (aline, ==, bline);
+          g_assert_cmpint (ax, ==, bx);
+        }
+      ar = pango_layout_xy_to_index (actual, ai.x, ai.y, &aindex, &atrailing);
+      br = pango_layout_xy_to_index (reference, bi.x, bi.y, &bindex, &btrailing);
+      g_assert_cmpint (ar, ==, br);
+      g_assert_cmpint (aindex, ==, bindex);
+      g_assert_cmpint (atrailing, ==, btrailing);
+      if (!*p)
+        break;
+    }
+}
+
+static void
+test_wrapping_reuse (void)
+{
+  const char *texts[] = {
+    "one two three   four five six seven eight nine ten ",
+    "office affinity ffi ffl AVATAR Toffee efficient official",
+    "áâä éêë क्‍षि क्षत्रिय संस्कृत भाषा हिन्दी परीक्षण",
+    "السَّلَامُ عَلَيْكُمْ العربية لا لا العربية كلمات طويلة",
+    "English עברית العربية 123 ffi हिन्दी English again",
+    "extraordinary incomprehensibility soft\302\255hyphen co\302\255operate",
+    "abc\t12.34\tffi def\txyz longer words and more words",
+    "one two\nthree four\342\200\250five six\nseven eight",
+  };
+  const int widths[] = { 0, 1, 17, 39, 80, 143, 300, -1 };
+  PangoContext *context;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  for (int t = 0; t < G_N_ELEMENTS (texts); t++)
+    for (int w = 0; w < G_N_ELEMENTS (widths); w++)
+      for (int wrap = PANGO_WRAP_WORD; wrap <= PANGO_WRAP_WORD_CHAR; wrap++)
+        for (int variant = 0; variant < 10; variant++)
+          {
+            PangoLayout *actual;
+            PangoLayout *reference;
+            PangoAttrList *attrs = pango_attr_list_new ();
+            PangoTabArray *tabs;
+            PangoRectangle rect = { 0, -10 * PANGO_SCALE, 10 * PANGO_SCALE, 12 * PANGO_SCALE };
+
+            pango_context_set_base_gravity (context, variant == 7 ? PANGO_GRAVITY_EAST : PANGO_GRAVITY_SOUTH);
+            pango_context_set_round_glyph_positions (context, variant != 9);
+            actual = pango_layout_new (context);
+            pango_layout_set_text (actual, texts[t], -1);
+            pango_layout_set_width (actual, widths[w] < 0 ? -1 : widths[w] * PANGO_SCALE);
+            pango_layout_set_wrap (actual, wrap);
+            switch (variant)
+              {
+              case 0:
+                pango_attr_list_insert (attrs, pango_attr_insert_hyphens_new (FALSE));
+                break;
+              case 2:
+                pango_attr_list_insert (attrs, pango_attr_letter_spacing_new (PANGO_SCALE));
+                break;
+              case 3:
+                pango_attr_list_insert (attrs, pango_attr_text_transform_new (PANGO_TEXT_TRANSFORM_UPPERCASE));
+                break;
+              case 4:
+                pango_attr_list_insert (attrs, pango_attr_shape_new (&rect, &rect));
+                break;
+              case 5:
+                tabs = pango_tab_array_new (3, TRUE);
+                pango_tab_array_set_tab (tabs, 0, PANGO_TAB_RIGHT, 50);
+                pango_tab_array_set_tab (tabs, 1, PANGO_TAB_CENTER, 100);
+                pango_tab_array_set_tab (tabs, 2, PANGO_TAB_DECIMAL, 150);
+                pango_layout_set_tabs (actual, tabs);
+                pango_tab_array_free (tabs);
+                break;
+              case 6:
+                pango_layout_set_height (actual, -2);
+                pango_layout_set_ellipsize (actual, PANGO_ELLIPSIZE_END);
+                break;
+              case 8:
+                pango_layout_set_justify (actual, TRUE);
+                break;
+              default:
+                break;
+              }
+            pango_layout_set_attributes (actual, attrs);
+            pango_attr_list_unref (attrs);
+            reference = pango_layout_copy (actual);
+            g_object_set_data (G_OBJECT (reference), "pango-no-reuse", GINT_TO_POINTER (1));
+            g_test_message ("text %d width %d wrap %d variant %d", t, widths[w], wrap, variant);
+            compare_layouts (actual, reference);
+            g_object_unref (reference);
+            g_object_unref (actual);
+          }
+  g_object_unref (context);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -115,6 +290,8 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/layout/bad.layout", test_bad_layout);
   g_test_add_func ("/layout/large-wrapped-item", test_large_wrapped_item);
+
+  g_test_add_func ("/layout/wrapping-reuse", test_wrapping_reuse);
 
   return g_test_run ();
 }
