@@ -294,6 +294,7 @@ struct _ItemizeState
 
   guint8 *embedding_levels;
   guint8 embedding_levels_[64];
+  gboolean embedding_levels_owned;
   int embedding_end_offset;
   const char *embedding_end;
   guint8 embedding;
@@ -452,7 +453,8 @@ itemize_state_init (ItemizeState               *state,
                     int                         length,
                     PangoAttrList              *attrs,
                     PangoAttrIterator          *cached_iter,
-                    const PangoFontDescription *desc)
+                    const PangoFontDescription *desc,
+                    const guint8               *embedding_levels)
 {
   unsigned int n_chars;
 
@@ -472,11 +474,18 @@ itemize_state_init (ItemizeState               *state,
   /* First, apply the bidirectional algorithm to break
    * the text into directional runs.
    */
-  if (n_chars < 64)
-    state->embedding_levels = state->embedding_levels_;
+  state->embedding_levels_owned = embedding_levels == NULL;
+  if (embedding_levels != NULL)
+    state->embedding_levels = (guint8 *)embedding_levels;
   else
-    state->embedding_levels = g_new (guint8, n_chars);
-  pango_log2vis_fill_embedding_levels (text + start_index, length, n_chars, state->embedding_levels, &base_dir);
+    {
+      if (n_chars < 64)
+        state->embedding_levels = state->embedding_levels_;
+      else
+        state->embedding_levels = g_new (guint8, n_chars);
+      pango_log2vis_fill_embedding_levels (text + start_index, length, n_chars,
+                                           state->embedding_levels, &base_dir);
+    }
 
   state->embedding_end_offset = 0;
   state->embedding_end = text + start_index;
@@ -1060,7 +1069,8 @@ itemize_state_process_run (ItemizeState *state)
 static void
 itemize_state_finish (ItemizeState *state)
 {
-  if (state->embedding_levels != state->embedding_levels_)
+  if (state->embedding_levels_owned &&
+      state->embedding_levels != state->embedding_levels_)
     g_free (state->embedding_levels);
   if (state->free_attr_iter)
     pango_attr_iterator_destroy (state->attr_iter);
@@ -1601,7 +1611,7 @@ pango_itemize_with_font (PangoContext               *context,
     return NULL;
 
   itemize_state_init (&state, context, text, base_dir, start_index, length,
-                      attrs, cached_iter, desc);
+                      attrs, cached_iter, desc, NULL);
 
   do
     itemize_state_process_run (&state);
@@ -1672,6 +1682,79 @@ pango_itemize_with_base_dir (PangoContext      *context,
                                    text, start_index, length,
                                    attrs, cached_iter,
                                    NULL);
+
+  return pango_itemize_post_process_items (context, text, NULL, items);
+}
+
+/**
+ * pango_itemize_with_base_dir_and_embedding_levels:
+ * @context: a structure holding information that affects itemization
+ * @base_dir: base direction of the paragraph
+ * @text: valid UTF-8 paragraph text
+ * @start_index: first byte in @text to process
+ * @length: number of bytes to process
+ * @attrs: (nullable): attributes that apply to @text
+ * @cached_iter: (nullable): cached attribute iterator
+ * @embedding_levels: (array length=n_embedding_levels): one embedding level
+ *   for each character in @text
+ * @n_embedding_levels: length of @embedding_levels
+ *
+ * Itemizes a range using embedding levels computed for the complete paragraph.
+ *
+ * This is useful when itemizing bounded ranges of a paragraph without changing
+ * the directional analysis at range boundaries. The embedding levels must
+ * contain one entry for every Unicode character in @text. @start_index and
+ * @length must identify UTF-8 character boundaries.
+ *
+ * Return value: (transfer full) (element-type Pango.Item): newly allocated items in logical order
+ *
+ * Since: 1.60
+ */
+GList *
+pango_itemize_with_base_dir_and_embedding_levels (PangoContext      *context,
+                                                  PangoDirection     base_dir,
+                                                  const char        *text,
+                                                  int                start_index,
+                                                  int                length,
+                                                  PangoAttrList     *attrs,
+                                                  PangoAttrIterator *cached_iter,
+                                                  const guint8      *embedding_levels,
+                                                  int                n_embedding_levels)
+{
+  ItemizeState state;
+  GList *items;
+  int initial_offset;
+  int range_chars;
+
+  g_return_val_if_fail (context != NULL, NULL);
+  g_return_val_if_fail (context->font_map != NULL, NULL);
+  g_return_val_if_fail (text != NULL, NULL);
+  g_return_val_if_fail (start_index >= 0, NULL);
+  g_return_val_if_fail (length >= 0, NULL);
+  g_return_val_if_fail (embedding_levels != NULL, NULL);
+  g_return_val_if_fail (n_embedding_levels >= 0, NULL);
+  g_return_val_if_fail (g_utf8_validate (text, start_index, NULL), NULL);
+  g_return_val_if_fail (g_utf8_validate (text + start_index, length, NULL), NULL);
+
+  if (length == 0 || text[start_index] == '\0')
+    return NULL;
+
+  initial_offset = g_utf8_strlen (text, start_index);
+  range_chars = g_utf8_strlen (text + start_index, length);
+
+  g_return_val_if_fail (initial_offset <= n_embedding_levels, NULL);
+  g_return_val_if_fail (range_chars <= n_embedding_levels - initial_offset, NULL);
+
+  itemize_state_init (&state, context, text, base_dir, start_index, length,
+                      attrs, cached_iter, NULL,
+                      embedding_levels + initial_offset);
+
+  do
+    itemize_state_process_run (&state);
+  while (itemize_state_next (&state));
+
+  itemize_state_finish (&state);
+  items = reorder_items (context, state.result, initial_offset);
 
   return pango_itemize_post_process_items (context, text, NULL, items);
 }

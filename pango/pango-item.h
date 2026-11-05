@@ -162,6 +162,18 @@ GList *                 pango_itemize_with_base_dir  (PangoContext      *context
                                                       PangoAttrList     *attrs,
                                                       PangoAttrIterator *cached_iter);
 
+PANGO_AVAILABLE_IN_1_60
+GList *                 pango_itemize_with_base_dir_and_embedding_levels
+                                                     (PangoContext      *context,
+                                                      PangoDirection     base_dir,
+                                                      const char        *text,
+                                                      int                start_index,
+                                                      int                length,
+                                                      PangoAttrList     *attrs,
+                                                      PangoAttrIterator *cached_iter,
+                                                      const guint8      *embedding_levels,
+                                                      int                n_embedding_levels);
+
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (PangoItem, pango_item_free)
 
 G_END_DECLS
