@@ -619,12 +619,14 @@
                 "glyph" : 76,
                 "width" : 10240,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 71,
                 "width" : 10240,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               },
               {

@@ -88,11 +88,17 @@ struct _PangoGlyphGeometry
  * PangoGlyphVisAttr:
  * @is_cluster_start: set for the first logical glyph in each cluster.
  * @is_color: set if the the font will render this glyph with color. Since 1.50
+ * @unsafe_to_break: set when existing glyphs cannot safely be split at the start
+ *   of this glyph's cluster; callers should reshape the text on both sides of
+ *   the split. Since 1.60
+ * @unsafe_to_concat: set when existing glyphs cannot safely be joined at this
+ *   cluster boundary; callers should shape the combined text again instead
+ *   of concatenating the existing glyph strings. Since 1.60
  *
  * A `PangoGlyphVisAttr` structure communicates information between
  * the shaping and rendering phases.
  *
- * Currently, it contains cluster start and color information.
+ * Currently, it contains cluster start, color, and shaping-boundary information.
  * More attributes may be added in the future.
  *
  * Clusters are stored in visual order, within the cluster, glyphs
@@ -104,6 +110,8 @@ struct _PangoGlyphVisAttr
 {
   guint is_cluster_start : 1;
   guint is_color         : 1;
+  guint unsafe_to_break  : 1;
+  guint unsafe_to_concat : 1;
 };
 
 /* A single glyph
@@ -220,6 +228,10 @@ void                    pango_glyph_string_index_to_x_full      (PangoGlyphStrin
  * @PANGO_SHAPE_NONE: Default value
  * @PANGO_SHAPE_ROUND_POSITIONS: Round glyph positions and widths to whole device units
  *   This option should be set if the target renderer can't do subpixel positioning of glyphs
+ * @PANGO_SHAPE_NOT_START_OF_PARAGRAPH: The shaped text is not at the start of
+ *   the paragraph. Since 1.60
+ * @PANGO_SHAPE_NOT_END_OF_PARAGRAPH: The shaped text is not at the end of the
+ *   paragraph. Since 1.60
  *
  * Flags influencing the shaping process.
  *
@@ -230,6 +242,8 @@ void                    pango_glyph_string_index_to_x_full      (PangoGlyphStrin
 typedef enum {
   PANGO_SHAPE_NONE            = 0,
   PANGO_SHAPE_ROUND_POSITIONS = 1 << 0,
+  PANGO_SHAPE_NOT_START_OF_PARAGRAPH PANGO_AVAILABLE_ENUMERATOR_IN_1_60 = 1 << 2,
+  PANGO_SHAPE_NOT_END_OF_PARAGRAPH PANGO_AVAILABLE_ENUMERATOR_IN_1_60 = 1 << 3,
 } PangoShapeFlags;
 
 PANGO_AVAILABLE_IN_ALL

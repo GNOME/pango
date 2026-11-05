@@ -406,7 +406,14 @@ pango_hb_shape (const char          *item_text,
   if (PANGO_GRAVITY_IS_IMPROPER (analysis->gravity))
     hb_direction = HB_DIRECTION_REVERSE (hb_direction);
 
-  hb_buffer_flags = HB_BUFFER_FLAG_BOT | HB_BUFFER_FLAG_EOT;
+  hb_buffer_flags = (HB_BUFFER_FLAG_BOT |
+                     HB_BUFFER_FLAG_EOT |
+                     HB_BUFFER_FLAG_PRODUCE_UNSAFE_TO_CONCAT);
+
+  if (flags & PANGO_SHAPE_NOT_START_OF_PARAGRAPH)
+    hb_buffer_flags &= ~HB_BUFFER_FLAG_BOT;
+  if (flags & PANGO_SHAPE_NOT_END_OF_PARAGRAPH)
+    hb_buffer_flags &= ~HB_BUFFER_FLAG_EOT;
 
   if (context.show_flags & PANGO_SHOW_IGNORABLES)
     hb_buffer_flags |= HB_BUFFER_FLAG_PRESERVE_DEFAULT_IGNORABLES;
@@ -528,6 +535,10 @@ pango_hb_shape (const char          *item_text,
       glyphs->log_clusters[i] = hb_glyph->cluster - item_offset;
       infos[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
       infos[i].attr.is_color = font_is_color && glyph_has_color (hb_font, hb_glyph->codepoint);
+      infos[i].attr.unsafe_to_break =
+        (hb_glyph_info_get_glyph_flags (hb_glyph) & HB_GLYPH_FLAG_UNSAFE_TO_BREAK) != 0;
+      infos[i].attr.unsafe_to_concat =
+        (hb_glyph_info_get_glyph_flags (hb_glyph) & HB_GLYPH_FLAG_UNSAFE_TO_CONCAT) != 0;
       hb_glyph++;
       last_cluster = glyphs->log_clusters[i];
     }
@@ -599,6 +610,7 @@ fallback_shape (const char          *text,
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = logical_rect.width;
+      glyphs->glyphs[i].attr = (PangoGlyphVisAttr) { 0 };
 
       glyphs->log_clusters[i] = cluster;
 
