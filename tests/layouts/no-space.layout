@@ -107,12 +107,14 @@
                 "glyph" : 268435488,
                 "width" : 11264,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 268435488,
                 "width" : 11264,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 1
               },
               {
@@ -125,12 +127,14 @@
                 "glyph" : 268435488,
                 "width" : 11264,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 5
               },
               {
                 "glyph" : 268435488,
                 "width" : 11264,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 6
               }
             ]

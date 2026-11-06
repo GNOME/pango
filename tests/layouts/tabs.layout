@@ -543,6 +543,7 @@
                 "glyph" : 268435455,
                 "width" : 37376,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -627,6 +628,7 @@
                 "glyph" : 268435455,
                 "width" : 58368,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -723,6 +725,7 @@
                 "glyph" : 268435455,
                 "width" : 89600,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -801,6 +804,7 @@
                 "glyph" : 268435455,
                 "width" : 58880,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -891,6 +895,7 @@
                 "glyph" : 268435455,
                 "width" : 58880,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -977,6 +982,7 @@
                 "glyph" : 268435455,
                 "width" : 37376,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1067,6 +1073,7 @@
                 "glyph" : 268435455,
                 "width" : 54272,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1163,6 +1170,7 @@
                 "glyph" : 268435455,
                 "width" : 79360,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1247,6 +1255,7 @@
                 "glyph" : 268435455,
                 "width" : 53248,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1331,6 +1340,7 @@
                 "glyph" : 268435455,
                 "width" : 53248,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1423,6 +1433,7 @@
                 "glyph" : 268435455,
                 "width" : 37376,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1519,6 +1530,7 @@
                 "glyph" : 268435455,
                 "width" : 56320,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1603,6 +1615,7 @@
                 "glyph" : 268435455,
                 "width" : 88576,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1693,6 +1706,7 @@
                 "glyph" : 268435455,
                 "width" : 46080,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -1771,6 +1785,7 @@
                 "glyph" : 268435455,
                 "width" : 46080,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]

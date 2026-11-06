@@ -285,6 +285,7 @@
                 "glyph" : 1109,
                 "width" : 3072,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -383,6 +384,7 @@
                 "glyph" : 1109,
                 "width" : 3072,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]

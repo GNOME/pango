@@ -3500,9 +3500,15 @@ shape_tab (PangoLayoutLine  *line,
   pango_glyph_string_set_size (glyphs, 1);
 
   if (properties->showing_space)
-    glyphs->glyphs[0].glyph = PANGO_GET_UNKNOWN_GLYPH ('\t');
+    {
+      glyphs->glyphs[0].glyph = PANGO_GET_UNKNOWN_GLYPH ('\t');
+      glyphs->glyphs[0].attr.no_ink = 0;
+    }
   else
-    glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
+    {
+      glyphs->glyphs[0].glyph = PANGO_GLYPH_EMPTY;
+      glyphs->glyphs[0].attr.no_ink = 1;
+    }
 
   glyphs->glyphs[0].geometry.x_offset = 0;
   glyphs->glyphs[0].geometry.y_offset = 0;

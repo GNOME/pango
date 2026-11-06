@@ -171,6 +171,7 @@
                 "glyph" : 268435455,
                 "width" : 0,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 6
               }
             ]

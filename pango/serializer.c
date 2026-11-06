@@ -741,6 +741,9 @@ add_run (GtkJsonPrinter *printer,
       if (run->glyphs->glyphs[i].attr.is_color)
         gtk_json_printer_add_boolean (printer, "is-color", TRUE);
 
+      if (run->glyphs->glyphs[i].attr.no_ink)
+        gtk_json_printer_add_boolean (printer, "no-ink", TRUE);
+
       gtk_json_printer_add_integer (printer, "log-cluster", run->glyphs->log_clusters[i]);
 
       gtk_json_printer_end (printer);

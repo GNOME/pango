@@ -244,6 +244,7 @@
                 "width" : 0,
                 "x-offset" : 4444,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 5
               }
             ]
@@ -357,6 +358,7 @@
                 "width" : 0,
                 "x-offset" : 4444,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 0
               }
             ]
@@ -436,6 +438,7 @@
                 "width" : 0,
                 "x-offset" : 4444,
                 "is-cluster-start" : true,
+                "no-ink" : true,
                 "log-cluster" : 8
               }
             ]

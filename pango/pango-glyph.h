@@ -87,7 +87,8 @@ struct _PangoGlyphGeometry
 /**
  * PangoGlyphVisAttr:
  * @is_cluster_start: set for the first logical glyph in each cluster.
- * @is_color: set if the the font will render this glyph with color. Since 1.50
+ * @is_color: set if the font renders this glyph with color. Since 1.50
+ * @no_ink: set if the font does not render this glyph. Since: 1.59
  *
  * A `PangoGlyphVisAttr` structure communicates information between
  * the shaping and rendering phases.
@@ -104,6 +105,7 @@ struct _PangoGlyphVisAttr
 {
   guint is_cluster_start : 1;
   guint is_color         : 1;
+  guint no_ink           : 1;
 };
 
 /* A single glyph

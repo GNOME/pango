@@ -356,6 +356,21 @@ glyph_has_color (hb_font_t      *font,
   return FALSE;
 }
 
+static gboolean
+glyph_has_no_ink (hb_font_t      *font,
+                  hb_codepoint_t  glyph)
+{
+  hb_glyph_extents_t extents;
+
+  if (glyph == PANGO_GLYPH_EMPTY)
+    return TRUE;
+
+  if (hb_font_get_glyph_extents (font, glyph, &extents))
+    return extents.width == 0 || extents.height == 0;
+
+  return TRUE;
+}
+
 /* }}} */
 
 static void
@@ -524,6 +539,7 @@ pango_hb_shape (const char          *item_text,
       glyphs->log_clusters[i] = hb_glyph->cluster - item_offset;
       infos[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
       infos[i].attr.is_color = font_is_color && glyph_has_color (hb_font, hb_glyph->codepoint);
+      infos[i].attr.no_ink = glyph_has_no_ink (hb_font, hb_glyph->codepoint);
       hb_glyph++;
       last_cluster = glyphs->log_clusters[i];
     }
