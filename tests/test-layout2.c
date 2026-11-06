@@ -211,6 +211,84 @@ compare_layouts (PangoLayout *actual,
 }
 
 static void
+test_wrapping_broken_syllables (void)
+{
+  const char *text = "ভ া  কষষ ষভষারভপ ষংংংাা";
+  PangoContext *context;
+  PangoLayout *layout;
+  PangoLayout *reference;
+  PangoFontDescription *desc;
+  PangoFontDescription *loaded_desc;
+  PangoFont *font;
+  PangoAttrList *attrs;
+  PangoLayoutLine *line;
+  PangoGlyphItem *run;
+  PangoGlyphString *glyphs;
+  PangoLogAttr *log_attrs;
+  int char_offset;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  pango_cairo_context_set_resolution (context, 96);
+  desc = pango_font_description_from_string ("Noto Sans Bengali 12");
+  font = pango_context_load_font (context, desc);
+  loaded_desc = font ? pango_font_describe (font) : NULL;
+  if (!loaded_desc ||
+      g_strcmp0 (pango_font_description_get_family (loaded_desc), "Noto Sans Bengali") != 0)
+    {
+      g_test_skip ("Noto Sans Bengali is required for this test");
+      g_clear_pointer (&loaded_desc, pango_font_description_free);
+      g_clear_object (&font);
+      pango_font_description_free (desc);
+      g_object_unref (context);
+      return;
+    }
+  pango_font_description_free (loaded_desc);
+  g_object_unref (font);
+
+  layout = pango_layout_new (context);
+  pango_layout_set_font_description (layout, desc);
+  pango_font_description_free (desc);
+  pango_layout_set_text (layout, text, -1);
+  pango_layout_set_width (layout, 187 * PANGO_SCALE);
+  pango_layout_set_wrap (layout, PANGO_WRAP_WORD_CHAR);
+  attrs = pango_attr_list_new ();
+  pango_attr_list_insert (attrs, pango_attr_insert_hyphens_new (FALSE));
+  pango_layout_set_attributes (layout, attrs);
+  pango_attr_list_unref (attrs);
+
+  reference = pango_layout_copy (layout);
+  g_object_set_data (G_OBJECT (reference), "pango-no-reuse", GINT_TO_POINTER (1));
+  compare_layouts (layout, reference, TRUE);
+
+  g_assert_cmpint (pango_layout_get_line_count (layout), ==, 2);
+  line = pango_layout_get_line_readonly (layout, 1);
+  g_assert_cmpuint (g_slist_length (line->runs), ==, 1);
+  run = line->runs->data;
+  g_assert_cmpstr (text + run->item->offset, ==, "ষংংংাা");
+
+  glyphs = pango_glyph_string_new ();
+  pango_layout_get_log_attrs (layout, &log_attrs, NULL);
+  char_offset = g_utf8_pointer_to_offset (text, text + run->item->offset);
+  pango_shape_item (run->item, text, strlen (text), log_attrs + char_offset,
+                    glyphs, PANGO_SHAPE_ROUND_POSITIONS);
+  g_assert_cmpint (run->glyphs->num_glyphs, ==, glyphs->num_glyphs);
+  for (int i = 0; i < glyphs->num_glyphs; i++)
+    {
+      g_assert_cmpuint (run->glyphs->glyphs[i].glyph, ==, glyphs->glyphs[i].glyph);
+      g_assert_cmpint (run->glyphs->log_clusters[i], ==, glyphs->log_clusters[i]);
+      g_assert_cmpint (run->glyphs->glyphs[i].geometry.width, ==, glyphs->glyphs[i].geometry.width);
+      g_assert_cmpint (run->glyphs->glyphs[i].geometry.x_offset, ==, glyphs->glyphs[i].geometry.x_offset);
+      g_assert_cmpint (run->glyphs->glyphs[i].geometry.y_offset, ==, glyphs->glyphs[i].geometry.y_offset);
+    }
+
+  pango_glyph_string_free (glyphs);
+  g_free (log_attrs);
+  g_object_unref (reference);
+  g_object_unref (layout);
+  g_object_unref (context);
+}
+
+static void
 test_wrapping_reuse (void)
 {
   const char *texts[] = {
@@ -320,6 +398,7 @@ main (int argc, char *argv[])
   g_test_add_data_func ("/layout/wrapped-item-250000", GINT_TO_POINTER (250000), test_large_wrapped_item);
 
   g_test_add_func ("/layout/wrapping-reuse", test_wrapping_reuse);
+  g_test_add_func ("/layout/wrapping-broken-syllables", test_wrapping_broken_syllables);
 
   return g_test_run ();
 }
