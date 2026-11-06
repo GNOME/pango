@@ -64,18 +64,16 @@
  *   faster, and saves memory.  This is handled by fontmap->priv->pattern_hash.
  *   The patterns are cached indefinitely.
  *
- * - The results of a FcFontSort() are used to populate fontsets.  However,
- *   FcFontSort() relies on the search pattern only, which includes the font
+ * - The results of FcSortedFontSetCreate() are used to populate fontsets.
+ *   The sort relies on the search pattern only, which includes the font
  *   size but not the full font matrix.  The fontset however depends on the
- *   matrix.  As a result, multiple fontsets may need results of the
- *   FcFontSort() on the same input pattern (think rotating text).  As such,
- *   we cache FcFontSort() results in fontmap->priv->patterns_hash which
- *   is a refcounted structure.  This level of abstraction also allows for
- *   optimizations like calling FcFontMatch() instead of FcFontSort(), and
- *   only calling FcFontSort() if any patterns other than the first match
- *   are needed.  Another possible optimization would be to call FcFontSort()
- *   without trimming, and do the trimming lazily as we go.  Only pattern sets
- *   already referenced by a fontset are cached.
+ *   matrix.  As a result, multiple fontsets may need results of the sort
+ *   on the same input pattern (think rotating text).  As such, we cache
+ *   FcSortedFontSet results in fontmap->priv->patterns_hash which is a
+ *   refcounted structure.  FcSortedFontSetMatch() extracts results
+ *   incrementally from a heap, so only as many fonts as actually needed
+ *   are sorted.  Only pattern sets already referenced by a fontset are
+ *   cached.
  *
  * - A number of most-recently-used fontsets are cached and reused when
  *   needed.  This is achieved using fontmap->priv->fontset_hash and
@@ -98,28 +96,11 @@
  * - Make PangoCoverage a GObject and subclass it as PangoFcCoverage which
  *   will directly use FcCharset. (#569622)
  *
- * - Lazy trimming of FcFontSort() results.  Requires fontconfig with
- *   FcCharSetMerge().
+ * - Explore dropping the background thread for fontconfig operations,
+ *   since FcSortedFontSetCreate is O(n) and fast enough for inline use.
  */
 
-typedef enum {
-  /* Initial state; Fontconfig is not initialized yet */
-  DEFAULT_CONFIG_NOT_INITIALIZED,
-
-  /* We have a thread doing Fontconfig initialization in the background */
-  DEFAULT_CONFIG_INITIALIZING,
-
-  /* FcInit() finished and its default configuration is loaded */
-  DEFAULT_CONFIG_INITIALIZED
-} DefaultConfig;
-
-/* We call FcInit in a thread and set fc_initialized
- * when done, and are protected by a mutex. The thread
- * signals the cond when FcInit is done.
- */
-static GMutex fc_init_mutex;
-static GCond fc_init_cond;
-static DefaultConfig fc_initialized = DEFAULT_CONFIG_NOT_INITIALIZED;
+static gboolean fc_initialized = FALSE;
 
 
 typedef struct _PangoFcFontFaceData PangoFcFontFaceData;
@@ -170,8 +151,6 @@ struct _PangoFcFontMapPrivate
 
   FcConfig *config;
   FcFontSet *fonts;
-
-  GAsyncQueue *queue;
 };
 
 struct _PangoFcFontFaceData
@@ -815,224 +794,18 @@ pango_fc_font_key_get_features (const PangoFcFontKey *key)
 struct _PangoFcPatterns {
   PangoFcFontMap *fontmap;
 
-  /* match and fontset are initialized in a thread,
-   * and are protected by a mutex. The thread signals
-   * the cond when match or fontset become available.
-   */
-  GMutex mutex;
-  GCond cond;
-
   FcPattern *pattern;
-  FcPattern *match;
-  FcFontSet *fontset;
+  FcSortedFontSet *sorted;
 };
 
-static FcFontSet *
-font_set_copy (FcFontSet *fontset)
-{
-  FcFontSet *copy;
-  int i;
-
-  if (!fontset)
-    return NULL;
-
-  copy = malloc (sizeof (FcFontSet));
-  copy->sfont = copy->nfont = fontset->nfont;
-  copy->fonts = malloc (sizeof (FcPattern *) * copy->nfont);
-  if (copy->nfont > 0)
-    memcpy (copy->fonts, fontset->fonts, sizeof (FcPattern *) * copy->nfont);
-  for (i = 0; i < copy->nfont; i++)
-    FcPatternReference (copy->fonts[i]);
-
-  return copy;
-}
-
-typedef enum {
-  FC_INIT,
-  FC_MATCH,
-  FC_SORT,
-  FC_END,
-} FcOp;
-
-typedef struct {
-  FcOp op;
-  FcConfig *config;
-  FcFontSet *fonts;
-  FcPattern *pattern;
-  PangoFcPatterns *patterns;
-} ThreadData;
-
 static FcFontSet *pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap);
-
-static ThreadData *
-thread_data_new (FcOp             op,
-                 PangoFcPatterns *patterns)
-{
-  ThreadData *td;
-
-  td = g_new0 (ThreadData, 1);
-
-  td->op = op;
-
-  if (!patterns)
-    return td;
-
-  /* We don't want the fontmap dying on us */
-  g_object_ref (patterns->fontmap);
-
-  td->patterns = pango_fc_patterns_ref (patterns);
-  td->pattern = FcPatternDuplicate (patterns->pattern);
-
-  td->config = FcConfigReference (pango_fc_font_map_get_config (patterns->fontmap));
-  td->fonts = font_set_copy (pango_fc_font_map_get_config_fonts (patterns->fontmap));
-
-  return td;
-}
-
-static void
-thread_data_free (gpointer data)
-{
-  ThreadData *td = data;
-  PangoFcFontMap *fontmap = td->patterns ? td->patterns->fontmap : NULL;
-
-  g_clear_pointer (&td->fonts, FcFontSetDestroy);
-  if (td->pattern)
-    FcPatternDestroy (td->pattern);
-  if (td->config)
-    FcConfigDestroy (td->config);
-  if (td->patterns)
-    pango_fc_patterns_unref (td->patterns);
-  g_free (td);
-
-  g_clear_object (&fontmap);
-}
-
-static gpointer
-init_in_thread (gpointer task_data)
-{
-  ThreadData *td = task_data;
-  gint64 before G_GNUC_UNUSED;
-
-  before = PANGO_TRACE_CURRENT_TIME;
-
-  FcInit ();
-
-  pango_trace_mark (before, "FcInit", NULL);
-
-  g_mutex_lock (&fc_init_mutex);
-  fc_initialized = DEFAULT_CONFIG_INITIALIZED;
-  g_cond_broadcast (&fc_init_cond);
-  g_mutex_unlock (&fc_init_mutex);
-
-  thread_data_free (td);
-
-  return NULL;
-}
-
-static gpointer
-sort_in_thread (gpointer task_data)
-{
-  ThreadData *td = task_data;
-  FcResult result;
-  FcFontSet *fontset;
-  gint64 before G_GNUC_UNUSED;
-
-  before = PANGO_TRACE_CURRENT_TIME;
-
-  fontset = FcFontSetSort (td->config,
-                           &td->fonts, 1,
-                           td->pattern,
-                           FcTrue,
-                           NULL,
-                           &result);
-
-  pango_trace_mark (before, "FcFontSetSort", NULL);
-
-  g_mutex_lock (&td->patterns->mutex);
-  td->patterns->fontset = fontset;
-  g_cond_signal (&td->patterns->cond);
-  g_mutex_unlock (&td->patterns->mutex);
-
-  thread_data_free (td);
-
-  return NULL;
-}
-
-static gpointer
-match_in_thread (gpointer task_data)
-{
-  ThreadData *td = task_data;
-  FcResult result;
-  FcPattern *match;
-  gint64 before G_GNUC_UNUSED;
-
-  before = PANGO_TRACE_CURRENT_TIME;
-
-  match = FcFontSetMatch (td->config,
-                          &td->fonts, 1,
-                          td->pattern,
-                          &result);
-
-  pango_trace_mark (before, "FcFontSetMatch", NULL);
-
-  g_mutex_lock (&td->patterns->mutex);
-  td->patterns->match = match;
-  g_cond_signal (&td->patterns->cond);
-  g_mutex_unlock (&td->patterns->mutex);
-
-  if (result == FcResultNoMatch)
-    sort_in_thread (td);
-  else
-    thread_data_free (td);
-
-  return NULL;
-}
-
-static gpointer
-fc_thread_func (gpointer data)
-{
-  GAsyncQueue *queue = data;
-  gboolean done = FALSE;
-
-  while (!done)
-    {
-      ThreadData *td = g_async_queue_pop (queue);
-
-      switch (td->op)
-        {
-        case FC_INIT:
-          init_in_thread (td);
-          break;
-
-        case FC_MATCH:
-          match_in_thread (td);
-          break;
-
-        case FC_SORT:
-          sort_in_thread (td);
-          break;
-
-        case FC_END:
-          thread_data_free (td);
-          done = TRUE;
-          break;
-
-        default:
-          g_assert_not_reached ();
-        }
-    }
-
-  g_async_queue_unref (queue);
-
-  pango_trace_mark (PANGO_TRACE_CURRENT_TIME, "end fontconfig thread", NULL);
-
-  return NULL;
-}
 
 static PangoFcPatterns *
 pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
 {
   PangoFcPatterns *pats;
+  FcFontSet *fonts;
+  gint64 before G_GNUC_UNUSED;
 
   pat = uniquify_pattern (fontmap, pat);
   pats = g_hash_table_lookup (fontmap->priv->patterns_hash, pat);
@@ -1046,10 +819,12 @@ pango_fc_patterns_new (FcPattern *pat, PangoFcFontMap *fontmap)
   FcPatternReference (pat);
   pats->pattern = pat;
 
-  g_mutex_init (&pats->mutex);
-  g_cond_init (&pats->cond);
+  before = PANGO_TRACE_CURRENT_TIME;
 
-  g_async_queue_push (fontmap->priv->queue, thread_data_new (FC_MATCH, pats));
+  fonts = pango_fc_font_map_get_config_fonts (fontmap);
+  pats->sorted = FcSortedFontSetCreate (&fonts, 1, pat);
+
+  pango_trace_mark (before, "FcSortedFontSetCreate", NULL);
 
   g_hash_table_insert (fontmap->priv->patterns_hash, pats->pattern, pats);
 
@@ -1076,14 +851,8 @@ free_patterns (gpointer data)
   if (pats->pattern)
     FcPatternDestroy (pats->pattern);
 
-  if (pats->match)
-    FcPatternDestroy (pats->match);
-
-  if (pats->fontset)
-    FcFontSetDestroy (pats->fontset);
-
-  g_cond_clear (&pats->cond);
-  g_mutex_clear (&pats->mutex);
+  if (pats->sorted)
+    FcSortedFontSetDestroy (pats->sorted);
 }
 
 static void
@@ -1185,74 +954,8 @@ filter_by_format (FcFontSet **sets, int nsets)
 static FcPattern *
 pango_fc_patterns_get_font_pattern (PangoFcPatterns *pats, int i, gboolean *prepare)
 {
-  FcPattern *match = NULL;
-  FcFontSet *fontset = NULL;
-
-  if (i == 0)
-    {
-      gint64 before G_GNUC_UNUSED;
-      gboolean waited = FALSE;
-
-      before = PANGO_TRACE_CURRENT_TIME;
-
-      g_mutex_lock (&pats->mutex);
-
-      while (!pats->match && !pats->fontset)
-        {
-          waited = TRUE;
-          g_cond_wait (&pats->cond, &pats->mutex);
-        }
-
-      match = pats->match;
-      fontset = pats->fontset;
-
-      g_mutex_unlock (&pats->mutex);
-
-      if (waited)
-        pango_trace_mark (before, "wait for FcFontMatch", NULL);
-
-      if (match)
-        {
-          *prepare = FALSE;
-          return match;
-        }
-    }
-  else
-    {
-      gint64 before G_GNUC_UNUSED;
-      gboolean waited = FALSE;
-
-      before = PANGO_TRACE_CURRENT_TIME;
-
-      if (!pats->fontset)
-        g_async_queue_push (pats->fontmap->priv->queue, thread_data_new (FC_SORT, pats));
-
-      g_mutex_lock (&pats->mutex);
-
-      while (!pats->fontset)
-        {
-          waited = TRUE;
-          g_cond_wait (&pats->cond, &pats->mutex);
-        }
-
-      fontset = pats->fontset;
-
-      g_mutex_unlock (&pats->mutex);
-
-      if (waited)
-        pango_trace_mark (before, "wait for FcFontSort", NULL);
-    }
-
-  if (fontset)
-    {
-      if (i < fontset->nfont)
-        {
-          *prepare = TRUE;
-          return fontset->fonts[i];
-        }
-    }
-
-  return NULL;
+  *prepare = TRUE;
+  return FcSortedFontSetMatch (pats->sorted, i);
 }
 
 
@@ -1524,43 +1227,19 @@ G_DEFINE_ABSTRACT_TYPE_WITH_CODE (PangoFcFontMap, pango_fc_font_map, PANGO_TYPE_
                                   G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, pango_fc_font_map_list_model_init))
 
 static void
-start_fontconfig_thread (PangoFcFontMap *fcfontmap)
+ensure_fc_init (void)
 {
-  GThread *thread;
-
-  g_mutex_lock (&fc_init_mutex);
-
-  thread = g_thread_new ("[pango] fontconfig", fc_thread_func, g_async_queue_ref (fcfontmap->priv->queue));
-  g_thread_unref (thread);
-
-  if (fc_initialized == DEFAULT_CONFIG_NOT_INITIALIZED)
+  if (!fc_initialized)
     {
-      fc_initialized = DEFAULT_CONFIG_INITIALIZING;
+      gint64 before G_GNUC_UNUSED;
 
-      g_async_queue_push (fcfontmap->priv->queue, thread_data_new (FC_INIT, NULL));
+      before = PANGO_TRACE_CURRENT_TIME;
+
+      FcInit ();
+      fc_initialized = TRUE;
+
+      pango_trace_mark (before, "FcInit", NULL);
     }
-
-  g_mutex_unlock (&fc_init_mutex);
-}
-
-static void
-wait_for_fc_init (void)
-{
-  gint64 before G_GNUC_UNUSED;
-  gboolean waited = FALSE;
-
-  before = PANGO_TRACE_CURRENT_TIME;
-
-  g_mutex_lock (&fc_init_mutex);
-  while (fc_initialized < DEFAULT_CONFIG_INITIALIZED)
-    {
-      waited = TRUE;
-      g_cond_wait (&fc_init_cond, &fc_init_mutex);
-    }
-  g_mutex_unlock (&fc_init_mutex);
-
-  if (waited)
-    pango_trace_mark (before, "wait for FcInit", NULL);
 }
 
 static void
@@ -1593,10 +1272,6 @@ pango_fc_font_map_init (PangoFcFontMap *fcfontmap)
 						     (GDestroyNotify)pango_fc_font_face_data_free,
 						     NULL);
   priv->dpi = -1;
-
-  priv->queue = g_async_queue_new ();
-
-  start_fontconfig_thread (fcfontmap);
 }
 
 static void
@@ -1630,11 +1305,6 @@ pango_fc_font_map_fini (PangoFcFontMap *fcfontmap)
   g_free (priv->families);
   priv->n_families = -1;
   priv->families = NULL;
-
-  g_async_queue_push (fcfontmap->priv->queue, thread_data_new (FC_END, NULL));
-
-  g_async_queue_unref (priv->queue);
-  priv->queue = NULL;
 }
 
 static void
@@ -1917,7 +1587,7 @@ ensure_families (PangoFcFontMap *fcfontmap)
   int i;
   int count;
 
-  wait_for_fc_init ();
+  ensure_fc_init ();
 
   if (priv->n_families < 0)
     {
@@ -2402,7 +2072,7 @@ pango_fc_font_map_get_patterns (PangoFontMap      *fontmap,
   PangoFcPatterns *patterns;
   FcPattern *pattern;
 
-  wait_for_fc_init ();
+  ensure_fc_init ();
 
   pattern = pango_fc_fontset_key_make_pattern (key);
   pango_fc_default_substitute (fcfontmap, key, pattern);
@@ -2658,7 +2328,7 @@ pango_fc_font_map_get_config (PangoFcFontMap *fcfontmap)
 {
   g_return_val_if_fail (PANGO_IS_FC_FONT_MAP (fcfontmap), NULL);
 
-  wait_for_fc_init ();
+  ensure_fc_init ();
 
   return fcfontmap->priv->config;
 }
@@ -2670,7 +2340,7 @@ pango_fc_font_map_get_config_fonts (PangoFcFontMap *fcfontmap)
     {
       FcFontSet *sets[2];
 
-      wait_for_fc_init ();
+      ensure_fc_init ();
 
       sets[FcSetSystem] = FcConfigGetFonts (fcfontmap->priv->config, FcSetSystem);
       sets[FcSetApplication] = FcConfigGetFonts (fcfontmap->priv->config, FcSetApplication);

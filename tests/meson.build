@@ -100,6 +100,19 @@ custom_target('all-unicode',
                 gen_all_unicode, '@OUTPUT@'
               ])
 
+if cairo_dep.found() and build_pangoft2
+  executable('bench-itemize', 'bench-itemize.c',
+    dependencies: [ libpangocairo_dep, libpangoft2_dep ],
+    include_directories: root_inc,
+    c_args: common_cflags + pango_debug_cflags + test_cflags,
+  )
+  executable('profile-itemize', 'profile-itemize.c',
+    dependencies: [ libpangocairo_dep, libpangoft2_dep, fontconfig_dep ],
+    include_directories: root_inc,
+    c_args: common_cflags + pango_debug_cflags + test_cflags,
+  )
+endif
+
 foreach t: tests
   name = t[0]
   src = t.get(1, [ '@0@.c'.format(name) ])
