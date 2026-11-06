@@ -3827,6 +3827,21 @@ can_reuse_glyphs (PangoLayout    *layout,
       (state->last_tab.glyphs && state->last_tab.align != PANGO_TAB_LEFT))
     return FALSE;
 
+  switch (item->analysis.script)
+    {
+    case PANGO_SCRIPT_COMMON:
+    case PANGO_SCRIPT_INHERITED:
+    case PANGO_SCRIPT_LATIN:
+    case PANGO_SCRIPT_GREEK:
+    case PANGO_SCRIPT_CYRILLIC:
+    case PANGO_SCRIPT_ARABIC:
+    case PANGO_SCRIPT_HEBREW:
+      break;
+
+    default:
+      return FALSE;
+    }
+
   for (GSList *l = item->analysis.extra_attrs; l; l = l->next)
     {
       PangoAttribute *attr = l->data;
