@@ -306,10 +306,8 @@ font_has_color (hb_font_t *font)
 
   face = hb_font_get_face (font);
 
-#if HB_VERSION_ATLEAST (7, 0, 0)
   if (hb_ot_color_has_paint (face))
     return TRUE;
-#endif
 
   return hb_ot_color_has_layers (face) ||
          hb_ot_color_has_png (face) ||
@@ -325,10 +323,8 @@ glyph_has_color (hb_font_t      *font,
 
   face = hb_font_get_face (font);
 
-#if HB_VERSION_ATLEAST (7, 0, 0)
   if (hb_ot_color_glyph_has_paint (face, glyph))
     return TRUE;
-#endif
 
   if (hb_ot_color_glyph_get_layers (face, glyph, 0, NULL, NULL) > 0)
     return TRUE;

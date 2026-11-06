@@ -312,7 +312,6 @@ render_callback (PangoLayout *layout,
           cairo_restore (cr);
         }
 
-#if HB_VERSION_ATLEAST(4,0,0)
       if (annotate & ANNOTATE_RUN_BASELINES)
         {
           hb_ot_layout_baseline_tag_t baseline_tag = 0;
@@ -424,7 +423,6 @@ render_callback (PangoLayout *layout,
           pango_layout_iter_free (iter);
           cairo_restore (cr);
         }
-#endif
 
       if (annotate & ANNOTATE_LAYOUT_EXTENTS)
         {

@@ -1000,10 +1000,7 @@ pango_fc_font_create_hb_font (PangoFont *font)
                      pixel_size * PANGO_SCALE * x_scale,
                      pixel_size * PANGO_SCALE * y_scale);
   hb_font_set_ptem (hb_font, point_size);
-
-#if HB_VERSION_ATLEAST (3, 3, 0)
   hb_font_set_synthetic_slant (hb_font, slant);
-#endif
 
   if (key)
     {

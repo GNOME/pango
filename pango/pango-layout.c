@@ -6772,11 +6772,9 @@ apply_baseline_shift (PangoLayoutLine *line,
   int y_offset = 0;
   PangoItem *prev = NULL;
   hb_position_t baseline_adjustment = 0;
-#if HB_VERSION_ATLEAST(4,0,0)
   hb_ot_layout_baseline_tag_t baseline_tag = 0;
   hb_position_t baseline;
   hb_position_t run_baseline;
-#endif
 
   for (GSList *l = line->runs; l; l = l->next)
     {
@@ -6784,7 +6782,6 @@ apply_baseline_shift (PangoLayoutLine *line,
       PangoItem *item = run->item;
       int start_x_offset, end_x_offset;
       int start_y_offset, end_y_offset;
-#if HB_VERSION_ATLEAST(4,0,0)
       hb_font_t *hb_font;
       hb_script_t script;
       hb_language_t language;
@@ -6793,7 +6790,6 @@ apply_baseline_shift (PangoLayoutLine *line,
       hb_tag_t lang_tags[HB_OT_MAX_TAGS_PER_LANGUAGE];
       unsigned int script_count = HB_OT_MAX_TAGS_PER_SCRIPT;
       unsigned int lang_count = HB_OT_MAX_TAGS_PER_LANGUAGE;
-#endif
 
       if (item->analysis.font == NULL)
         {
@@ -6804,7 +6800,6 @@ apply_baseline_shift (PangoLayoutLine *line,
           continue;
         }
 
-#if HB_VERSION_ATLEAST(4,0,0)
       hb_font = pango_font_get_hb_font (item->analysis.font);
 
       script = (hb_script_t) g_unicode_script_to_iso15924 (item->analysis.script);
@@ -6854,7 +6849,6 @@ apply_baseline_shift (PangoLayoutLine *line,
         baseline_adjustment = 0;
       else
         baseline_adjustment = baseline - run_baseline;
-#endif
 
       collect_baseline_shift (state, item, prev, &start_x_offset, &start_y_offset, &end_x_offset, &end_y_offset);
 
