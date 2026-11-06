@@ -611,6 +611,9 @@ fallback_shape (const char          *text,
       glyphs->glyphs[i].geometry.x_offset = 0;
       glyphs->glyphs[i].geometry.y_offset = 0;
       glyphs->glyphs[i].geometry.width = logical_rect.width;
+      glyphs->glyphs[i].attr.is_cluster_start = 0;
+      glyphs->glyphs[i].attr.is_color = 0;
+      glyphs->glyphs[i].attr.no_ink = 0;
 
       glyphs->log_clusters[i] = cluster;
 
