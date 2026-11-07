@@ -17,6 +17,20 @@
   },
   "comment" : "Mixed-direction ellipsization",
   "text" : "Hello שלום Γειά σας",
+  "attributes" : [
+    {
+      "start" : 6,
+      "end" : 14,
+      "type" : "foreground",
+      "value" : "#ffff00000000"
+    },
+    {
+      "start" : 17,
+      "end" : 30,
+      "type" : "foreground",
+      "value" : "#00000000ffff"
+    }
+  ],
   "font" : "Cantarell 11",
   "justify" : true,
   "ellipsize" : "end",
@@ -252,6 +266,14 @@
               ]
             },
             "flags" : 0,
+            "extra-attributes" : [
+              {
+                "start" : 6,
+                "end" : 14,
+                "type" : "foreground",
+                "value" : "#ffff00000000"
+              }
+            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
@@ -383,6 +405,12 @@
                 "end" : 2147483647,
                 "type" : "fallback",
                 "value" : false
+              },
+              {
+                "start" : 17,
+                "end" : 30,
+                "type" : "foreground",
+                "value" : "#00000000ffff"
               }
             ],
             "y-offset" : 0,

@@ -202,6 +202,8 @@
                 "glyph" : 268435455,
                 "width" : 0,
                 "is-cluster-start" : true,
+                "unsafe-to-break" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 4
               }
             ]
@@ -278,6 +280,8 @@
                 "glyph" : 268435455,
                 "width" : 0,
                 "is-cluster-start" : true,
+                "unsafe-to-break" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 4
               }
             ]
@@ -418,6 +422,7 @@
                 "width" : 18432,
                 "is-cluster-start" : true,
                 "is-color" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               }
             ]
@@ -588,12 +593,16 @@
                 "glyph" : 268435455,
                 "width" : 0,
                 "is-cluster-start" : true,
+                "unsafe-to-break" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 16
               },
               {
                 "glyph" : 268435455,
                 "width" : 0,
                 "is-cluster-start" : true,
+                "unsafe-to-break" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 20
               }
             ]

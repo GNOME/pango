@@ -213,7 +213,11 @@ pango_ot_buffer_output (const PangoOTBuffer *buffer,
     {
       glyphs->glyphs[i].glyph = hb_glyph->codepoint;
       glyphs->log_clusters[i] = hb_glyph->cluster;
-      glyphs->glyphs[i].attr.is_cluster_start = glyphs->log_clusters[i] != last_cluster;
+      glyphs->glyphs[i].attr = (PangoGlyphVisAttr) {
+        .is_cluster_start = glyphs->log_clusters[i] != last_cluster,
+        .unsafe_to_break = (hb_glyph_info_get_glyph_flags (hb_glyph) & HB_GLYPH_FLAG_UNSAFE_TO_BREAK) != 0,
+        .unsafe_to_concat = (hb_glyph_info_get_glyph_flags (hb_glyph) & HB_GLYPH_FLAG_UNSAFE_TO_CONCAT) != 0,
+      };
       last_cluster = glyphs->log_clusters[i];
 
       glyphs->glyphs[i].geometry.width = hb_position->x_advance;

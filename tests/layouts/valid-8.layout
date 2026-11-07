@@ -17,6 +17,20 @@
   },
   "comment" : "",
   "text" : "Hello שלום Γειά σας",
+  "attributes" : [
+    {
+      "start" : 6,
+      "end" : 14,
+      "type" : "foreground",
+      "value" : "#ffff00000000"
+    },
+    {
+      "start" : 15,
+      "end" : 30,
+      "type" : "foreground",
+      "value" : "#00000000ffff"
+    }
+  ],
   "font" : "Cantarell 11",
   "auto-dir" : false,
   "alignment" : "center",
@@ -252,6 +266,14 @@
               ]
             },
             "flags" : 0,
+            "extra-attributes" : [
+              {
+                "start" : 6,
+                "end" : 14,
+                "type" : "foreground",
+                "value" : "#ffff00000000"
+              }
+            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
@@ -342,6 +364,14 @@
               ]
             },
             "flags" : 0,
+            "extra-attributes" : [
+              {
+                "start" : 15,
+                "end" : 30,
+                "type" : "foreground",
+                "value" : "#00000000ffff"
+              }
+            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,

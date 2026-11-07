@@ -388,12 +388,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 2
               },
               {
                 "glyph" : 417,
                 "width" : 7168,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 3
               },
               {
@@ -406,12 +408,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 5
               },
               {
                 "glyph" : 417,
                 "width" : 7168,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 6
               },
               {

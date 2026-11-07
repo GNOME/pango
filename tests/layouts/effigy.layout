@@ -110,17 +110,20 @@
                 "glyph" : 72,
                 "width" : 26624,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 5041,
                 "width" : 29696,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               },
               {
                 "glyph" : 2803,
                 "width" : 15360,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               }
             ]
@@ -162,18 +165,21 @@
                 "glyph" : 76,
                 "width" : 12288,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 0
               },
               {
                 "glyph" : 74,
                 "width" : 27648,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               },
               {
                 "glyph" : 92,
                 "width" : 25600,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 2
               }
             ]

@@ -22,6 +22,18 @@
       "end" : 31,
       "type" : "font-features",
       "value" : "tnum=1"
+    },
+    {
+      "start" : 74,
+      "end" : 117,
+      "type" : "foreground",
+      "value" : "#ffff00000000"
+    },
+    {
+      "start" : 117,
+      "end" : 124,
+      "type" : "foreground",
+      "value" : "#00000000ffff"
     }
   ],
   "font" : "Cantarell 11",
@@ -871,12 +883,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 8
               },
               {
                 "glyph" : 430,
                 "width" : 5120,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 9
               },
               {
@@ -919,12 +933,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 16
               },
               {
                 "glyph" : 406,
                 "width" : 8192,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 17
               },
               {
@@ -1091,12 +1107,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 16
               },
               {
                 "glyph" : 430,
                 "width" : 5120,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 17
               },
               {
@@ -1239,12 +1257,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 10
               },
               {
                 "glyph" : 272,
                 "width" : 8192,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 11
               },
               {
@@ -1299,12 +1319,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 20
               },
               {
                 "glyph" : 273,
                 "width" : 7168,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 21
               },
               {
@@ -1329,12 +1351,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 25
               },
               {
                 "glyph" : 312,
                 "width" : 8192,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 26
               },
               {
@@ -1395,6 +1419,12 @@
                 "end" : 31,
                 "type" : "font-features",
                 "value" : "tnum=1"
+              },
+              {
+                "start" : 74,
+                "end" : 117,
+                "type" : "foreground",
+                "value" : "#ffff00000000"
               }
             ],
             "y-offset" : 0,
@@ -1417,12 +1447,14 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 2
               },
               {
                 "glyph" : 312,
                 "width" : 8192,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 3
               },
               {
@@ -1531,6 +1563,14 @@
               ]
             },
             "flags" : 0,
+            "extra-attributes" : [
+              {
+                "start" : 74,
+                "end" : 117,
+                "type" : "foreground",
+                "value" : "#ffff00000000"
+              }
+            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
@@ -1545,24 +1585,28 @@
                 "glyph" : 311,
                 "width" : 5120,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 1
               },
               {
                 "glyph" : 1109,
                 "width" : 3072,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 2
               },
               {
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 3
               },
               {
                 "glyph" : 430,
                 "width" : 5120,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 4
               },
               {
@@ -1653,6 +1697,7 @@
                 "glyph" : 472,
                 "width" : 7168,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 20
               },
               {
@@ -1719,6 +1764,14 @@
               ]
             },
             "flags" : 0,
+            "extra-attributes" : [
+              {
+                "start" : 117,
+                "end" : 124,
+                "type" : "foreground",
+                "value" : "#00000000ffff"
+              }
+            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,

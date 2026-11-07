@@ -17,6 +17,20 @@
   },
   "comment" : "A keycap sequence",
   "text" : " 0️⃣ Keycap Digit Zero",
+  "attributes" : [
+    {
+      "start" : 2,
+      "end" : 5,
+      "type" : "foreground",
+      "value" : "#ffff00000000"
+    },
+    {
+      "start" : 5,
+      "end" : 8,
+      "type" : "foreground",
+      "value" : "#00000000ffff"
+    }
+  ],
   "font" : "Cantarell 11",
   "output" : {
     "is-wrapped" : false,
@@ -227,6 +241,20 @@
               ]
             },
             "flags" : 0,
+            "extra-attributes" : [
+              {
+                "start" : 2,
+                "end" : 5,
+                "type" : "foreground",
+                "value" : "#ffff00000000"
+              },
+              {
+                "start" : 5,
+                "end" : 8,
+                "type" : "foreground",
+                "value" : "#00000000ffff"
+              }
+            ],
             "y-offset" : 0,
             "start-x-offset" : 0,
             "end-x-offset" : 0,
@@ -326,24 +354,28 @@
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 9
               },
               {
                 "glyph" : 312,
                 "width" : 8192,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 10
               },
               {
                 "glyph" : 324,
                 "width" : 4096,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 11
               },
               {
                 "glyph" : 430,
                 "width" : 5120,
                 "is-cluster-start" : true,
+                "unsafe-to-concat" : true,
                 "log-cluster" : 12
               },
               {

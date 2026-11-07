@@ -111,6 +111,9 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 static void
 test_bidi_embedding_levels (void)
 {
+  PangoFontMap *fontmap;
+  PangoContext *context;
+
   /* Examples taken from https://www.w3.org/International/articles/inline-bidi-markup/uba-basics */
   struct {
     const char *text;
@@ -132,16 +135,18 @@ test_bidi_embedding_levels (void)
 
   };
 
+  fontmap = pango_cairo_font_map_new ();
+  context = pango_font_map_create_context (fontmap);
+
   for (int i = 0; i < G_N_ELEMENTS (tests); i++)
     {
       const char *text = tests[i].text;
       PangoDirection dir = tests[i].dir;
       guint8 *levels;
-      gsize len;
+      gsize len = g_utf8_strlen (text, -1);
+      int ranges[][2] = { { 0, len }, { len / 2, len - 1 }, { len - 1, len }, { len, len } };
 
       levels = pango_log2vis_get_embedding_levels (text, -1, &dir);
-
-      len = g_utf8_strlen (text, -1);
 
       if (memcmp (levels, tests[i].levels, sizeof (guint8) * len) != 0)
         {
@@ -152,8 +157,41 @@ test_bidi_embedding_levels (void)
       g_assert_true (memcmp (levels, tests[i].levels, sizeof (guint8) * len) == 0);
       g_assert_true (dir == tests[i].out_dir);
 
+      for (guint range = 0; range < G_N_ELEMENTS (ranges); range++)
+        {
+          int start = ranges[range][0];
+          int end = ranges[range][1];
+          const char *begin = g_utf8_offset_to_pointer (text, start);
+          const char *limit = g_utf8_offset_to_pointer (text, end);
+          int covered = begin - text;
+          int character = start;
+          GList *items;
+
+          items = pango_itemize_with_base_dir_and_embedding_levels (context, dir,
+                                                                    text, covered, limit - begin,
+                                                                    NULL, NULL, levels, len);
+          for (GList *l = items; l; l = l->next)
+            {
+              PangoItem *item = l->data;
+
+              g_assert_cmpint (item->offset, ==, covered);
+              for (int j = 0; j < item->num_chars; j++, character++)
+                {
+                  g_assert_cmpint (character, <, end);
+                  g_assert_cmpuint (item->analysis.level, ==, levels[character]);
+                }
+              covered += item->length;
+            }
+          g_assert_cmpint (covered, ==, limit - text);
+          g_assert_cmpint (character, ==, end);
+          g_list_free_full (items, (GDestroyNotify) pango_item_free);
+        }
+
       g_free (levels);
     }
+
+  g_object_unref (context);
+  g_object_unref (fontmap);
 }
 
 /* Some basic tests for pango_layout_move_cursor_visually inside
