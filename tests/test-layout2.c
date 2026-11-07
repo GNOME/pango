@@ -289,6 +289,66 @@ test_wrapping_broken_syllables (void)
 }
 
 static void
+test_wrapping_arabic_context (void)
+{
+  const char *text = "\u0644\u0652\u061c\u064e\u064e\u00ad\u0639";
+  g_autoptr(PangoContext) context = NULL;
+  g_autoptr(PangoFontDescription) desc = NULL;
+  g_autoptr(PangoFontDescription) loaded_desc = NULL;
+  g_autoptr(PangoFont) font = NULL;
+  g_autoptr(PangoLayout) layout = NULL;
+  g_autoptr(PangoLayout) reference = NULL;
+  g_autoptr(PangoGlyphString) glyphs = NULL;
+  g_autofree PangoLogAttr *log_attrs = NULL;
+  PangoLayoutLine *line;
+  PangoGlyphItem *run;
+  PangoRectangle rect;
+  int char_offset;
+
+  context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
+  pango_cairo_context_set_resolution (context, 96);
+  desc = pango_font_description_from_string ("Droid Arabic Kufi 12");
+  font = pango_context_load_font (context, desc);
+  loaded_desc = font ? pango_font_describe (font) : NULL;
+  if (!loaded_desc ||
+      g_strcmp0 (pango_font_description_get_family (loaded_desc), "Droid Arabic Kufi") != 0)
+    {
+      g_test_skip ("Droid Arabic Kufi is required for this test");
+      return;
+    }
+
+  layout = pango_layout_new (context);
+  pango_layout_set_font_description (layout, desc);
+  pango_layout_set_text (layout, text, -1);
+  pango_layout_set_width (layout, 5 * PANGO_SCALE);
+  pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
+
+  reference = pango_layout_copy (layout);
+  g_object_set_data (G_OBJECT (reference), "pango-no-reuse", GINT_TO_POINTER (1));
+  compare_layouts (layout, reference, TRUE);
+
+  g_assert_cmpint (pango_layout_get_line_count (layout), ==, 2);
+  line = pango_layout_get_line_readonly (layout, 1);
+  g_assert_cmpuint (g_slist_length (line->runs), ==, 1);
+  run = line->runs->data;
+  g_assert_cmpstr (text + run->item->offset, ==, "\u0639");
+
+  glyphs = pango_glyph_string_new ();
+  pango_layout_get_log_attrs (layout, &log_attrs, NULL);
+  char_offset = g_utf8_pointer_to_offset (text, text + run->item->offset);
+  pango_shape_item (run->item, text, strlen (text), log_attrs + char_offset, glyphs, PANGO_SHAPE_ROUND_POSITIONS);
+  g_assert_cmpint (glyphs->num_glyphs, ==, 1);
+  g_assert_cmpint (run->glyphs->num_glyphs, ==, 1);
+  g_assert_cmpuint (run->glyphs->glyphs[0].glyph, ==, glyphs->glyphs[0].glyph);
+  g_assert_cmpint (run->glyphs->log_clusters[0], ==, glyphs->log_clusters[0]);
+  g_assert_cmpint (run->glyphs->glyphs[0].geometry.width, ==, glyphs->glyphs[0].geometry.width);
+  g_assert_cmpint (run->glyphs->glyphs[0].geometry.x_offset, ==, glyphs->glyphs[0].geometry.x_offset);
+  g_assert_cmpint (run->glyphs->glyphs[0].geometry.y_offset, ==, glyphs->glyphs[0].geometry.y_offset);
+  pango_layout_line_get_extents (line, NULL, &rect);
+  g_assert_cmpint (rect.width, ==, pango_glyph_string_get_width (glyphs));
+}
+
+static void
 test_wrapping_reuse (void)
 {
   const char *texts[] = {
@@ -399,6 +459,7 @@ main (int argc, char *argv[])
 
   g_test_add_func ("/layout/wrapping-reuse", test_wrapping_reuse);
   g_test_add_func ("/layout/wrapping-broken-syllables", test_wrapping_broken_syllables);
+  g_test_add_func ("/layout/wrapping-arabic-context", test_wrapping_arabic_context);
 
   return g_test_run ();
 }
