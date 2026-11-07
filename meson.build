@@ -16,6 +16,8 @@ add_project_arguments([
   language: 'c'
 )
 
+add_project_arguments('-DG_DISABLE_CLEANUP', language: ['c', 'cpp'])
+
 pango_prefix = get_option('prefix')
 pango_libdir = join_paths(pango_prefix, get_option('libdir'))
 pango_sysconfdir = join_paths(pango_prefix, get_option('sysconfdir'))
