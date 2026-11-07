@@ -3834,10 +3834,10 @@ can_reuse_glyphs (PangoLayout    *layout,
     case PANGO_SCRIPT_LATIN:
     case PANGO_SCRIPT_GREEK:
     case PANGO_SCRIPT_CYRILLIC:
-    case PANGO_SCRIPT_ARABIC:
     case PANGO_SCRIPT_HEBREW:
       break;
 
+    case PANGO_SCRIPT_ARABIC:
     default:
       return FALSE;
     }
