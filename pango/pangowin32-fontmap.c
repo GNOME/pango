@@ -1510,6 +1510,7 @@ pango_win32_font_map_load_fontset (PangoFontMap                 *fontmap,
   families = g_strsplit (family ? family : "", ",", -1);
 
   tmp_desc = pango_font_description_copy_static (desc);
+  pango_font_description_unset_fields (tmp_desc, PANGO_FONT_MASK_COLOR);
 
   fonts = pango_fontset_simple_new (language);
 

@@ -303,6 +303,12 @@ test_features_and_variants (void)
       g_object_unref (fontmap);
       return;
     }
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
+    {
+      g_test_incomplete ("Small Caps support needs to be added to PangoCairoWin32FontMap");
+      g_object_unref (fontmap);
+      return;
+    }
   context = pango_font_map_create_context (fontmap);
 
   desc1 = pango_font_description_from_string ("Cantarell Small-Caps 14");
@@ -359,6 +365,12 @@ test_features_and_variants2 (void)
   if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoCoreTextFontMap") == 0)
     {
       g_test_skip ("CoreText cannot load the bundled Cantarell font");
+      g_object_unref (fontmap);
+      return;
+    }
+  if (strcmp (G_OBJECT_TYPE_NAME (fontmap), "PangoCairoWin32FontMap") == 0)
+    {
+      g_test_incomplete ("Small Caps support needs to be added to PangoCairoWin32FontMap");
       g_object_unref (fontmap);
       return;
     }

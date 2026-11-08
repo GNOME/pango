@@ -56,8 +56,9 @@ typedef struct _PangoCairoWin32FontClass PangoCairoWin32FontClass;
 
 struct _PangoCairoWin32Font
 {
-  PangoWin32Font font;
+  PangoWin32Font        font;
   PangoCairoFontPrivate cf_priv;
+  PangoMatrix           matrix;
 };
 
 struct _PangoCairoWin32FontClass
@@ -247,8 +248,14 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
   cairo_matrix_t font_matrix;
   cairo_font_options_t *options;
   const char *variations;
+  const PangoMatrix *context_matrix;
+  PangoMatrix matrix = PANGO_MATRIX_INIT;
 
   g_return_val_if_fail (PANGO_IS_CAIRO_WIN32_FONT_MAP (cwfontmap), NULL);
+
+  context_matrix = context ? pango_context_get_matrix (context) : NULL;
+  if (context_matrix)
+    matrix = *context_matrix;
 
   size = (double) pango_font_description_get_size (desc) / PANGO_SCALE;
 
@@ -287,6 +294,11 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
       pango_cairo_font_get_font_options ((PangoCairoFont *) cwfont, options2);
 
       if (ABS (win32font->size - size * PANGO_SCALE) < 2 &&
+          cwfont->matrix.xx == matrix.xx &&
+          cwfont->matrix.xy == matrix.xy &&
+          cwfont->matrix.yx == matrix.yx &&
+          cwfont->matrix.yy == matrix.yy &&
+          cwfont->cf_priv.gravity == pango_font_description_get_gravity (desc) &&
           cairo_font_options_equal (options, options2))
         {
           g_object_ref (win32font);
@@ -304,6 +316,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
     }
 
   cwfont = g_object_new (PANGO_TYPE_CAIRO_WIN32_FONT, NULL);
+  cwfont->matrix = matrix;
   win32font = PANGO_WIN32_FONT (cwfont);
 
   g_assert (win32font->fontmap == NULL);
@@ -338,7 +351,7 @@ _pango_cairo_win32_font_new (PangoCairoWin32FontMap     *cwfontmap,
 					(PangoCairoFont *) cwfont,
 					pango_font_description_get_gravity (desc),
                                         options,
-					pango_context_get_matrix (context),
+                                        context_matrix,
 					&font_matrix);
 
   cairo_font_options_destroy (options);

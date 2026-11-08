@@ -65,6 +65,13 @@ get_font_map_with_boxes (void)
   PangoFont *font;
 
   fontmap = pango_cairo_font_map_new ();
+  if (pango_cairo_font_map_get_font_type (PANGO_CAIRO_FONT_MAP (fontmap)) != CAIRO_FONT_TYPE_FT)
+    {
+      g_test_skip ("These unhinted font metrics require the FreeType backend");
+      g_object_unref (fontmap);
+      return NULL;
+    }
+
   path = g_test_build_filename (G_TEST_DIST, "fonts", "boxes.ttf", NULL);
 
   pango_font_map_add_font_file (fontmap, path, &error);
