@@ -374,8 +374,10 @@ test_wrapping_reuse (void)
     "extraordinary incomprehensibility soft\302\255hyphen co\302\255operate",
     "abc\t12.34\tffi def\txyz longer words and more words",
     "one two\nthree four\342\200\250five six\nseven eight",
-    "extraordinarily incomprehensibility internationalization counterintuitiveness "
-    "extraordinarily incomprehensibility internationalization counterintuitiveness",
+    (
+      "extraordinarily incomprehensibility internationalization counterintuitiveness "
+      "extraordinarily incomprehensibility internationalization counterintuitiveness"
+    ),
     "office\302\255affinity ffi\302\255ffl áêï office\302\255affinity ffi\302\255ffl",
 
   };
